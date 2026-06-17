@@ -1,8 +1,8 @@
-# prosport-frontend
+# 🕶️ Sunglass Frontend
 
 Multi-brand storefront built with Next.js 16 App Router. A single codebase serves multiple brands (proSPORT Sunglasses, BikerShades, Sunglass Monster) — the active brand is selected via environment variable.
 
-## Stack
+## 🛠️ Stack
 
 - **Next.js 16** — App Router, server components, server actions, Turbopack
 - **Tailwind CSS v4** — design system tokens in `globals.css`
@@ -10,14 +10,14 @@ Multi-brand storefront built with Next.js 16 App Router. A single codebase serve
 - **@supabase/ssr** — server-side session management
 - **Radix UI / shadcn** — Sheet component for slide-over panels
 
-## Getting Started
+## 🚀 Getting Started
 
 ```bash
 npm install
 npm run dev
 ```
 
-### Environment Variables
+### ⚙️ Environment Variables
 
 ```env
 NEXT_PUBLIC_BRAND_SLUG=prosport-sunglasses   # or bikershades / sunglass-monster
@@ -26,13 +26,13 @@ NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ```
 
-## Multi-Brand
+## 🏷️ Multi-Brand
 
 All brand config (name, logo, accent colour, hero copy) lives in `src/lib/brand.ts`. The `BRAND_SLUG` env var picks the active brand at build time. The accent colour is injected as a CSS variable (`--color-brand`) on the root element, so all brand-coloured UI updates automatically.
 
 To add a brand: add an entry to the `BRANDS` object in `brand.ts` and deploy a new instance with the corresponding `NEXT_PUBLIC_BRAND_SLUG`.
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 src/
@@ -68,10 +68,14 @@ src/
     │   ├── auth.ts          # signIn, signOut, getSession, requireUser
     │   ├── client.ts        # Browser Supabase client
     │   └── server.ts        # Server Supabase client (reads cookies)
+    ├── db/
+    │   ├── 001_initial_schema.sql     # Initial Supabase schema
+    │   ├── 002_user_cart_bookmarks.sql # Cart and bookmark tables
+    │   └── drop_schema.sql            # Teardown script
     └── categoryUtils.ts     # Tree traversal helpers
 ```
 
-## Auth Flow
+## 🔐 Auth Flow
 
 Sign-in and sign-out are server actions. The session is stored as a cookie by `@supabase/ssr`. No client-side Supabase listener is used.
 
@@ -79,7 +83,7 @@ Sign-in and sign-out are server actions. The session is stored as a cookie by `@
 - **Sign out** (`SignOutButton`) — calls `setLoggedIn(false)`, then `router.push("/")`, then `await signOut()` — navigation happens before session is cleared to avoid `requireUser()` redirecting mid-transition
 - `AuthProvider` exposes `useLoggedIn()` and `useSetLoggedIn()` — no effects, just state
 
-## Cart & Bookmark Sync
+## 🛒 Cart & Bookmark Sync
 
 Both providers follow the same pattern:
 
@@ -89,11 +93,11 @@ Both providers follow the same pattern:
 4. **Debounced PUT** (800ms): handles normal add/remove/qty changes after initial load
 5. **Providers are at root**: never unmount across navigations, so debounce timers persist
 
-## Category Filters
+## 🔍 Category Filters
 
 Filter slugs (`under-15`, `15-25`, `25-plus`, `sale`) are passed as `?filter=<slug>`. The backend translates them via a hardcoded `FILTER_MAP` — price logic is never exposed in the URL. A `<Suspense key={filter}>` forces remount on filter change to prevent Next.js from serving cached results.
 
-## API
+## 📡 API
 
 All data fetching goes through `src/lib/api.ts` (server actions, `"use server"`). Two sections:
 
