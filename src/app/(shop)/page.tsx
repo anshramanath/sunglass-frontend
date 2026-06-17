@@ -8,6 +8,24 @@ import { collectLeaves } from "@/lib/categoryUtils";
 import ProductGrid from "@/components/product/ProductGrid";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
+async function HeroCTAs() {
+  const tree = await getCategories(BRAND_SLUG);
+  const leaves = collectLeaves(tree);
+  const first = leaves[0];
+  const shopHref = first ? `/category/${first.path.join("/")}` : "/sale";
+
+  return (
+    <div className="flex items-center gap-6 mt-9">
+      <Link href={shopHref} className="bg-ink text-paper text-[15px] px-7 py-3.5 hover:bg-grey-800 transition-colors duration-200">
+        Shop Sunglasses
+      </Link>
+      <Link href="/sale" className="text-[15px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
+        Shop Sale
+      </Link>
+    </div>
+  );
+}
+
 async function TopCategories() {
   const tree = await getCategories(BRAND_SLUG);
   const leaves = collectLeaves(tree);
@@ -28,8 +46,8 @@ async function TopCategories() {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      {tiles.map((tile) => (
-        <Link key={tile.href} href={tile.href} className="group block">
+      {tiles.map((tile, i) => (
+        <Link key={tile.href} href={tile.href} className={`group block${i === 4 ? " hidden lg:block" : ""}`}>
           <div className="bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-3 sm:p-7">
             {tile.img && (
               <Image
@@ -67,7 +85,7 @@ async function EditorialSplit() {
   const tree = await getCategories(BRAND_SLUG);
   const leaves = collectLeaves(tree);
   const slots = await Promise.all(
-    [5, 6].map(async (idx) => {
+    [4, 6].map(async (idx) => {
       const leaf = leaves[idx];
       if (!leaf) return null;
       const data = await getProducts({ brandSlug: BRAND_SLUG, categoryId: leaf.node.id, size: 1 }).catch(() => null);
@@ -85,7 +103,7 @@ async function EditorialSplit() {
     <section className="grid sm:grid-cols-2">
       {[left, right].map((slot, i) =>
         slot ? (
-          <Link key={slot.href} href={slot.href} className={`group relative ${bgs[i]} min-h-[58vh] overflow-hidden flex items-center justify-center p-12`}>
+          <Link key={slot.href} href={slot.href} className={`group relative ${bgs[i]} min-h-[58vh] overflow-hidden flex items-center justify-center p-12${i === 1 ? " hidden sm:flex" : ""}`}>
             {slot.img && (
               <Image
                 src={slot.img.src}
@@ -130,20 +148,9 @@ export default function HomePage() {
             <p className="text-[16px] text-grey-600 leading-relaxed mt-6">
               {BRAND.heroCopy.body}
             </p>
-            <div className="flex items-center gap-6 mt-9">
-              <Link
-                href="/category"
-                className="bg-ink text-paper text-[15px] px-7 py-3.5 hover:bg-grey-800 transition-colors duration-200"
-              >
-                Shop Sunglasses
-              </Link>
-              <Link
-                href="/category"
-                className="text-[15px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200"
-              >
-                Shop Sale
-              </Link>
-            </div>
+            <Suspense fallback={null}>
+              <HeroCTAs />
+            </Suspense>
           </div>
         </div>
         <div className="group bg-grey-100 lg:min-h-[80vh] order-1 lg:order-2 flex items-center justify-center p-10 sm:p-16 relative overflow-hidden">

@@ -30,8 +30,8 @@ export default function SignInPage() {
       {/* ── Left — product image ── */}
       <div className="relative hidden lg:flex items-center justify-center bg-grey-50 overflow-hidden p-20">
         <Image
-          src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_05_Airspeed-Black-Angle.jpg"
-          alt="Featured eyewear"
+          src={BRAND.hero}
+          alt={`${BRAND.name} eyewear`}
           width={600}
           height={600}
           className="w-full h-full object-contain mix-blend-multiply"
