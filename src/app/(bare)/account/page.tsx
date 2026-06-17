@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth";
 import { BRAND } from "@/lib/brand";
 import SignOutButton from "./SignOutButton";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signUp } from "@/lib/supabase/auth";
+import { signUp } from "@/lib/auth";
 
 export default function SignUpForm({ onSwitch }: { onSwitch: () => void }) {
   const [name, setName] = useState("");

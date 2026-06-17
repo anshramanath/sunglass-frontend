@@ -1,7 +1,7 @@
 "use server";
 
 import type { ApiResponse, CategoryNode, ProductDetail, ProductListItem, ProductsResponse } from "./types";
-import { getSession } from "@/lib/supabase/auth";
+import { getSession } from "@/lib/auth";
 
 const BASE = process.env.BASE_URL!;
 

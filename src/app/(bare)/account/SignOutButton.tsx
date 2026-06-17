@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { signOut } from "@/lib/supabase/auth";
+import { signOut } from "@/lib/auth";
 import { useSetLoggedIn } from "@/components/providers/AuthProvider";
 
 export default function SignOutButton() {

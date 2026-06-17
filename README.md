@@ -64,8 +64,8 @@ src/
 └── lib/
     ├── api.ts               # All server actions — public catalog + authed user data
     ├── brand.ts             # Brand config and BRAND export
+    ├── auth.ts              # signIn, signOut, getSession, requireUser
     ├── supabase/
-    │   ├── auth.ts          # signIn, signOut, getSession, requireUser
     │   ├── client.ts        # Browser Supabase client
     │   └── server.ts        # Server Supabase client (reads cookies)
     ├── db/

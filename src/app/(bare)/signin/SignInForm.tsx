@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/supabase/auth";
+import { signIn } from "@/lib/auth";
 import { useSetLoggedIn } from "@/components/providers/AuthProvider";
 
 export default function SignInForm({ onSwitch }: { onSwitch: () => void }) {
