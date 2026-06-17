@@ -40,7 +40,7 @@ export async function signUp(name: string, email: string, password: string): Pro
   if (error) return error.message;
   const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
   if (signInError) return signInError.message;
-  redirect("/");
+  return null;
 }
 
 export async function signOut() {

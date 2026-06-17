@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/auth";
+import { useSetLoggedIn } from "@/components/providers/AuthProvider";
 
 export default function SignUpForm({ onSwitch }: { onSwitch: () => void }) {
+  const router = useRouter();
+  const setLoggedIn = useSetLoggedIn();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +20,9 @@ export default function SignUpForm({ onSwitch }: { onSwitch: () => void }) {
     setError(null);
     setIsPending(true);
     const err = await signUp(name, email, password);
-    if (err) { setError(err); setIsPending(false); }
+    if (err) { setError(err); setIsPending(false); return; }
+    setLoggedIn(true);
+    router.push("/");
   }
 
   return (
