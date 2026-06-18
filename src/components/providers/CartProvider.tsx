@@ -20,24 +20,22 @@ export type CartItem = {
 type CartContextValue = {
   items: CartItem[];
   add: (item: Omit<CartItem, "quantity">) => void;
-  remove: (productSlug: string, attribute: CartAttribute[]) => void;
-  updateQty: (productSlug: string, attribute: CartAttribute[], qty: number) => void;
+  remove: (productSlug: string, sku: string | null) => void;
+  updateQty: (productSlug: string, sku: string | null, qty: number) => void;
   totalCents: number;
   count: number;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function itemKey(slug: string, attribute: CartAttribute[]) {
-  if (attribute.length === 0) return `${slug}::none`;
-  const sorted = [...attribute].sort((a, b) => a.name.localeCompare(b.name));
-  return `${slug}::${sorted.map((a) => `${a.name}:${a.option}`).join(",")}`;
+export function itemKey(slug: string, sku: string | null) {
+  return `${slug}:${sku ?? "no-sku"}`;
 }
 
 function mergeCartItems(local: CartItem[], db: CartItem[]): CartItem[] {
   const map = new Map<string, CartItem>();
-  for (const item of local) map.set(item.productSlug, item);
-  for (const item of db) map.set(item.productSlug, item); // DB wins on conflict
+  for (const item of local) map.set(itemKey(item.productSlug, item.sku), item);
+  for (const item of db) map.set(itemKey(item.productSlug, item.sku), item); // DB wins on conflict
   return Array.from(map.values());
 }
 
@@ -87,26 +85,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const add = useCallback((item: Omit<CartItem, "quantity">) => {
     setItems((prev) => {
-      const key = itemKey(item.productSlug, item.attribute);
-      const existing = prev.find((i) => itemKey(i.productSlug, i.attribute) === key);
+      const key = itemKey(item.productSlug, item.sku);
+      const existing = prev.find((i) => itemKey(i.productSlug, i.sku) === key);
       if (existing) {
         return prev.map((i) =>
-          itemKey(i.productSlug, i.attribute) === key ? { ...i, quantity: i.quantity + 1 } : i
+          itemKey(i.productSlug, i.sku) === key ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
       return [...prev, { ...item, quantity: 1 }];
     });
   }, []);
 
-  const remove = useCallback((productSlug: string, attribute: CartAttribute[]) => {
-    setItems((prev) => prev.filter((i) => itemKey(i.productSlug, i.attribute) !== itemKey(productSlug, attribute)));
+  const remove = useCallback((productSlug: string, sku: string | null) => {
+    setItems((prev) => prev.filter((i) => itemKey(i.productSlug, i.sku) !== itemKey(productSlug, sku)));
   }, []);
 
-  const updateQty = useCallback((productSlug: string, attribute: CartAttribute[], qty: number) => {
-    if (qty <= 0) { remove(productSlug, attribute); return; }
+  const updateQty = useCallback((productSlug: string, sku: string | null, qty: number) => {
+    if (qty <= 0) { remove(productSlug, sku); return; }
     setItems((prev) =>
       prev.map((i) =>
-        itemKey(i.productSlug, i.attribute) === itemKey(productSlug, attribute) ? { ...i, quantity: qty } : i
+        itemKey(i.productSlug, i.sku) === itemKey(productSlug, sku) ? { ...i, quantity: qty } : i
       )
     );
   }, [remove]);

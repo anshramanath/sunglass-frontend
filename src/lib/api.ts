@@ -98,7 +98,7 @@ export async function putBookmarks(brandSlug: string, items: unknown[]) {
   return res?.ok ?? false;
 }
 
-export async function validateCart(brandSlug: string, items: { sku: string }[]): Promise<Map<string, boolean>> {
+export async function validateCart(brandSlug: string, items: { sku: string; productSlug: string }[]): Promise<Map<string, boolean>> {
   const res = await fetch(`${BASE}/api/public/validate-cart`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -106,7 +106,7 @@ export async function validateCart(brandSlug: string, items: { sku: string }[]):
   });
   if (!res.ok) return new Map();
   const json = await res.json();
-  return new Map((json.data.items as { sku: string; exists: boolean }[]).map((i) => [i.sku, i.exists]));
+  return new Map((json.data.items as { sku: string; productSlug: string; exists: boolean }[]).map((i) => [`${i.productSlug}:${i.sku}`, i.exists]));
 }
 
 export async function createCheckoutSession(
