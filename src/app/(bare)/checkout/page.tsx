@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/providers/CartProvider";
 import { validateCart, createCheckoutSession } from "@/lib/api";
+import { getSession } from "@/lib/auth";
 import { BRAND, BRAND_SLUG } from "@/lib/brand";
 
 function fmt(cents: number) {
@@ -40,6 +41,11 @@ export default function CheckoutPage() {
 
   async function handleProceed() {
     setCheckoutError(null);
+    const session = await getSession();
+    if (!session) {
+      window.location.href = "/signin";
+      return;
+    }
     const checkoutItems = items.filter((i) => i.sku && !invalidSkus.has(i.sku));
     if (checkoutItems.length === 0) return;
     setRedirecting(true);
