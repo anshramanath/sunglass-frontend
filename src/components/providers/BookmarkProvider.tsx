@@ -4,11 +4,9 @@ import { createContext, useContext, useState, useCallback, useEffect, ReactNode 
 import { BRAND_SLUG } from "@/lib/brand";
 import { getBookmarks, putBookmarks } from "@/lib/api";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
-import type { CartAttribute } from "@/components/providers/CartProvider";
 
 export type BookmarkedItem = {
   productSlug: string;
-  attribute: CartAttribute[];
   name: string;
   imageSrc: string;
 };
@@ -73,7 +71,8 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timeout);
   }, [items, loaded]);
 
-  const isBookmarked = useCallback((slug: string) => items.some((i) => i.productSlug === slug), [items]);
+  const isBookmarked = useCallback((slug: string) =>
+    items.some((i) => i.productSlug === slug), [items]);
 
   const toggle = useCallback((item: BookmarkedItem) => {
     setItems((prev) =>

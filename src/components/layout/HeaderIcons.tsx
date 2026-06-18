@@ -53,21 +53,21 @@ function BagPanelContent({ onClose }: { onClose: () => void }) {
                 : "";
               const href = `/product/${item.productSlug}${attrParams}`;
               return (
-              <div key={`${item.productSlug}::${item.attribute.map((a) => a.option).join(",") || "none"}`} className="flex items-start gap-5 py-7 first:pt-0">
+              <div key={`${item.productSlug}:${item.sku ?? "no-sku"}`} className="flex items-start gap-5 py-7 first:pt-0">
                 <Link href={href} onClick={onClose} className="shrink-0 w-[90px] aspect-[4/5] bg-grey-100 flex items-center justify-center p-2">
                   <Image src={item.imageSrc} alt={item.name} width={90} height={112} className="w-full h-full object-contain mix-blend-multiply" />
                 </Link>
                 <div className="flex-1 min-w-0 flex flex-col">
                   <div className="flex items-start justify-between gap-4">
                     <Link href={href} onClick={onClose} className="block text-[16px] font-medium leading-snug truncate">{item.name}</Link>
-                    <button onClick={() => remove(item.productSlug, item.attribute)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
+                    <button onClick={() => remove(item.productSlug, item.sku)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
                   </div>
                   {item.attribute.length > 0 && <p className="text-[14px] text-grey-500 mt-1 truncate">{item.attribute.map((a) => a.option).join(" / ")}</p>}
                   <div className="flex items-center justify-between mt-4">
                     <div className="inline-flex items-center border border-grey-300">
-                      <button onClick={() => updateQty(item.productSlug, item.attribute, item.quantity - 1)} className="w-9 h-9 grid place-items-center text-lg hover:bg-grey-100 transition-colors duration-200">&minus;</button>
+                      <button onClick={() => updateQty(item.productSlug, item.sku, item.quantity - 1)} className="w-9 h-9 grid place-items-center text-lg hover:bg-grey-100 transition-colors duration-200">&minus;</button>
                       <span className="w-9 text-center text-[15px]">{item.quantity}</span>
-                      <button onClick={() => updateQty(item.productSlug, item.attribute, item.quantity + 1)} className="w-9 h-9 grid place-items-center text-lg hover:bg-grey-100 transition-colors duration-200">+</button>
+                      <button onClick={() => updateQty(item.productSlug, item.sku, item.quantity + 1)} className="w-9 h-9 grid place-items-center text-lg hover:bg-grey-100 transition-colors duration-200">+</button>
                     </div>
                     <p className="text-[16px]">{fmt(item.priceCents * item.quantity)}</p>
                   </div>
@@ -112,26 +112,19 @@ function SavedPanelContent({ onClose }: { onClose: () => void }) {
           <p className="text-base text-grey-500 mt-4">Nothing saved yet.</p>
         ) : (
           <div className="divide-y divide-grey-150">
-            {items.map((item) => {
-              const attrParams = item.attribute.length > 0
-                ? "?" + item.attribute.map((a) => `${encodeURIComponent(a.name)}=${encodeURIComponent(a.option)}`).join("&")
-                : "";
-              const href = `/product/${item.productSlug}${attrParams}`;
-              return (
+            {items.map((item) => (
               <div key={item.productSlug} className="flex items-start gap-5 py-7 first:pt-0">
-                <Link href={href} onClick={onClose} className="shrink-0 w-[90px] aspect-[4/5] bg-grey-100 flex items-center justify-center p-2">
+                <Link href={`/product/${item.productSlug}`} onClick={onClose} className="shrink-0 w-[90px] aspect-[4/5] bg-grey-100 flex items-center justify-center p-2">
                   <Image src={item.imageSrc} alt={item.name} width={90} height={112} className="w-full h-full object-contain mix-blend-multiply" />
                 </Link>
                 <div className="flex-1 min-w-0 flex flex-col">
                   <div className="flex items-start justify-between gap-4">
-                    <Link href={href} onClick={onClose} className="block text-[16px] font-medium leading-snug">{item.name}</Link>
+                    <Link href={`/product/${item.productSlug}`} onClick={onClose} className="block text-[16px] font-medium leading-snug">{item.name}</Link>
                     <button onClick={() => remove(item.productSlug)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
                   </div>
-                  {item.attribute.length > 0 && <p className="text-[14px] text-grey-500 mt-1 truncate">{item.attribute.map((a) => a.option).join(" / ")}</p>}
                 </div>
               </div>
-              );
-            })}
+            ))}
           </div>
         )}
       </div>

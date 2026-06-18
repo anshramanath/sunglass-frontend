@@ -55,12 +55,7 @@ export default function ProductCard({ product, categoryPath }: { product: Produc
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (thumbnail) toggle({
-                productSlug: product.slug,
-                attribute: [],
-                name: product.name,
-                imageSrc: thumbnail.src,
-              });
+              if (thumbnail) toggle({ productSlug: product.slug, name: product.name, imageSrc: thumbnail.src });
             }}
             className="shrink-0 grid place-items-center text-ink hover:opacity-60 transition-opacity duration-200"
             aria-label={saved ? `Remove ${product.name} from saved` : `Save ${product.name}`}

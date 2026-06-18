@@ -9,7 +9,7 @@ export type CartAttribute = { name: string; option: string };
 
 export type CartItem = {
   productSlug: string;
-  sku: string | null;
+  sku: string;
   attribute: CartAttribute[];
   name: string;
   imageSrc: string;
@@ -20,16 +20,16 @@ export type CartItem = {
 type CartContextValue = {
   items: CartItem[];
   add: (item: Omit<CartItem, "quantity">) => void;
-  remove: (productSlug: string, sku: string | null) => void;
-  updateQty: (productSlug: string, sku: string | null, qty: number) => void;
+  remove: (productSlug: string, sku: string) => void;
+  updateQty: (productSlug: string, sku: string, qty: number) => void;
   totalCents: number;
   count: number;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function itemKey(slug: string, sku: string | null) {
-  return `${slug}:${sku ?? "no-sku"}`;
+export function itemKey(slug: string, sku: string) {
+  return `${slug}:${sku}`;
 }
 
 function mergeCartItems(local: CartItem[], db: CartItem[]): CartItem[] {
@@ -96,11 +96,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const remove = useCallback((productSlug: string, sku: string | null) => {
+  const remove = useCallback((productSlug: string, sku: string) => {
     setItems((prev) => prev.filter((i) => itemKey(i.productSlug, i.sku) !== itemKey(productSlug, sku)));
   }, []);
 
-  const updateQty = useCallback((productSlug: string, sku: string | null, qty: number) => {
+  const updateQty = useCallback((productSlug: string, sku: string, qty: number) => {
     if (qty <= 0) { remove(productSlug, sku); return; }
     setItems((prev) =>
       prev.map((i) =>

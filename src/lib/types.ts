@@ -17,7 +17,6 @@ export type ProductListItem = {
   minPriceCents: number;
   maxPriceCents: number;
   salePriceCents: number | null;
-  attributes: { name: string; option: string }[];
   featured: boolean;
   sale: boolean;
   images: ProductImage[];

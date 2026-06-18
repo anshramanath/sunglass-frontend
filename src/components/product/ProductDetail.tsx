@@ -97,10 +97,10 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
   const { add: addToCart } = useCart();
   const { toggle: toggleBookmark, isBookmarked } = useBookmarks();
 
-  const hasVariations = attrNames.length > 0;
+  const hasVariations = product.variations.length > 0;
   const variation = hasVariations ? resolveVariation(product.variations, attrNames, selections) : null;
   const images = variation?.images.length ? variation.images : product.productImages;
-  const sku = variation?.sku ?? product.sku ?? null;
+  const sku = hasVariations ? (variation?.sku ?? null) : (product.sku ?? null);
 
   const priceCents = variation
     ? (variation.sale && variation.salePriceCents != null ? variation.salePriceCents : variation.regularPriceCents)
@@ -115,6 +115,7 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
   }
 
   function handleAddToBag() {
+    if (!sku) return;
     addToCart({
       productSlug: slug,
       attribute: attrNames.length > 0
@@ -130,12 +131,7 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
   function handleBookmark() {
     const thumbnail = images[0]?.src ?? product.productImages[0]?.src;
     if (!thumbnail) return;
-    toggleBookmark({
-      productSlug: slug,
-      attribute: attrNames.map((n) => ({ name: n, option: selections[n] ?? "" })),
-      name: product.name,
-      imageSrc: thumbnail,
-    });
+    toggleBookmark({ productSlug: slug, name: product.name, imageSrc: thumbnail });
   }
 
   const isItemBookmarked = isBookmarked(slug);
@@ -210,7 +206,8 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
         <div className="flex items-stretch gap-3 mt-8">
           <button
             onClick={handleAddToBag}
-            className="flex-1 bg-ink text-paper text-[15px] py-4 hover:bg-grey-800 transition-colors duration-200"
+            disabled={!sku}
+            className="flex-1 bg-ink text-paper text-[15px] py-4 hover:bg-grey-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Add to Bag — {formatPrice(priceCents)}
           </button>
