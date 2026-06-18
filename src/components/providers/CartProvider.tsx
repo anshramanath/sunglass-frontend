@@ -9,6 +9,7 @@ export type CartAttribute = { name: string; option: string };
 
 export type CartItem = {
   productSlug: string;
+  sku: string | null;
   attribute: CartAttribute[];
   name: string;
   imageSrc: string;

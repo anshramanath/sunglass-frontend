@@ -97,13 +97,14 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
   const { add: addToCart } = useCart();
   const { toggle: toggleBookmark, isBookmarked } = useBookmarks();
 
-  const variation = resolveVariation(product.variations, attrNames, selections);
-  const images = variation && variation.images.length > 0 ? variation.images : product.productImages;
+  const hasVariations = attrNames.length > 0;
+  const variation = hasVariations ? resolveVariation(product.variations, attrNames, selections) : null;
+  const images = variation?.images.length ? variation.images : product.productImages;
+  const sku = variation?.sku ?? product.sku ?? null;
 
   const priceCents = variation
-    ? (variation.sale && variation.salePriceCents ? variation.salePriceCents : variation.regularPriceCents)
+    ? (variation.sale && variation.salePriceCents != null ? variation.salePriceCents : variation.regularPriceCents)
     : (product.salePriceCents ?? product.minPriceCents);
-
   const regularCents = variation?.regularPriceCents ?? product.minPriceCents;
   const onSale = variation
     ? (variation.sale && variation.salePriceCents != null)
@@ -120,13 +121,14 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
         ? attrNames.map((n) => ({ name: n, option: selections[n] ?? "" }))
         : [],
       name: product.name,
+      sku,
       imageSrc: images[0]?.src ?? "",
       priceCents,
     });
   }
 
   function handleBookmark() {
-    const thumbnail = product.productImages[0]?.src ?? images[0]?.src;
+    const thumbnail = images[0]?.src ?? product.productImages[0]?.src;
     if (!thumbnail) return;
     toggleBookmark({
       productSlug: slug,

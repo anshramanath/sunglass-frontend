@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/providers/CartProvider";
-import { BRAND } from "@/lib/brand";
+import { validateCart, createCheckoutSession } from "@/lib/api";
+import { BRAND, BRAND_SLUG } from "@/lib/brand";
 
 function fmt(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
@@ -22,6 +23,47 @@ function LockIcon({ className }: { className?: string }) {
 export default function CheckoutPage() {
   const { items, totalCents, remove, updateQty, count } = useCart();
   const [redirecting, setRedirecting] = useState(false);
+  const [invalidSkus, setInvalidSkus] = useState<Set<string>>(new Set());
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const skuItems = items.filter((i) => i.sku).map((i) => ({ sku: i.sku! }));
+    if (skuItems.length === 0) return;
+    validateCart(BRAND_SLUG, skuItems)
+      .then((result) => {
+        const invalid = new Set<string>();
+        result.forEach((exists, sku) => { if (!exists) invalid.add(sku); });
+        setInvalidSkus(invalid);
+      })
+      .catch(() => {});
+  }, [items]);
+
+  async function handleProceed() {
+    setCheckoutError(null);
+    const checkoutItems = items.filter((i) => i.sku && !invalidSkus.has(i.sku));
+    if (checkoutItems.length === 0) return;
+    setRedirecting(true);
+    const url = await createCheckoutSession(
+      BRAND_SLUG,
+      checkoutItems.map((i) => ({
+        productSlug: i.productSlug,
+        sku: i.sku!,
+        name: i.name,
+        imageSrc: i.imageSrc,
+        priceCents: i.priceCents,
+        quantity: i.quantity,
+        attribute: i.attribute,
+      })),
+      `${window.location.origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+      `${window.location.origin}/checkout`,
+    );
+    if (!url) {
+      setRedirecting(false);
+      setCheckoutError("Unable to start checkout. Please try again.");
+      return;
+    }
+    window.location.href = url;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -71,7 +113,7 @@ export default function CheckoutPage() {
                 <p className="text-[15px] text-grey-500 py-6">Your bag is empty.</p>
               ) : (
                 items.map((item) => (
-                  <div key={`${item.productSlug}::${item.attribute.map((a) => a.option).join(",") || "none"}`} className="flex gap-5 py-6">
+                  <div key={`${item.productSlug}::${item.attribute.map((a) => a.option).join(",") || "none"}`} className={`flex gap-5 py-6${item.sku && invalidSkus.has(item.sku) ? " opacity-50" : ""}`}>
                     <Link href={`/product/${item.productSlug}`} className="block w-20 shrink-0 self-start bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-2">
                       {item.imageSrc && (
                         <Image src={item.imageSrc} alt={item.name} width={80} height={100} className="w-full h-full object-contain mix-blend-multiply" />
@@ -83,6 +125,7 @@ export default function CheckoutPage() {
                         <button onClick={() => remove(item.productSlug, item.attribute)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
                       </div>
                       {item.attribute.length > 0 && <p className="text-[13px] text-grey-500 mt-0.5 truncate">{item.attribute.map((a) => a.option).join(" / ")}</p>}
+                      {item.sku && invalidSkus.has(item.sku) && <p className="text-[13px] text-sale mt-0.5">This item is no longer available</p>}
                       <div className="flex items-center justify-between mt-4">
                         <div className="inline-flex items-center border border-grey-300">
                           <button onClick={() => updateQty(item.productSlug, item.attribute, item.quantity - 1)} className="w-8 h-8 grid place-items-center text-grey-600 hover:bg-grey-100 transition-colors duration-200">&minus;</button>
@@ -123,10 +166,12 @@ export default function CheckoutPage() {
             </div>
             <p className="text-[13px] text-grey-500 mt-2.5">Applicable tax is calculated and shown on the next step.</p>
 
+            {checkoutError && <p className="text-[13px] text-sale mt-5 text-center">{checkoutError}</p>}
             <button
               type="button"
-              onClick={() => setRedirecting(true)}
-              className="w-full bg-ink text-paper text-[15px] py-4 mt-7 flex items-center justify-center gap-2.5 hover:bg-grey-800 transition-colors duration-200"
+              onClick={handleProceed}
+              disabled={redirecting || items.length === 0}
+              className="w-full bg-ink text-paper text-[15px] py-4 mt-7 flex items-center justify-center gap-2.5 hover:bg-grey-800 transition-colors duration-200 disabled:opacity-50"
             >
               <LockIcon className="w-[18px] h-[18px]" />
               Proceed to Payment

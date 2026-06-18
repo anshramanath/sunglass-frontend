@@ -97,3 +97,29 @@ export async function putBookmarks(brandSlug: string, items: unknown[]) {
   });
   return res?.ok ?? false;
 }
+
+export async function validateCart(brandSlug: string, items: { sku: string }[]): Promise<Map<string, boolean>> {
+  const res = await fetch(`${BASE}/api/public/validate-cart`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ brandSlug, items }),
+  });
+  if (!res.ok) return new Map();
+  const json = await res.json();
+  return new Map((json.data.items as { sku: string; exists: boolean }[]).map((i) => [i.sku, i.exists]));
+}
+
+export async function createCheckoutSession(
+  brandSlug: string,
+  items: { productSlug: string; sku: string; name: string; imageSrc: string; priceCents: number; quantity: number; attribute: { name: string; option: string }[] }[],
+  successUrl: string,
+  cancelUrl: string,
+): Promise<string | null> {
+  const res = await authedFetch("/api/user/checkout", {
+    method: "POST",
+    body: JSON.stringify({ brandSlug, items, successUrl, cancelUrl }),
+  });
+  if (!res?.ok) return null;
+  const json = await res.json();
+  return json.data.url ?? null;
+}
