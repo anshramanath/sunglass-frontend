@@ -61,7 +61,7 @@ export default function CheckoutPage() {
         attribute: i.attribute,
       })),
       `${window.location.origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
-      `${window.location.origin}/checkout`,
+      `${window.location.origin}/order/failure`,
     );
     if (!url) {
       setRedirecting(false);
@@ -76,7 +76,7 @@ export default function CheckoutPage() {
 
       {/* Header */}
       <header className="border-b border-grey-200">
-        <div className="mx-auto max-w-[1200px] px-5 lg:px-10">
+        <div className="mx-auto max-w-[1100px] px-5 lg:px-10">
           <div className="h-16 flex items-center justify-between relative">
             <Link href="/" className="shrink-0" aria-label={`${BRAND.name} home`}>
               <Image src={BRAND.logo} alt={BRAND.name} width={120} height={28} className="h-8 w-auto" />

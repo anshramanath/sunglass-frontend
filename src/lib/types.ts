@@ -63,4 +63,22 @@ export type ProductDetail = {
   descriptionImages: { src: string; name: string }[];
 };
 
+export type OrderItem = {
+  productSlug: string;
+  sku: string;
+  name: string;
+  imageSrc: string;
+  priceCents: number;
+  quantity: number;
+  attribute: { name: string; option: string }[];
+};
+
+export type Order = {
+  id: string;
+  status: string;
+  totalCents: number;
+  createdAt: string;
+  items: OrderItem[];
+};
+
 export type ApiResponse<T> = { success: true; data: T } | { success: false; error: string };

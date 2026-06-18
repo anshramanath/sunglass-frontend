@@ -1,18 +1,34 @@
 import Link from "next/link";
 import Image from "next/image";
 import { requireUser } from "@/lib/auth";
-import { BRAND } from "@/lib/brand";
+import { getOrders } from "@/lib/api";
+import { BRAND, BRAND_SLUG } from "@/lib/brand";
 import SignOutButton from "./SignOutButton";
+
+function fmt(cents: number) {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const label = status.charAt(0).toUpperCase() + status.slice(1);
+  const shipped = status === "shipped";
+  return (
+    <span className={`text-[11px] uppercase tracking-wider font-medium px-2.5 py-1 border ${shipped ? "text-sale border-sale" : "text-ink border-grey-300"}`}>
+      {label}
+    </span>
+  );
+}
 
 export default async function AccountPage() {
   const user = await requireUser();
+  const orders = await getOrders(BRAND_SLUG);
   const email = user.email ?? "";
   const displayName = user.user_metadata?.display_name ?? "";
 
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-grey-200">
-        <div className="mx-auto max-w-[920px] px-5 lg:px-10">
+        <div className="mx-auto max-w-[1100px] px-5 lg:px-10">
           <div className="h-16 flex items-center justify-between gap-4">
             <Link href="/" className="shrink-0" aria-label={`${BRAND.name} home`}>
               <Image src={BRAND.logo} alt={BRAND.name} width={120} height={28} className="h-8 w-auto" />
@@ -27,7 +43,7 @@ export default async function AccountPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[920px] px-5 lg:px-10 py-10 lg:py-14">
+      <main className="mx-auto w-full max-w-[1100px] px-5 lg:px-10 py-10 lg:py-14">
 
         <div className="border-b border-grey-200 pb-7">
           <div className="flex items-center justify-between">
@@ -38,8 +54,10 @@ export default async function AccountPage() {
         </div>
 
         <section className="mt-10">
-          <h2 className="text-[21px] font-normal">Account Details</h2>
-          <dl className="mt-6 space-y-4">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-[21px] font-normal">Account Details</h2>
+          </div>
+          <dl className="mt-6 grid sm:grid-cols-2 gap-y-6 gap-x-10">
             {displayName && (
               <div>
                 <dt className="text-[13px] text-grey-500">Name</dt>
@@ -59,7 +77,53 @@ export default async function AccountPage() {
 
         <section className="mt-10 border-t border-grey-200 pt-10">
           <h2 className="text-[21px] font-normal">Order History</h2>
-          <p className="text-[15px] text-grey-500 mt-6">No orders yet.</p>
+          {orders.length === 0 ? (
+            <p className="text-[15px] text-grey-500 mt-6">No orders yet.</p>
+          ) : (
+            <div className="mt-6 space-y-5">
+              {orders.map((order) => (
+                <div key={order.id} className="border border-grey-200">
+                  <div className="flex flex-wrap items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-grey-200">
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-[13px]">
+                      <span><span className="text-grey-500">Order</span> <span className="text-ink">#{order.id.slice(-8).toUpperCase()}</span></span>
+                      <span className="text-grey-500">Placed {new Date(order.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+                    </div>
+                    <StatusBadge status={order.status} />
+                  </div>
+
+                  <div className="px-5 sm:px-6 py-5">
+                    <div className="space-y-4">
+                      {order.items.map((item, i) => (
+                        <div key={i} className="flex items-center gap-4">
+                          <Link href={`/product/${item.productSlug}`} className="block w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
+                            <Image src={item.imageSrc} alt={item.name} width={64} height={80} className="w-full h-full object-contain mix-blend-multiply" />
+                          </Link>
+                          <div className="flex-1 min-w-0">
+                            <Link href={`/product/${item.productSlug}`} className="text-[15px] hover:opacity-60 transition-opacity duration-200">{item.name}</Link>
+                            <p className="text-[13px] text-grey-500 mt-0.5">
+                              {item.attribute.length > 0 ? `${item.attribute.map((a) => a.option).join(" · ")} · ` : ""}Qty {item.quantity}
+                            </p>
+                          </div>
+                          <p className="text-[15px] shrink-0">{fmt(item.priceCents * item.quantity)}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 px-5 sm:px-6 py-4 border-t border-grey-200">
+                    <p className="text-[15px]"><span className="text-grey-500">Total</span> {fmt(order.totalCents)}</p>
+                    <div className="flex items-center gap-5">
+                      {order.items[0] && (
+                        <Link href={`/product/${order.items[0].productSlug}`} className="text-[13px] underline underline-offset-4 text-grey-600 hover:text-ink transition-colors duration-200">
+                          Buy Again
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
       </main>

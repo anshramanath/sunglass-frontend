@@ -22,6 +22,7 @@ type CartContextValue = {
   add: (item: Omit<CartItem, "quantity">) => void;
   remove: (productSlug: string, sku: string) => void;
   updateQty: (productSlug: string, sku: string, qty: number) => void;
+  clear: () => void;
   totalCents: number;
   count: number;
 };
@@ -100,6 +101,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((i) => itemKey(i.productSlug, i.sku) !== itemKey(productSlug, sku)));
   }, []);
 
+  const clear = useCallback(() => setItems([]), []);
+
   const updateQty = useCallback((productSlug: string, sku: string, qty: number) => {
     if (qty <= 0) { remove(productSlug, sku); return; }
     setItems((prev) =>
@@ -113,7 +116,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const count = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ items, add, remove, updateQty, totalCents, count }}>
+    <CartContext.Provider value={{ items, add, remove, updateQty, clear, totalCents, count }}>
       {children}
     </CartContext.Provider>
   );

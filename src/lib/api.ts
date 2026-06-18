@@ -1,6 +1,6 @@
 "use server";
 
-import type { ApiResponse, CategoryNode, ProductDetail, ProductListItem, ProductsResponse } from "./types";
+import type { ApiResponse, CategoryNode, Order, ProductDetail, ProductListItem, ProductsResponse } from "./types";
 import { getSession } from "@/lib/auth";
 
 const BASE = process.env.BASE_URL!;
@@ -107,6 +107,13 @@ export async function validateCart(brandSlug: string, items: { sku: string; prod
   if (!res.ok) return new Map();
   const json = await res.json();
   return new Map((json.data.items as { sku: string; productSlug: string; exists: boolean }[]).map((i) => [`${i.productSlug}:${i.sku}`, i.exists]));
+}
+
+export async function getOrders(brandSlug: string): Promise<Order[]> {
+  const res = await authedFetch(`/api/user/orders?brandSlug=${brandSlug}`);
+  if (!res?.ok) return [];
+  const json = await res.json();
+  return json.data.orders ?? [];
 }
 
 export async function createCheckoutSession(
