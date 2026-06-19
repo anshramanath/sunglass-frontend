@@ -3,9 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ProductListItem, ListVariation } from "@/lib/types";
 import { useBookmarks } from "@/components/providers/BookmarkProvider";
 import { BRAND } from "@/lib/brand";
+
+const MAX_SWATCHES = 5;
 
 function formatPrice(cents: number): string {
   const d = cents / 100;
@@ -18,20 +21,20 @@ function colorAttr(v: ListVariation) {
 
 export default function ProductCard({ product, categoryPath }: { product: ProductListItem; categoryPath?: string }) {
   const { toggle, isBookmarked } = useBookmarks();
-  const [selectedVar, setSelectedVar] = useState<ListVariation | null>(null);
+  const router = useRouter();
+  const [hoveredVar, setHoveredVar] = useState<ListVariation | null>(null);
 
   const thumbnail = product.images[0];
   const saved = isBookmarked(product.slug);
   const colorVariations = product.variations.filter((v) => colorAttr(v));
+  const visibleVars = colorVariations.slice(0, MAX_SWATCHES);
+  const overflow = colorVariations.length - MAX_SWATCHES;
 
-  const displaySrc = selectedVar?.imageSrc ?? thumbnail?.src;
-  const displayAlt = selectedVar ? (colorAttr(selectedVar)?.option ?? product.name) : (thumbnail?.name ?? product.name);
+  const displaySrc = hoveredVar?.imageSrc ?? thumbnail?.src;
+  const displayAlt = hoveredVar ? (colorAttr(hoveredVar)?.option ?? product.name) : (thumbnail?.name ?? product.name);
 
-  const activeColorSlug = selectedVar ? colorAttr(selectedVar)?.slug : undefined;
   const pathParam = categoryPath ? `path=${categoryPath}` : null;
-  const colorParam = activeColorSlug ? `color=${activeColorSlug}` : null;
-  const query = [colorParam, pathParam].filter(Boolean).join("&");
-  const href = `/product/${product.slug}${query ? `?${query}` : ""}`;
+  const href = `/product/${product.slug}${pathParam ? `?${pathParam}` : ""}`;
 
   const price =
     product.minPriceCents === product.maxPriceCents
@@ -91,23 +94,35 @@ export default function ProductCard({ product, categoryPath }: { product: Produc
         </Link>
 
         {colorVariations.length > 0 && (
-          <div className="flex items-center gap-1.5 mt-2.5">
-            {colorVariations.map((v) => {
+          <div
+            className="flex items-center gap-1.5 mt-2.5"
+            onMouseLeave={() => setHoveredVar(null)}
+          >
+            {visibleVars.map((v) => {
               const c = colorAttr(v)!;
-              const isActive = selectedVar === v;
+              const isHovered = hoveredVar === v;
               return (
                 <button
                   key={v.id}
                   type="button"
                   title={c.option}
-                  onClick={() => setSelectedVar((prev) => prev === v ? null : v)}
+                  onMouseEnter={() => setHoveredVar(v)}
+                  onClick={() => {
+                    const q = [`color=${c.slug}`, pathParam].filter(Boolean).join("&");
+                    router.push(`/product/${product.slug}?${q}`);
+                  }}
                   className={`w-4 h-4 rounded-full border border-grey-200 transition-all duration-150 ${
-                    isActive ? "ring-[1.5px] ring-ink ring-offset-1" : "hover:ring-[1.5px] hover:ring-grey-400 hover:ring-offset-1"
+                    isHovered ? "ring-[1.5px] ring-ink ring-offset-1" : "hover:ring-[1.5px] hover:ring-grey-400 hover:ring-offset-1"
                   }`}
                   style={{ backgroundColor: c.value }}
                 />
               );
             })}
+            {overflow > 0 && (
+              <Link href={href} className="text-[12px] text-grey-500 hover:text-ink transition-colors duration-150 ml-0.5">
+                +{overflow}
+              </Link>
+            )}
           </div>
         )}
       </div>

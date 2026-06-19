@@ -84,7 +84,10 @@ function resolveVariation(
 }
 
 export default function ProductDetail({ product, slug, initialSelections = {} }: { product: ProductDetailType; slug: string; initialSelections?: Record<string, string> }) {
-  const attrNames = getAttrNames(product.variations);
+  const rawAttrNames = getAttrNames(product.variations);
+  const attrNames = rawAttrNames.includes("color")
+    ? ["color", ...rawAttrNames.filter((n) => n !== "color")]
+    : rawAttrNames;
 
   const defaultSelections = Object.fromEntries(attrNames.map((n) => {
     if (initialSelections[n]) {
@@ -166,9 +169,9 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
         {/* Variation selector */}
         {attrNames.length > 0 && (
           <div className="mt-8 flex flex-col gap-6">
-            {attrNames.map((attrName) => {
+            {attrNames.map((attrName, attrIndex) => {
               const allOpts = getAllOptions(product.variations, attrName);
-              const available = getAvailableOptions(product.variations, attrName, selections);
+              const available = getAvailableOptions(product.variations, attrName, attrIndex === 0 ? {} : selections);
               const seen = new Set<string>();
               const allAttrs = product.variations.flatMap((v) => v.attribute).filter((a) => {
                 if (a.name !== attrName || seen.has(a.option)) return false;
