@@ -10,6 +10,12 @@ export type CategoryNode = {
 
 export type ProductImage = { src: string; name: string };
 
+export type ListVariation = {
+  id: string;
+  attribute: { name: string; option: string; slug: string; value?: string }[];
+  imageSrc: string | null;
+};
+
 export type ProductListItem = {
   id: string;
   name: string;
@@ -20,6 +26,7 @@ export type ProductListItem = {
   featured: boolean;
   sale: boolean;
   images: ProductImage[];
+  variations: ListVariation[];
 };
 
 export type ProductsResponse = {
@@ -37,7 +44,7 @@ export type VariationImage = { src: string; name: string; sortOrder: number };
 export type Variation = {
   id: string;
   sku: string;
-  attribute: { name: string; option: string }[];
+  attribute: { name: string; option: string; slug: string; value?: string }[];
   sale: boolean;
   regularPriceCents: number;
   salePriceCents: number | null;
@@ -51,7 +58,7 @@ export type ProductDetail = {
   sku: string | null;
   description: string;
   summary: string[];
-  attributes: { name: string; option: string }[];
+  attributes: { name: string; option: string; slug: string; value?: string }[];
   featured: boolean;
   sale: boolean;
   minPriceCents: number;

@@ -87,7 +87,10 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
   const attrNames = getAttrNames(product.variations);
 
   const defaultSelections = Object.fromEntries(attrNames.map((n) => {
-    if (initialSelections[n]) return [n, initialSelections[n]];
+    if (initialSelections[n]) {
+      const bySlug = product.variations.flatMap((v) => v.attribute).find((a) => a.name === n && a.slug === initialSelections[n]);
+      return [n, bySlug?.option ?? initialSelections[n]];
+    }
     const firstVar = product.variations[0];
     const match = firstVar?.attribute.find((a) => a.name === n);
     return [n, match?.option ?? null];
@@ -166,6 +169,13 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
             {attrNames.map((attrName) => {
               const allOpts = getAllOptions(product.variations, attrName);
               const available = getAvailableOptions(product.variations, attrName, selections);
+              const seen = new Set<string>();
+              const allAttrs = product.variations.flatMap((v) => v.attribute).filter((a) => {
+                if (a.name !== attrName || seen.has(a.option)) return false;
+                seen.add(a.option);
+                return true;
+              });
+              const isColor = allAttrs.some((a) => a.value);
               return (
                 <div key={attrName}>
                   <p className="text-[15px] mb-3">
@@ -175,7 +185,23 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
                     )}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {allOpts.map((option) => {
+                    {isColor ? allAttrs.map((a) => {
+                      const isAvailable = available.has(a.option);
+                      const isSelected = selections[attrName] === a.option;
+                      return (
+                        <button
+                          key={a.option}
+                          type="button"
+                          title={a.option}
+                          disabled={!isAvailable}
+                          onClick={() => select(attrName, a.option)}
+                          className={`w-7 h-7 rounded-full border border-grey-200 transition-all duration-150 ${
+                            isSelected ? "ring-[1.5px] ring-ink ring-offset-1" : isAvailable ? "hover:ring-[1.5px] hover:ring-grey-400 hover:ring-offset-1" : "opacity-30 cursor-not-allowed"
+                          }`}
+                          style={{ backgroundColor: a.value }}
+                        />
+                      );
+                    }) : allOpts.map((option) => {
                       const isAvailable = available.has(option);
                       const isSelected = selections[attrName] === option;
                       return (
