@@ -1,20 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
-import { BRAND } from "@/lib/brand";
 
 export default function OrderFailurePage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-grey-200">
-        <div className="mx-auto max-w-[1100px] px-5 lg:px-10">
-          <div className="h-16 flex items-center justify-center">
-            <Link href="/" aria-label={`${BRAND.name} home`}>
-              <Image src={BRAND.logo} alt={BRAND.name} width={120} height={28} className="h-8 w-auto" />
-            </Link>
-          </div>
-        </div>
-      </header>
-
       <main className="flex-1 grid place-items-center px-5 py-20">
         <div className="w-full max-w-[440px] text-center">
 

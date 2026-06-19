@@ -60,7 +60,7 @@ export default function CheckoutPage() {
         quantity: i.quantity,
         attribute: i.attribute,
       })),
-      `${window.location.origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+      `${window.location.origin}/order/success`,
       `${window.location.origin}/order/failure`,
     );
     if (!url) {
@@ -183,23 +183,15 @@ export default function CheckoutPage() {
               Proceed to Payment
             </button>
 
-            <p className="text-[13px] text-grey-500 text-center mt-4 leading-relaxed">
-              You&apos;ll be redirected to Stripe&apos;s secure checkout to complete your purchase.
-            </p>
-
             <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
               {["Visa", "Mastercard", "Amex", "Apple Pay", "G Pay"].map((method) => (
                 <span key={method} className="border border-grey-200 text-[11px] uppercase tracking-wide text-grey-500 px-2 py-1">{method}</span>
               ))}
             </div>
 
-            <p className="flex items-center justify-center gap-1.5 text-[13px] text-grey-400 mt-5">
+            <p className="flex items-center justify-center gap-1.5 text-[13px] text-grey-400 mt-4">
               <LockIcon className="w-3.5 h-3.5" />
               Powered by <span className="text-grey-600 font-medium">Stripe</span>
-            </p>
-
-            <p className="text-[13px] text-grey-500 leading-relaxed mt-7 text-center border-t border-grey-200 pt-6">
-              Free returns within 30 days · Lifetime lens warranty
             </p>
           </aside>
 
