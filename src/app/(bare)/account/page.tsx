@@ -24,6 +24,7 @@ export default async function AccountPage() {
   const orders = await getOrders(BRAND_SLUG);
   const email = user.email ?? "";
   const displayName = user.user_metadata?.display_name ?? "";
+  const latestAddress = orders.find((o) => o.shippingAddress)?.shippingAddress ?? null;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -57,22 +58,34 @@ export default async function AccountPage() {
           <div className="flex items-baseline justify-between">
             <h2 className="text-[21px] font-normal">Account Details</h2>
           </div>
-          <dl className="mt-6 grid sm:grid-cols-2 gap-y-6 gap-x-10">
-            {displayName && (
+          <div className="mt-6 grid sm:grid-cols-2 gap-x-10">
+            <dl className="space-y-6">
               <div>
-                <dt className="text-[13px] text-grey-500">Name</dt>
-                <dd className="text-[15px] mt-1">{displayName}</dd>
+                <dt className="text-[13px] text-grey-500">Email</dt>
+                <dd className="text-[15px] mt-1">{email}</dd>
               </div>
+              {displayName && (
+                <div>
+                  <dt className="text-[13px] text-grey-500">Name</dt>
+                  <dd className="text-[15px] mt-1">{displayName}</dd>
+                </div>
+              )}
+              <div>
+                <dt className="text-[13px] text-grey-500">Member Since</dt>
+                <dd className="text-[15px] mt-1">{new Date(user.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</dd>
+              </div>
+            </dl>
+            {latestAddress && (
+              <dl className="mt-6 sm:mt-0">
+                <dt className="text-[13px] text-grey-500">Shipping Address</dt>
+                <dd className="text-[15px] mt-1 leading-relaxed">
+                  {latestAddress.line1}{latestAddress.line2 ? `, ${latestAddress.line2}` : ""}<br />
+                  {latestAddress.city}, {latestAddress.state} {latestAddress.postalCode}<br />
+                  {latestAddress.country}
+                </dd>
+              </dl>
             )}
-            <div>
-              <dt className="text-[13px] text-grey-500">Email</dt>
-              <dd className="text-[15px] mt-1">{email}</dd>
-            </div>
-            <div>
-              <dt className="text-[13px] text-grey-500">Member Since</dt>
-              <dd className="text-[15px] mt-1">{new Date(user.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</dd>
-            </div>
-          </dl>
+          </div>
         </section>
 
         <section className="mt-10 border-t border-grey-200 pt-10">
@@ -110,15 +123,13 @@ export default async function AccountPage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 px-5 sm:px-6 py-4 border-t border-grey-200">
+                  <div className="px-5 sm:px-6 py-4 border-t border-grey-200">
                     <p className="text-[15px]"><span className="text-grey-500">Total</span> {fmt(order.totalCents)}</p>
-                    <div className="flex items-center gap-5">
-                      {order.items[0] && (
-                        <Link href={`/product/${order.items[0].productSlug}`} className="text-[13px] underline underline-offset-4 text-grey-600 hover:text-ink transition-colors duration-200">
-                          Buy Again
-                        </Link>
-                      )}
-                    </div>
+                    {order.shippingAddress && (
+                      <p className="text-[13px] text-grey-500 mt-1">
+                        {order.shippingAddress.name} · {order.shippingAddress.line1}{order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}, {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}

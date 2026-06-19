@@ -73,10 +73,21 @@ export type OrderItem = {
   attribute: { name: string; option: string }[];
 };
 
+export type ShippingAddress = {
+  name: string;
+  line1: string;
+  line2: string | null;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+};
+
 export type Order = {
   id: string;
   status: string;
   totalCents: number;
+  shippingAddress: ShippingAddress | null;
   createdAt: string;
   items: OrderItem[];
 };
