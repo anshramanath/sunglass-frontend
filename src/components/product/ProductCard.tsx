@@ -119,7 +119,7 @@ export default function ProductCard({ product, categoryPath }: { product: Produc
               );
             })}
             {overflow > 0 && (
-              <Link href={href} className="text-[12px] text-grey-500 hover:text-ink transition-colors duration-150 ml-0.5">
+              <Link href={href} className="text-[13px] text-grey-500 hover:text-ink transition-colors duration-150 ml-0.5">
                 +{overflow}
               </Link>
             )}
