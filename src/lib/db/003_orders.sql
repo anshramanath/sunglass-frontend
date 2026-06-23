@@ -10,7 +10,7 @@ create table orders (
   brand_slug            text        not null references brands(slug) on delete cascade,
   stripe_session_id     text        not null unique,
   stripe_payment_intent text not null unique,
-  status                text        not null default 'pending',
+  status                text        not null,
   total_cents           int         not null,
   shipping_address      jsonb       not null,
   created_at            timestamptz not null default now()
@@ -33,7 +33,7 @@ create table order_items (
   image_src     text  not null,
   price_cents   int   not null,
   quantity      int   not null,
-  attribute     jsonb not null default '[]'
+  attribute     text
 );
 
 alter table order_items enable row level security;
@@ -47,16 +47,35 @@ create policy "order_items: users read own rows"
       and orders.user_id = auth.uid()
   ));
 
-create function increment_variation_total_sales(p_variation_id uuid, p_qty int)
-returns void
-language sql
+create or replace function update_total_sales()
+returns trigger
+language plpgsql
 as $$
-  update variations set total_sales = total_sales + p_qty where id = p_variation_id;
+declare
+  v_brand_slug text;
+  v_variation_id uuid;
+begin
+  select brand_slug into v_brand_slug
+  from orders where id = new.order_id;
+
+  select v.id into v_variation_id
+  from variations v
+  join products p on p.id = v.product_id
+  where p.slug = new.product_slug
+    and p.brand_slug = v_brand_slug
+    and v.sku = new.sku;
+
+  if v_variation_id is not null then
+    update variations set total_sales = total_sales + new.quantity where id = v_variation_id;
+  else
+    update products set total_sales = total_sales + new.quantity
+    where slug = new.product_slug and brand_slug = v_brand_slug and sku = new.sku;
+  end if;
+
+  return new;
+end;
 $$;
 
-create function increment_product_total_sales(p_product_id uuid, p_qty int)
-returns void
-language sql
-as $$
-  update products set total_sales = coalesce(total_sales, 0) + p_qty where id = p_product_id;
-$$;
+create trigger order_items_update_total_sales
+  after insert on order_items
+  for each row execute function update_total_sales();

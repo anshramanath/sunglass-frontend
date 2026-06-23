@@ -4,8 +4,7 @@
 -- Development only — never run in production
 -- ============================================================
 
-drop function if exists increment_variation_total_sales(uuid, int);
-drop function if exists increment_product_total_sales(uuid, int);
+drop function if exists update_total_sales();
 drop table if exists order_items cascade;
 drop table if exists orders cascade;
 drop table if exists bookmarks cascade;

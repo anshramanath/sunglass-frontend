@@ -19,7 +19,7 @@ Returns all brands.
 **Response**
 ```json
 [
-  { "id": "uuid", "name": "Sunglass Monster", "slug": "sunglass-monster" }
+  { "name": "BikerShades", "slug": "bikershades" }
 ]
 ```
 
@@ -27,7 +27,7 @@ Returns all brands.
 
 ### GET /api/public/categories
 
-Returns the full category tree for a brand. `sortOrder` is the authoritative ordering field.
+Returns the full category tree for a brand, sorted by `sortOrder` at every level.
 
 **Query Params**
 | Param | Required | Description |
@@ -43,7 +43,7 @@ Returns the full category tree for a brand. `sortOrder` is the authoritative ord
     "slug": "sunglasses",
     "sortOrder": 1,
     "children": [
-      { "id": "uuid", "name": "Sport", "slug": "sport", "sortOrder": 1, "children": [] }
+      { "id": "uuid", "name": "Sport", "slug": "sport", "sortOrder": 1 }
     ]
   }
 ]
@@ -53,13 +53,13 @@ Returns the full category tree for a brand. `sortOrder` is the authoritative ord
 
 ### GET /api/public/products
 
-Paginated products for a leaf category. Default page size is 20.
+Paginated products for a category. Default page size is 20. Returns one product image and one image per unique color variation.
 
 **Query Params**
 | Param | Required | Default | Description |
 |-------|----------|---------|-------------|
 | brandSlug | yes | — | Brand slug |
-| categoryId | yes | — | Leaf category UUID |
+| categoryId | yes | — | Category UUID |
 | filter | no | — | Filter slug (see below) |
 | page | no | 1 | Page number |
 | size | no | 20 | Results per page (max 100) |
@@ -67,8 +67,8 @@ Paginated products for a leaf category. Default page size is 20.
 **Filter slugs**
 | Slug | Effect |
 |------|--------|
-| `under-15` | `min_price_cents < 1500` |
-| `15-25` | `1500 ≤ min_price_cents < 2500` |
+| `under-15` | `min_price_cents ≤ 1500` |
+| `15-25` | `1500 ≤ min_price_cents ≤ 2500` |
 | `25-plus` | `min_price_cents ≥ 2500` |
 | `sale` | `sale = true` |
 
@@ -83,18 +83,27 @@ Paginated products for a leaf category. Default page size is 20.
       "minPriceCents": 1650,
       "maxPriceCents": 1995,
       "salePriceCents": null,
-      "attributes": [{ "name": "Color", "options": ["Black", "Tortoise"] }],
       "featured": false,
       "sale": false,
-      "images": [{ "src": "https://...", "name": "Front" }]
+      "imageSrc": "https://...",
+      "imageName": "Sport Sunglasses Front",
+      "variations": [
+        {
+          "id": "uuid",
+          "option": "Gloss Black",
+          "slug": "gloss-black",
+          "value": "#000000",
+          "imageSrc": "https://...",
+          "imageName": "Gloss Black Angle"
+        }
+      ]
     }
   ],
   "page": 1,
   "size": 20,
   "totalPages": 3,
   "totalProducts": 62,
-  "hasNextPage": true,
-  "hasPreviousPage": false
+  "hasNextPage": true
 }
 ```
 
@@ -102,7 +111,7 @@ Paginated products for a leaf category. Default page size is 20.
 
 ### GET /api/public/sale
 
-Paginated sale products (`sale = true`). No `sale` filter slug — the endpoint is already scoped to sale items.
+Paginated sale products (`sale = true`). Same response shape as `/products` except `sale` field is omitted (implied). No `sale` filter slug needed.
 
 **Query Params**
 | Param | Required | Default | Description |
@@ -112,44 +121,60 @@ Paginated sale products (`sale = true`). No `sale` filter slug — the endpoint 
 | page | no | 1 | Page number |
 | size | no | 20 | Results per page (max 100) |
 
-**Response** — same shape as `/products`
+**Response** — same shape as `/products` without the `sale` field on each product.
 
 ---
 
 ### GET /api/public/item
 
-Full product detail including variations, all images, and description images.
+Full product detail including all variations, all images, and description images.
 
 **Query Params**
 | Param | Required | Description |
 |-------|----------|-------------|
 | brandSlug | yes | Brand slug |
-| slug | yes | Product slug |
+| productSlug | yes | Product slug |
 
 **Response**
 ```json
 {
   "id": "uuid",
   "name": "Sport Sunglasses",
+  "slug": "sport-sunglasses",
   "sku": null,
   "description": "Full description...",
   "summary": ["Feature 1", "Feature 2"],
-  "attributes": [{ "name": "Color", "options": ["Black", "Tortoise"] }],
+  "attributes": [
+    {
+      "name": "color",
+      "options": [
+        { "option": "Gloss Black", "slug": "gloss-black", "value": "#000000" },
+        { "option": "Tortoise", "slug": "tortoise", "value": "#8b4513" }
+      ]
+    },
+    {
+      "name": "size",
+      "options": [
+        { "option": "Standard", "slug": "standard" },
+        { "option": "Large", "slug": "large" }
+      ]
+    }
+  ],
   "featured": false,
   "sale": false,
   "minPriceCents": 1650,
   "maxPriceCents": 1995,
   "salePriceCents": null,
-  "stock": 10,
   "variations": [
     {
-      "id": "uuid",
-      "sku": "SKU-BLK",
-      "attribute": [{ "name": "Color", "option": "Black" }],
+      "sku": "SKU-BLK-STD",
+      "attribute": [
+        { "name": "color", "slug": "gloss-black" },
+        { "name": "size", "slug": "standard" }
+      ],
       "sale": false,
       "regularPriceCents": 1650,
       "salePriceCents": null,
-      "stock": 5,
       "images": [{ "src": "https://...", "name": "Black Front", "sortOrder": 1 }]
     }
   ],
@@ -157,6 +182,8 @@ Full product detail including variations, all images, and description images.
   "descriptionImages": [{ "src": "https://...", "name": "Diagram" }]
 }
 ```
+
+Note: variation `attribute` entries are `{ name, slug }` only — use the top-level `attributes` to look up display labels and hex values by slug. `value` is only present on `color` options there.
 
 ---
 
@@ -168,52 +195,56 @@ Case-insensitive product name search. Returns up to 6 results.
 | Param | Required | Description |
 |-------|----------|-------------|
 | brandSlug | yes | Brand slug |
-| q | yes | Search query |
+| search | yes | Search query |
 
 **Response**
 ```json
-{
-  "items": [
-    {
-      "id": "uuid",
-      "name": "Sport Sunglasses",
-      "slug": "sport-sunglasses",
-      "minPriceCents": 1650,
-      "maxPriceCents": 1995,
-      "salePriceCents": null,
-      "attributes": [...],
-      "featured": false,
-      "sale": false,
-      "images": [{ "src": "https://...", "name": "Front" }]
-    }
-  ]
-}
+[
+  {
+    "id": "uuid",
+    "name": "Sport Sunglasses",
+    "slug": "sport-sunglasses",
+    "minPriceCents": 1650,
+    "maxPriceCents": 1995,
+    "salePriceCents": null,
+    "featured": false,
+    "sale": false,
+    "imageSrc": "https://...",
+    "imageName": "Sport Sunglasses Front"
+  }
+]
 ```
 
 ---
 
 ### POST /api/public/validate-cart
 
-Checks whether each cart item's product and variation still exist in the catalog. Call on cart page entry and before creating a checkout session.
+Checks whether each cart item exists and whether the price matches the current DB price. Call on cart page entry and before checkout.
+
+**Status codes**
+| Status | Meaning |
+|--------|---------|
+| `200` | All items exist and prices match |
+| `404` | One or more items don't exist |
+| `409` | One or more prices changed |
+| `422` | Both missing items and changed prices |
 
 **Body**
 ```json
 {
   "brandSlug": "sunglass-monster",
   "items": [
-    { "sku": "SKU-BLK" }
+    { "productSlug": "sport-sunglasses", "sku": "SKU-BLK", "priceCents": 1650 }
   ]
 }
 ```
 
 **Response**
 ```json
-{
-  "items": [
-    { "sku": "SKU-BLK", "exists": true },
-    { "sku": "SKU-OLD", "exists": false }
-  ]
-}
+[
+  { "productSlug": "sport-sunglasses", "sku": "SKU-BLK", "exists": true,  "priceCents": 1650, "priceChanged": false },
+  { "productSlug": "old-product",      "sku": "SKU-OLD", "exists": false, "priceCents": null, "priceChanged": false }
+]
 ```
 
 ---
@@ -233,19 +264,18 @@ Returns the user's cart items for a brand.
 
 **Response**
 ```json
-{
-  "items": [
-    {
-      "productSlug": "sport-sunglasses",
-      "sku": "SKU-BLK",
-      "attribute": [{ "name": "Color", "option": "Black" }],
-      "name": "Sport Sunglasses",
-      "imageSrc": "https://...",
-      "priceCents": 1650,
-      "quantity": 2
-    }
-  ]
-}
+[
+  {
+    "productId": "uuid",
+    "productSlug": "sport-sunglasses",
+    "sku": "SKU-BLK",
+    "attribute": [{ "name": "color", "option": "Gloss Black" }],
+    "name": "Sport Sunglasses",
+    "imageSrc": "https://...",
+    "priceCents": 1650,
+    "quantity": 2
+  }
+]
 ```
 
 ---
@@ -260,9 +290,10 @@ Replaces the user's cart for a brand (delete + insert). Pass an empty array to c
   "brandSlug": "sunglass-monster",
   "items": [
     {
+      "productId": "uuid",
       "productSlug": "sport-sunglasses",
       "sku": "SKU-BLK",
-      "attribute": [{ "name": "Color", "option": "Black" }],
+      "attribute": [{ "name": "color", "option": "Gloss Black" }],
       "name": "Sport Sunglasses",
       "imageSrc": "https://...",
       "priceCents": 1650,
@@ -290,16 +321,14 @@ Returns the user's bookmarks for a brand.
 
 **Response**
 ```json
-{
-  "items": [
-    {
-      "productSlug": "sport-sunglasses",
-      "attribute": [{ "name": "Color", "option": "Black" }],
-      "name": "Sport Sunglasses",
-      "imageSrc": "https://..."
-    }
-  ]
-}
+[
+  {
+    "productId": "uuid",
+    "productSlug": "sport-sunglasses",
+    "name": "Sport Sunglasses",
+    "imageSrc": "https://..."
+  }
+]
 ```
 
 ---
@@ -314,8 +343,8 @@ Replaces the user's bookmarks for a brand (delete + insert). Pass an empty array
   "brandSlug": "sunglass-monster",
   "items": [
     {
+      "productId": "uuid",
       "productSlug": "sport-sunglasses",
-      "attribute": [],
       "name": "Sport Sunglasses",
       "imageSrc": "https://..."
     }
@@ -330,9 +359,64 @@ Replaces the user's bookmarks for a brand (delete + insert). Pass an empty array
 
 ---
 
+### GET /api/user/orders
+
+Returns the user's order history for a brand, newest first.
+
+**Query Params**
+| Param | Required | Description |
+|-------|----------|-------------|
+| brandSlug | yes | Brand slug |
+
+**Response**
+```json
+[
+  {
+    "id": "uuid",
+    "status": "processing",
+    "totalCents": 7774,
+    "shippingAddress": {
+      "name": "John Smith",
+      "line1": "123 Main St",
+      "line2": null,
+      "city": "Austin",
+      "state": "TX",
+      "postalCode": "78701",
+      "country": "US"
+    },
+    "createdAt": "2026-06-18T18:35:31.167Z",
+    "items": [
+      {
+        "id": "uuid",
+        "productSlug": "sport-sunglasses",
+        "name": "Sport Sunglasses",
+        "imageSrc": "https://...",
+        "priceCents": 1650,
+        "quantity": 2,
+        "attribute": "Gloss Black / Standard"
+      }
+    ]
+  }
+]
+```
+
+`attribute` is a display string (e.g. `"Gloss Black / Standard"`) for variation products, or `null` for simple products. Order status values: `processing`, `shipped`, `delivered`.
+
+---
+
 ### POST /api/user/checkout
 
-Creates a Stripe checkout session for the user's cart. Returns a URL to redirect the user to Stripe. Idempotent — same cart and order count returns the same session URL.
+Creates a Stripe checkout session. Returns a redirect URL. Stripe collects the shipping address — no need to collect it on the frontend.
+
+Prices, name, images, and attributes are pulled from the DB — the frontend only needs to send `productSlug`, `sku`, `priceCents`, and `quantity`. Idempotent — same cart state and order count returns the same session URL; any DB change (price, name, image) produces a new session.
+
+**Status codes**
+| Status | Meaning |
+|--------|---------|
+| `200` | Session created — follow the URL |
+| `404` | One or more items don't exist |
+| `409` | One or more prices changed |
+| `422` | Both missing items and changed prices |
 
 **Body**
 ```json
@@ -342,11 +426,8 @@ Creates a Stripe checkout session for the user's cart. Returns a URL to redirect
     {
       "productSlug": "sport-sunglasses",
       "sku": "SKU-BLK",
-      "name": "Sport Sunglasses",
-      "imageSrc": "https://...",
       "priceCents": 1650,
-      "quantity": 2,
-      "attribute": [{ "name": "Color", "option": "Black" }]
+      "quantity": 2
     }
   ],
   "successUrl": "https://yourdomain.com/order/success",
@@ -354,9 +435,16 @@ Creates a Stripe checkout session for the user's cart. Returns a URL to redirect
 }
 ```
 
-**Response**
+**Response `200`** — Stripe checkout URL (string).
 ```json
-{ "url": "https://checkout.stripe.com/..." }
+"https://checkout.stripe.com/..."
+```
+
+**Response `404`/`409`/`422`** — same shape as `/validate-cart`.
+```json
+[
+  { "productSlug": "sport-sunglasses", "sku": "SKU-BLK", "exists": true, "priceCents": 1800, "priceChanged": true }
+]
 ```
 
 ---
@@ -367,4 +455,4 @@ Creates a Stripe checkout session for the user's cart. Returns a URL to redirect
 
 Stripe webhook handler. Verified via `stripe-signature` header. Only handles `checkout.session.completed`.
 
-On payment completion: inserts an `orders` row and `order_items` rows derived from the Stripe line items. Idempotent — duplicate deliveries are ignored via `stripe_session_id` unique constraint.
+On payment completion: inserts an `orders` row with status `processing` and `order_items` rows derived from the expanded Stripe line items. Idempotent — duplicate deliveries are ignored via `stripe_session_id` unique constraint.
