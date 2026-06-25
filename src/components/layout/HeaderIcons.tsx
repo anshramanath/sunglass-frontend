@@ -49,7 +49,7 @@ function BagPanelContent({ onClose }: { onClose: () => void }) {
           <div className="divide-y divide-grey-150">
             {items.map((item) => {
               const attrParams = item.attribute.length > 0
-                ? "?" + item.attribute.map((a) => `${encodeURIComponent(a.name)}=${encodeURIComponent(a.option)}`).join("&")
+                ? "?" + item.attribute.map((a) => `${encodeURIComponent(a.name)}=${encodeURIComponent(a.slug)}`).join("&")
                 : "";
               const href = `/product/${item.productSlug}${attrParams}`;
               return (
@@ -144,7 +144,11 @@ function SearchPanelContent({ featured, onClose }: { featured: ProductListItem[]
     setNoResults(false);
     const timeout = setTimeout(() => {
       searchProducts(BRAND_SLUG, query)
-        .then((items) => { setResults(items); setNoResults(items.length === 0); })
+        .then((res) => {
+          const items = res.success ? res.data : [];
+          setResults(items);
+          setNoResults(items.length === 0);
+        })
         .catch(() => {})
         .finally(() => setLoading(false));
     }, 300);
@@ -186,8 +190,8 @@ function SearchPanelContent({ featured, onClose }: { featured: ProductListItem[]
             {displayed.map((p) => (
               <Link key={p.id} href={`/product/${p.slug}`} onClick={onClose} className="block">
                 <div className="bg-grey-100 aspect-[4/5] flex items-center justify-center p-4">
-                  {p.images[0] && (
-                    <Image src={p.images[0].src} alt={p.name} width={200} height={200} className="w-full h-full object-contain mix-blend-multiply" />
+                  {p.imageSrc && (
+                    <Image src={p.imageSrc} alt={p.name} width={200} height={200} className="w-full h-full object-contain mix-blend-multiply" />
                   )}
                 </div>
                 <p className="mt-2 text-[15px]">{p.name}</p>

@@ -4,12 +4,9 @@ import { createContext, useContext, useState, useCallback, useEffect, ReactNode 
 import { BRAND_SLUG } from "@/lib/brand";
 import { getBookmarks, putBookmarks } from "@/lib/api";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
+import type { BookmarkedItem } from "@/lib/types";
 
-export type BookmarkedItem = {
-  productSlug: string;
-  name: string;
-  imageSrc: string;
-};
+export type { BookmarkedItem };
 
 type BookmarkContextValue = {
   items: BookmarkedItem[];
@@ -42,9 +39,9 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
       } catch {}
 
       try {
-        const dbItems = await getBookmarks(BRAND_SLUG);
-        if (dbItems) {
-          setItems(mergeBookmarks(localItems, dbItems));
+        const res = await getBookmarks(BRAND_SLUG);
+        if (res?.success) {
+          setItems(mergeBookmarks(localItems, res.data));
           setLoaded(true);
           return;
         }

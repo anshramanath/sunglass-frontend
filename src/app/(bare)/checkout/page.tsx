@@ -28,12 +28,14 @@ export default function CheckoutPage() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
-    const skuItems = items.filter((i) => i.sku).map((i) => ({ sku: i.sku!, productSlug: i.productSlug }));
-    if (skuItems.length === 0) return;
-    validateCart(BRAND_SLUG, skuItems)
-      .then((result) => {
+    const validateItems = items.filter((i) => i.sku).map((i) => ({ productSlug: i.productSlug, sku: i.sku!, priceCents: i.priceCents }));
+    if (validateItems.length === 0) return;
+    validateCart(BRAND_SLUG, validateItems)
+      .then((items) => {
         const invalid = new Set<string>();
-        result.forEach((exists, key) => { if (!exists) invalid.add(key); });
+        for (const item of items) {
+          if (!item.exists || item.priceChanged) invalid.add(`${item.productSlug}:${item.sku}`);
+        }
         setInvalidItems(invalid);
       })
       .catch(() => {});
@@ -49,26 +51,27 @@ export default function CheckoutPage() {
     const checkoutItems = items.filter((i) => i.sku && !invalidItems.has(`${i.productSlug}:${i.sku}`));
     if (checkoutItems.length === 0) return;
     setRedirecting(true);
-    const url = await createCheckoutSession(
+    const res = await createCheckoutSession(
       BRAND_SLUG,
-      checkoutItems.map((i) => ({
-        productSlug: i.productSlug,
-        sku: i.sku!,
-        name: i.name,
-        imageSrc: i.imageSrc,
-        priceCents: i.priceCents,
-        quantity: i.quantity,
-        attribute: i.attribute,
-      })),
+      checkoutItems.map((i) => ({ productSlug: i.productSlug, sku: i.sku!, priceCents: i.priceCents, quantity: i.quantity })),
       `${window.location.origin}/order/success`,
       `${window.location.origin}/order/failure`,
     );
-    if (!url) {
+    if (!res) {
       setRedirecting(false);
       setCheckoutError("Unable to start checkout. Please try again.");
       return;
     }
-    window.location.href = url;
+    if (!res.success) {
+      const invalid = new Set<string>();
+      for (const item of res.items) {
+        if (!item.exists || item.priceChanged) invalid.add(`${item.productSlug}:${item.sku}`);
+      }
+      setInvalidItems(invalid);
+      setRedirecting(false);
+      return;
+    }
+    window.location.href = res.url;
   }
 
   return (

@@ -22,11 +22,12 @@ type Props = {
 };
 
 async function ProductSection({ categoryId, filter, categoryPath }: { categoryId: string; filter?: string; categoryPath: string }) {
-  const data = await getProducts({ brandSlug: BRAND_SLUG, categoryId, filter, size: 20 });
+  const res = await getProducts({ brandSlug: BRAND_SLUG, categoryId, filter, size: 20 });
+  if (!res.success) return null;
   return (
     <LoadMoreProducts
-      initialProducts={data.products}
-      initialHasNextPage={data.hasNextPage}
+      initialProducts={res.data.products}
+      initialHasNextPage={res.data.hasNextPage}
       categoryId={categoryId}
       filter={filter}
       categoryPath={categoryPath}
@@ -36,7 +37,8 @@ async function ProductSection({ categoryId, filter, categoryPath }: { categoryId
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { path } = await params;
-  const tree = await getCategories(BRAND_SLUG);
+  const res = await getCategories(BRAND_SLUG);
+  const tree = res.success ? res.data : [];
   const nodes = findPathNodes(tree, path);
   const leaf = nodes?.[nodes.length - 1];
   return { title: leaf ? `${leaf.name} | ${BRAND.name}` : BRAND.name };
@@ -45,7 +47,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { path } = await params;
   const { filter } = await searchParams;
-  const tree = await getCategories(BRAND_SLUG);
+  const res = await getCategories(BRAND_SLUG);
+  const tree = res.success ? res.data : [];
   const nodes = findPathNodes(tree, path);
   if (!nodes) notFound();
 

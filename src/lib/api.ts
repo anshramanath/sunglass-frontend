@@ -1,25 +1,23 @@
 "use server";
 
-import type { ApiResponse, CategoryNode, Order, ProductDetail, ProductListItem, ProductsResponse } from "./types";
+import type { ApiResponse, BookmarkedItem, CartItem, CategoryNode, CheckoutResponse, Order, ProductDetail, ProductListItem, ProductsResponse, ValidateCartItem } from "./types";
 import { getSession } from "@/lib/auth";
 
 const BASE = process.env.BASE_URL!;
 
 // ── Public catalog ────────────────────────────────────────────────────────────
 
-async function apiFetch<T>(path: string, params: Record<string, string | number>): Promise<T> {
+async function apiFetch<T>(path: string, params: Record<string, string | number>): Promise<ApiResponse<T>> {
   const url = new URL(`${BASE}${path}`);
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, String(value));
   }
   const res = await fetch(url.toString(), { next: { revalidate: 60 } });
-  const json: ApiResponse<T> = await res.json();
-  if (!json.success) throw new Error(json.error);
-  return json.data;
+  return res.json();
 }
 
-export async function getCategories(brandSlug: string): Promise<CategoryNode[]> {
-  return apiFetch("/api/public/categories", { brandSlug });
+export async function getCategories(brandSlug: string): Promise<ApiResponse<CategoryNode[]>> {
+  return apiFetch<CategoryNode[]>("/api/public/categories", { brandSlug });
 }
 
 export async function getProducts(params: {
@@ -28,7 +26,7 @@ export async function getProducts(params: {
   filter?: string;
   page?: number;
   size?: number;
-}): Promise<ProductsResponse> {
+}): Promise<ApiResponse<ProductsResponse>> {
   const query: Record<string, string | number> = {
     brandSlug: params.brandSlug,
     categoryId: params.categoryId,
@@ -36,97 +34,96 @@ export async function getProducts(params: {
     size: params.size ?? 20,
   };
   if (params.filter) query.filter = params.filter;
-  return apiFetch("/api/public/products", query);
+  return apiFetch<ProductsResponse>("/api/public/products", query);
 }
 
-export async function getSaleProducts(params: { brandSlug: string; filter?: string; page?: number; size?: number }): Promise<ProductsResponse> {
-  const query: Record<string, string | number> = { brandSlug: params.brandSlug, page: params.page ?? 1, size: params.size ?? 20 };
+export async function getSaleProducts(params: {
+  brandSlug: string;
+  filter?: string;
+  page?: number;
+  size?: number;
+}): Promise<ApiResponse<ProductsResponse>> {
+  const query: Record<string, string | number> = {
+    brandSlug: params.brandSlug,
+    page: params.page ?? 1,
+    size: params.size ?? 20,
+  };
   if (params.filter) query.filter = params.filter;
-  return apiFetch("/api/public/sale", query);
+  return apiFetch<ProductsResponse>("/api/public/sale", query);
 }
 
-export async function getItem(slug: string, brandSlug: string): Promise<ProductDetail> {
-  return apiFetch("/api/public/item", { slug, brandSlug });
+export async function getItem(productSlug: string, brandSlug: string): Promise<ApiResponse<ProductDetail>> {
+  return apiFetch<ProductDetail>("/api/public/item", { brandSlug, productSlug });
 }
 
-export async function searchProducts(brandSlug: string, q: string): Promise<ProductListItem[]> {
-  return apiFetch<{ items: ProductListItem[] }>("/api/public/search", { brandSlug, q }).then((d) => d.items);
+export async function searchProducts(brandSlug: string, search: string): Promise<ApiResponse<ProductListItem[]>> {
+  return apiFetch<ProductListItem[]>("/api/public/search", { brandSlug, search });
 }
 
-// ── Authenticated user data ───────────────────────────────────────────────────
-
-async function authedFetch(path: string, options?: RequestInit) {
-  const session = await getSession();
-  if (!session) return null;
-  return fetch(`${BASE}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`,
-      ...(options?.headers ?? {}),
-    },
-  });
-}
-
-export async function getCart(brandSlug: string) {
-  const res = await authedFetch(`/api/user/cart?brandSlug=${brandSlug}`);
-  if (!res?.ok) return null;
-  const json = await res.json();
-  return json.data.items;
-}
-
-export async function putCart(brandSlug: string, items: unknown[]) {
-  const res = await authedFetch("/api/user/cart", {
-    method: "PUT",
-    body: JSON.stringify({ brandSlug, items }),
-  });
-  return res?.ok ?? false;
-}
-
-export async function getBookmarks(brandSlug: string) {
-  const res = await authedFetch(`/api/user/bookmarks?brandSlug=${brandSlug}`);
-  if (!res?.ok) return null;
-  const json = await res.json();
-  return json.data.items;
-}
-
-export async function putBookmarks(brandSlug: string, items: unknown[]) {
-  const res = await authedFetch("/api/user/bookmarks", {
-    method: "PUT",
-    body: JSON.stringify({ brandSlug, items }),
-  });
-  return res?.ok ?? false;
-}
-
-export async function validateCart(brandSlug: string, items: { sku: string; productSlug: string }[]): Promise<Map<string, boolean>> {
+export async function validateCart(brandSlug: string, items: { productSlug: string; sku: string; priceCents: number }[]): Promise<ValidateCartItem[]> {
   const res = await fetch(`${BASE}/api/public/validate-cart`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ brandSlug, items }),
   });
-  if (!res.ok) return new Map();
-  const json = await res.json();
-  return new Map((json.data.items as { sku: string; productSlug: string; exists: boolean }[]).map((i) => [`${i.productSlug}:${i.sku}`, i.exists]));
+  return res.json();
 }
 
-export async function getOrders(brandSlug: string): Promise<Order[]> {
-  const res = await authedFetch(`/api/user/orders?brandSlug=${brandSlug}`);
-  if (!res?.ok) return [];
-  const json = await res.json();
-  return json.data.orders ?? [];
+// ── Authenticated user data ───────────────────────────────────────────────────
+
+async function authedFetch<T>(path: string, method: string, body: unknown): Promise<ApiResponse<T> | null> {
+  const session = await getSession();
+  if (!session) return null;
+  const res = await fetch(`${BASE}${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  return res.json();
+}
+
+export async function getCart(brandSlug: string): Promise<ApiResponse<CartItem[]> | null> {
+  return authedFetch<CartItem[]>("/api/user/cart", "POST", { brandSlug });
+}
+
+export async function putCart(brandSlug: string, items: CartItem[]): Promise<ApiResponse<{ synced: number }> | null> {
+  return authedFetch<{ synced: number }>("/api/user/cart", "PUT", { brandSlug, items });
+}
+
+export async function getBookmarks(brandSlug: string): Promise<ApiResponse<BookmarkedItem[]> | null> {
+  return authedFetch<BookmarkedItem[]>("/api/user/bookmarks", "POST", { brandSlug });
+}
+
+export async function putBookmarks(brandSlug: string, items: BookmarkedItem[]): Promise<ApiResponse<{ synced: number }> | null> {
+  return authedFetch<{ synced: number }>("/api/user/bookmarks", "PUT", { brandSlug, items });
+}
+
+export async function getOrders(brandSlug: string): Promise<ApiResponse<Order[]> | null> {
+  return authedFetch<Order[]>("/api/user/orders", "POST", { brandSlug });
 }
 
 export async function createCheckoutSession(
   brandSlug: string,
-  items: { productSlug: string; sku: string; name: string; imageSrc: string; priceCents: number; quantity: number; attribute: { name: string; option: string }[] }[],
+  items: { productSlug: string; sku: string; priceCents: number; quantity: number }[],
   successUrl: string,
   cancelUrl: string,
-): Promise<string | null> {
-  const res = await authedFetch("/api/user/checkout", {
+): Promise<CheckoutResponse | null> {
+  const session = await getSession();
+  if (!session) return null;
+  const res = await fetch(`${BASE}/api/user/checkout`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.access_token}`,
+    },
     body: JSON.stringify({ brandSlug, items, successUrl, cancelUrl }),
   });
-  if (!res?.ok) return null;
-  const json = await res.json();
-  return json.data.url ?? null;
+  if (res.ok) {
+    const json: ApiResponse<{ url: string }> = await res.json();
+    return json.success ? { success: true, url: json.data.url } : { success: false, items: [] };
+  }
+  return { success: false, items: await res.json() };
 }

@@ -4,18 +4,9 @@ import { createContext, useContext, useState, useCallback, useEffect, ReactNode 
 import { BRAND_SLUG } from "@/lib/brand";
 import { getCart, putCart } from "@/lib/api";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
+import type { CartItem } from "@/lib/types";
 
-export type CartAttribute = { name: string; option: string };
-
-export type CartItem = {
-  productSlug: string;
-  sku: string;
-  attribute: CartAttribute[];
-  name: string;
-  imageSrc: string;
-  priceCents: number;
-  quantity: number;
-};
+export type { CartItem };
 
 type CartContextValue = {
   items: CartItem[];
@@ -55,9 +46,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       } catch {}
 
       try {
-        const dbItems = await getCart(BRAND_SLUG);
-        if (dbItems) {
-          setItems(mergeCartItems(localItems, dbItems));
+        const res = await getCart(BRAND_SLUG);
+        if (res?.success) {
+          setItems(mergeCartItems(localItems, res.data));
           setLoaded(true);
           return;
         }

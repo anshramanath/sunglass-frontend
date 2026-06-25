@@ -15,26 +15,23 @@ function formatPrice(cents: number): string {
   return d % 1 === 0 ? `$${d}` : `$${d.toFixed(2)}`;
 }
 
-function colorAttr(v: ListVariation) {
-  return v.attribute.find((a) => a.name === "color" && a.value);
-}
-
 export default function ProductCard({ product, categoryPath }: { product: ProductListItem; categoryPath?: string }) {
   const { toggle, isBookmarked } = useBookmarks();
   const router = useRouter();
   const [hoveredVar, setHoveredVar] = useState<ListVariation | null>(null);
 
-  const thumbnail = product.images[0];
   const saved = isBookmarked(product.slug);
-  const colorVariations = product.variations.filter((v) => colorAttr(v));
+  const colorVariations = (product.variations ?? []).filter((v) => v.value);
   const visibleVars = colorVariations.slice(0, MAX_SWATCHES);
   const overflow = colorVariations.length - MAX_SWATCHES;
 
-  const displaySrc = hoveredVar?.imageSrc ?? thumbnail?.src;
-  const displayAlt = hoveredVar ? (colorAttr(hoveredVar)?.option ?? product.name) : (thumbnail?.name ?? product.name);
+  const displaySrc = hoveredVar?.imageSrc ?? product.imageSrc;
+  const displayAlt = hoveredVar ? (hoveredVar.option ?? product.name) : (product.imageName ?? product.name);
 
   const pathParam = categoryPath ? `path=${categoryPath}` : null;
-  const href = `/product/${product.slug}${pathParam ? `?${pathParam}` : ""}`;
+  const colorParam = hoveredVar ? `color=${hoveredVar.slug}` : null;
+  const qs = [colorParam, pathParam].filter(Boolean).join("&");
+  const href = `/product/${product.slug}${qs ? `?${qs}` : ""}`;
 
   const price =
     product.minPriceCents === product.maxPriceCents
@@ -72,7 +69,7 @@ export default function ProductCard({ product, categoryPath }: { product: Produc
           <Link href={href} className="text-[15px] hover:opacity-60 transition-opacity duration-200">{product.name}</Link>
           <button
             type="button"
-            onClick={() => { if (thumbnail) toggle({ productSlug: product.slug, name: product.name, imageSrc: thumbnail.src }); }}
+            onClick={() => { if (product.imageSrc) toggle({ productId: product.id, productSlug: product.slug, name: product.name, imageSrc: product.imageSrc }); }}
             className="shrink-0 grid place-items-center text-ink hover:opacity-60 transition-opacity duration-200"
             aria-label={saved ? `Remove ${product.name} from saved` : `Save ${product.name}`}
           >
@@ -99,22 +96,21 @@ export default function ProductCard({ product, categoryPath }: { product: Produc
             onMouseLeave={() => setHoveredVar(null)}
           >
             {visibleVars.map((v) => {
-              const c = colorAttr(v)!;
               const isHovered = hoveredVar === v;
               return (
                 <button
-                  key={v.id}
+                  key={v.slug}
                   type="button"
-                  title={c.option}
+                  title={v.option}
                   onMouseEnter={() => setHoveredVar(v)}
                   onClick={() => {
-                    const q = [`color=${c.slug}`, pathParam].filter(Boolean).join("&");
+                    const q = [`color=${v.slug}`, pathParam].filter(Boolean).join("&");
                     router.push(`/product/${product.slug}?${q}`);
                   }}
                   className={`w-4 h-4 rounded-full border border-grey-200 transition-all duration-150 ${
                     isHovered ? "ring-[1.5px] ring-ink ring-offset-1" : "hover:ring-[1.5px] hover:ring-grey-400 hover:ring-offset-1"
                   }`}
-                  style={{ backgroundColor: c.value }}
+                  style={{ backgroundColor: v.value }}
                 />
               );
             })}

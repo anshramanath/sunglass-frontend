@@ -8,12 +8,12 @@ export type CategoryNode = {
   children?: CategoryNode[];
 };
 
-export type ProductImage = { src: string; name: string };
-
 export type ListVariation = {
-  id: string;
-  attribute: { name: string; option: string; slug: string; value?: string }[];
+  option: string;
+  slug: string;
+  value?: string;
   imageSrc: string | null;
+  imageName: string | null;
 };
 
 export type ProductListItem = {
@@ -25,8 +25,9 @@ export type ProductListItem = {
   salePriceCents: number | null;
   featured: boolean;
   sale: boolean;
-  images: ProductImage[];
-  variations: ListVariation[];
+  imageSrc: string | null;
+  imageName: string | null;
+  variations?: ListVariation[];
 };
 
 export type ProductsResponse = {
@@ -36,48 +37,65 @@ export type ProductsResponse = {
   totalPages: number;
   totalProducts: number;
   hasNextPage: boolean;
-  hasPreviousPage: boolean;
 };
 
 export type VariationImage = { src: string; name: string; sortOrder: number };
 
 export type Variation = {
-  id: string;
   sku: string;
-  attribute: { name: string; option: string; slug: string; value?: string }[];
+  attribute: { name: string; slug: string }[];
   sale: boolean;
   regularPriceCents: number;
   salePriceCents: number | null;
-  stock: number;
   images: VariationImage[];
 };
 
 export type ProductDetail = {
   id: string;
   name: string;
+  slug: string;
   sku: string | null;
   description: string;
   summary: string[];
-  attributes: { name: string; option: string; slug: string; value?: string }[];
+  attributes: { name: string; options: { option: string; slug: string; value?: string }[] }[];
   featured: boolean;
   sale: boolean;
   minPriceCents: number;
   maxPriceCents: number;
   salePriceCents: number | null;
-  stock: number | null;
   variations: Variation[];
   productImages: VariationImage[];
   descriptionImages: { src: string; name: string }[];
 };
 
-export type OrderItem = {
+export type CartAttribute = { name: string; option: string; slug: string };
+
+export type CartItem = {
+  productId: string;
   productSlug: string;
   sku: string;
+  attribute: CartAttribute[];
   name: string;
   imageSrc: string;
   priceCents: number;
   quantity: number;
-  attribute: { name: string; option: string }[];
+};
+
+export type BookmarkedItem = {
+  productId: string;
+  productSlug: string;
+  name: string;
+  imageSrc: string;
+};
+
+export type OrderItem = {
+  id: string;
+  productSlug: string;
+  name: string;
+  imageSrc: string;
+  priceCents: number;
+  quantity: number;
+  attribute: string | null;
 };
 
 export type ShippingAddress = {
@@ -100,3 +118,7 @@ export type Order = {
 };
 
 export type ApiResponse<T> = { success: true; data: T } | { success: false; error: string };
+
+export type ValidateCartItem = { productSlug: string; sku: string; exists: boolean; priceCents: number | null; priceChanged: boolean };
+
+export type CheckoutResponse = { success: true; url: string } | { success: false; items: ValidateCartItem[] };

@@ -18,11 +18,12 @@ const FILTERS = [
 type Props = { searchParams: Promise<{ filter?: string }> };
 
 async function SaleProducts({ filter }: { filter?: string }) {
-  const data = await getSaleProducts({ brandSlug: BRAND_SLUG, filter, size: 20 });
+  const res = await getSaleProducts({ brandSlug: BRAND_SLUG, filter, size: 20 });
+  if (!res.success) return null;
   return (
     <LoadMoreSaleProducts
-      initialProducts={data.products}
-      initialHasNextPage={data.hasNextPage}
+      initialProducts={res.data.products}
+      initialHasNextPage={res.data.hasNextPage}
       filter={filter}
     />
   );

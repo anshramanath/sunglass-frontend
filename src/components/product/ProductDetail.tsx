@@ -50,16 +50,6 @@ function formatPrice(cents: number) {
   return d % 1 === 0 ? `$${d}` : `$${d.toFixed(2)}`;
 }
 
-function getAttrNames(variations: Variation[]): string[] {
-  return [...new Set(variations.flatMap((v) => v.attribute.map((a) => a.name)))];
-}
-
-function getAllOptions(variations: Variation[], attrName: string): string[] {
-  return [...new Set(variations.flatMap((v) =>
-    v.attribute.filter((a) => a.name === attrName).map((a) => a.option)
-  ))];
-}
-
 function getAvailableOptions(
   variations: Variation[],
   attrName: string,
@@ -67,9 +57,9 @@ function getAvailableOptions(
 ): Set<string> {
   const others = Object.entries(selections).filter(([k, v]) => k !== attrName && v !== null);
   const matching = variations.filter((v) =>
-    others.every(([name, option]) => v.attribute.some((a) => a.name === name && a.option === option))
+    others.every(([name, slug]) => v.attribute.some((a) => a.name === name && a.slug === slug))
   );
-  return new Set(matching.flatMap((v) => v.attribute.filter((a) => a.name === attrName).map((a) => a.option)));
+  return new Set(matching.flatMap((v) => v.attribute.filter((a) => a.name === attrName).map((a) => a.slug)));
 }
 
 function resolveVariation(
@@ -79,24 +69,21 @@ function resolveVariation(
 ): Variation | null {
   if (attrNames.some((n) => !selections[n])) return null;
   return variations.find((v) =>
-    attrNames.every((name) => v.attribute.some((a) => a.name === name && a.option === selections[name]))
+    attrNames.every((name) => v.attribute.some((a) => a.name === name && a.slug === selections[name]))
   ) ?? null;
 }
 
 export default function ProductDetail({ product, slug, initialSelections = {} }: { product: ProductDetailType; slug: string; initialSelections?: Record<string, string> }) {
-  const rawAttrNames = getAttrNames(product.variations);
+  const rawAttrNames = product.attributes.map((a) => a.name);
   const attrNames = rawAttrNames.includes("color")
     ? ["color", ...rawAttrNames.filter((n) => n !== "color")]
     : rawAttrNames;
 
   const defaultSelections = Object.fromEntries(attrNames.map((n) => {
-    if (initialSelections[n]) {
-      const bySlug = product.variations.flatMap((v) => v.attribute).find((a) => a.name === n && a.slug === initialSelections[n]);
-      return [n, bySlug?.option ?? initialSelections[n]];
-    }
+    if (initialSelections[n]) return [n, initialSelections[n]];
     const firstVar = product.variations[0];
     const match = firstVar?.attribute.find((a) => a.name === n);
-    return [n, match?.option ?? null];
+    return [n, match?.slug ?? null];
   }));
 
   const [selections, setSelections] = useState<Record<string, string | null>>(defaultSelections);
@@ -116,17 +103,20 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
     ? (variation.sale && variation.salePriceCents != null)
     : !!product.salePriceCents;
 
-  function select(attrName: string, option: string) {
-    setSelections((prev) => ({ ...prev, [attrName]: option }));
+  function select(attrName: string, slug: string) {
+    setSelections((prev) => ({ ...prev, [attrName]: slug }));
   }
 
   function handleAddToBag() {
     if (!sku) return;
     addToCart({
+      productId: product.id,
       productSlug: slug,
-      attribute: attrNames.length > 0
-        ? attrNames.map((n) => ({ name: n, option: selections[n] ?? "" }))
-        : [],
+      attribute: attrNames.map((n) => {
+        const attrSlug = selections[n] ?? "";
+        const option = product.attributes.find((a) => a.name === n)?.options.find((o) => o.slug === attrSlug)?.option ?? attrSlug;
+        return { name: n, option, slug: attrSlug };
+      }),
       name: product.name,
       sku,
       imageSrc: images[0]?.src ?? "",
@@ -137,7 +127,7 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
   function handleBookmark() {
     const thumbnail = images[0]?.src ?? product.productImages[0]?.src;
     if (!thumbnail) return;
-    toggleBookmark({ productSlug: slug, name: product.name, imageSrc: thumbnail });
+    toggleBookmark({ productId: product.id, productSlug: slug, name: product.name, imageSrc: thumbnail });
   }
 
   const isItemBookmarked = isBookmarked(slug);
@@ -170,48 +160,44 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
         {attrNames.length > 0 && (
           <div className="mt-8 flex flex-col gap-6">
             {attrNames.map((attrName, attrIndex) => {
-              const allOpts = getAllOptions(product.variations, attrName);
+              const allAttrs = product.attributes.find((a) => a.name === attrName)?.options ?? [];
               const available = getAvailableOptions(product.variations, attrName, attrIndex === 0 ? {} : selections);
-              const seen = new Set<string>();
-              const allAttrs = product.variations.flatMap((v) => v.attribute).filter((a) => {
-                if (a.name !== attrName || seen.has(a.option)) return false;
-                seen.add(a.option);
-                return true;
-              });
-              const isColor = allAttrs.some((a) => a.value);
+              const isColor = allAttrs.some((o) => o.value);
               return (
                 <div key={attrName}>
                   <p className="text-[15px] mb-3">
                     {attrName}
                     {selections[attrName] && (
-                      <span className="text-grey-600 ml-2">— {selections[attrName]}</span>
+                      <span className="text-grey-600 ml-2">
+                        — {allAttrs.find((o) => o.slug === selections[attrName])?.option}
+                      </span>
                     )}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {isColor ? allAttrs.map((a) => {
-                      const isAvailable = available.has(a.option);
-                      const isSelected = selections[attrName] === a.option;
+                    {isColor ? allAttrs.map((o) => {
+                      const isAvailable = available.has(o.slug);
+                      const isSelected = selections[attrName] === o.slug;
                       return (
                         <button
-                          key={a.option}
+                          key={o.slug}
                           type="button"
-                          title={a.option}
+                          title={o.option}
                           disabled={!isAvailable}
-                          onClick={() => select(attrName, a.option)}
+                          onClick={() => select(attrName, o.slug)}
                           className={`w-7 h-7 rounded-full border border-grey-200 transition-all duration-150 ${
                             isSelected ? "ring-[1.5px] ring-ink ring-offset-1" : isAvailable ? "hover:ring-[1.5px] hover:ring-grey-400 hover:ring-offset-1" : "opacity-30 cursor-not-allowed"
                           }`}
-                          style={{ backgroundColor: a.value }}
+                          style={{ backgroundColor: o.value }}
                         />
                       );
-                    }) : allOpts.map((option) => {
-                      const isAvailable = available.has(option);
-                      const isSelected = selections[attrName] === option;
+                    }) : allAttrs.map((o) => {
+                      const isAvailable = available.has(o.slug);
+                      const isSelected = selections[attrName] === o.slug;
                       return (
                         <button
-                          key={option}
+                          key={o.slug}
                           disabled={!isAvailable}
-                          onClick={() => select(attrName, option)}
+                          onClick={() => select(attrName, o.slug)}
                           className={`border px-3.5 py-2 text-[13px] transition-colors duration-200 ${
                             isSelected
                               ? "border-ink bg-ink text-paper"
@@ -220,7 +206,7 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
                               : "border-grey-200 text-grey-300 cursor-not-allowed"
                           }`}
                         >
-                          {option}
+                          {o.option}
                         </button>
                       );
                     })}

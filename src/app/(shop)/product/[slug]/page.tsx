@@ -19,26 +19,29 @@ function humanize(slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getItem(slug, BRAND_SLUG).catch(() => null);
+  const res = await getItem(slug, BRAND_SLUG).catch(() => null);
+  const product = res?.success ? res.data : null;
   return { title: product ? `${product.name} | ${BRAND.name}` : BRAND.name };
 }
 
 async function Detail({ slug, attrParams }: { slug: string; attrParams: Record<string, string> }) {
-  const product = await getItem(slug, BRAND_SLUG).catch(() => null);
-  if (!product) notFound();
-  return <ProductDetail product={product} slug={slug} initialSelections={attrParams} />;
+  const res = await getItem(slug, BRAND_SLUG).catch(() => null);
+  if (!res?.success) notFound();
+  return <ProductDetail product={res.data} slug={slug} initialSelections={attrParams} />;
 }
 
 async function Related({ slug, path }: { slug: string; path: string | undefined }) {
   if (!path) return null;
-  const categories = await getCategories(BRAND_SLUG).catch(() => null);
+  const categoriesRes = await getCategories(BRAND_SLUG).catch(() => null);
+  const categories = categoriesRes?.success ? categoriesRes.data : null;
   if (!categories) return null;
   const categoryNodes = findPathNodes(categories, path.split("/"));
   const leafCategoryId = categoryNodes?.[categoryNodes.length - 1]?.id;
   if (!leafCategoryId) return null;
-  const relatedProducts = await getProducts({ brandSlug: BRAND_SLUG, categoryId: leafCategoryId, size: 6 })
-    .then((d) => d.products.filter((p) => p.slug !== slug).slice(0, 5))
-    .catch(() => []);
+  const relatedRes = await getProducts({ brandSlug: BRAND_SLUG, categoryId: leafCategoryId, size: 6 }).catch(() => null);
+  const relatedProducts = relatedRes?.success
+    ? relatedRes.data.products.filter((p) => p.slug !== slug).slice(0, 5)
+    : [];
   if (relatedProducts.length === 0) return null;
   return (
     <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-16 lg:mt-24">

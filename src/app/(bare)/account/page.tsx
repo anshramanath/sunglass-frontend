@@ -21,7 +21,8 @@ function StatusBadge({ status }: { status: string }) {
 
 export default async function AccountPage() {
   const user = await requireUser();
-  const orders = await getOrders(BRAND_SLUG);
+  const ordersRes = await getOrders(BRAND_SLUG);
+  const orders = ordersRes?.success ? ordersRes.data : [];
   const email = user.email ?? "";
   const displayName = user.user_metadata?.display_name ?? "";
   const latestAddress = orders.find((o) => o.shippingAddress)?.shippingAddress ?? null;
@@ -108,13 +109,13 @@ export default async function AccountPage() {
                     <div className="space-y-4">
                       {order.items.map((item, i) => (
                         <div key={i} className="flex items-center gap-4">
-                          <Link href={`/product/${item.productSlug}`} className="block w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
+                          <div className="block w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
                             <Image src={item.imageSrc} alt={item.name} width={64} height={80} className="w-full h-full object-contain mix-blend-multiply" />
-                          </Link>
+                          </div>
                           <div className="flex-1 min-w-0">
-                            <Link href={`/product/${item.productSlug}`} className="text-[15px] hover:opacity-60 transition-opacity duration-200">{item.name}</Link>
+                            <p className="text-[15px]">{item.name}</p>
                             <p className="text-[13px] text-grey-500 mt-0.5">
-                              {item.attribute.length > 0 ? `${item.attribute.map((a) => a.option).join(" · ")} · ` : ""}Qty {item.quantity}
+                              {item.attribute ? `${item.attribute} · ` : ""}Qty {item.quantity}
                             </p>
                           </div>
                           <p className="text-[15px] shrink-0">{fmt(item.priceCents * item.quantity)}</p>

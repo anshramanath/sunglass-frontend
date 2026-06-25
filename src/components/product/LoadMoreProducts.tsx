@@ -23,10 +23,11 @@ export default function LoadMoreProducts({ initialProducts, initialHasNextPage, 
   function loadMore() {
     startTransition(async () => {
       const next = page + 1;
-      const data = await getProducts({ brandSlug: BRAND_SLUG, categoryId, filter, page: next, size: 20 });
-      setProducts((prev) => [...prev, ...data.products]);
+      const res = await getProducts({ brandSlug: BRAND_SLUG, categoryId, filter, page: next, size: 20 });
+      if (!res.success) return;
+      setProducts((prev) => [...prev, ...res.data.products]);
       setPage(next);
-      setHasNextPage(data.hasNextPage);
+      setHasNextPage(res.data.hasNextPage);
     });
   }
 

@@ -9,7 +9,8 @@ import ProductGrid from "@/components/product/ProductGrid";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
 async function HeroCTAs() {
-  const tree = await getCategories(BRAND_SLUG);
+  const res = await getCategories(BRAND_SLUG);
+  const tree = res.success ? res.data : [];
   const leaves = collectLeaves(tree);
   const first = leaves[0];
   const shopHref = first ? `/category/${first.path.join("/")}` : "/sale";
@@ -27,16 +28,17 @@ async function HeroCTAs() {
 }
 
 async function TopCategories() {
-  const tree = await getCategories(BRAND_SLUG);
+  const res = await getCategories(BRAND_SLUG);
+  const tree = res.success ? res.data : [];
   const leaves = collectLeaves(tree);
 
   const tiles = (
     await Promise.all(
       leaves.map(async ({ node, path }) => {
-        const data = await getProducts({ brandSlug: BRAND_SLUG, categoryId: node.id, size: 1 }).catch(() => null);
-        const product = data?.products[0];
+        const r = await getProducts({ brandSlug: BRAND_SLUG, categoryId: node.id, size: 1 }).catch(() => null);
+        const product = r?.success ? r.data.products[0] : null;
         if (!product) return null;
-        const img = product.images[0] ?? null;
+        const img = product.imageSrc ? { src: product.imageSrc, name: product.imageName ?? "" } : null;
         return { label: node.name, href: `/category/${path.join("/")}`, img };
       })
     )
@@ -67,13 +69,14 @@ async function TopCategories() {
 }
 
 async function BestSellers() {
-  const tree = await getCategories(BRAND_SLUG);
+  const res = await getCategories(BRAND_SLUG);
+  const tree = res.success ? res.data : [];
   const leaves = collectLeaves(tree);
   let products: ProductListItem[] = [];
   for (const { node } of leaves) {
-    const data = await getProducts({ brandSlug: BRAND_SLUG, categoryId: node.id, size: 10 }).catch(() => null);
-    if (data && data.totalProducts >= 10) {
-      products = data.products;
+    const r = await getProducts({ brandSlug: BRAND_SLUG, categoryId: node.id, size: 10 }).catch(() => null);
+    if (r?.success && r.data.totalProducts >= 10) {
+      products = r.data.products;
       break;
     }
   }
@@ -82,16 +85,17 @@ async function BestSellers() {
 }
 
 async function EditorialSplit() {
-  const tree = await getCategories(BRAND_SLUG);
+  const res = await getCategories(BRAND_SLUG);
+  const tree = res.success ? res.data : [];
   const leaves = collectLeaves(tree);
   const slots = await Promise.all(
     [4, 6].map(async (idx) => {
       const leaf = leaves[idx];
       if (!leaf) return null;
-      const data = await getProducts({ brandSlug: BRAND_SLUG, categoryId: leaf.node.id, size: 1 }).catch(() => null);
-      const product = data?.products[0];
+      const r = await getProducts({ brandSlug: BRAND_SLUG, categoryId: leaf.node.id, size: 1 }).catch(() => null);
+      const product = r?.success ? r.data.products[0] : null;
       if (!product) return null;
-      const img = product.images[1] ?? product.images[0] ?? null;
+      const img = product.imageSrc ? { src: product.imageSrc, name: product.imageName ?? "" } : null;
       return { name: leaf.node.name, href: `/category/${leaf.path.join("/")}`, img };
     })
   );

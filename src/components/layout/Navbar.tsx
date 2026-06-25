@@ -37,14 +37,15 @@ export default async function Navbar() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const isSignedIn = !!user;
-  const categories = await getCategories(BRAND_SLUG).catch(() => []);
+  const categoriesRes = await getCategories(BRAND_SLUG).catch(() => null);
+  const categories = categoriesRes?.success ? categoriesRes.data : [];
 
   let searchProducts: ProductListItem[] = [];
   const leaves = collectLeaves(categories);
   for (const { node } of leaves) {
-    const data = await getProducts({ brandSlug: BRAND_SLUG, categoryId: node.id, size: 6 }).catch(() => null);
-    if (data && data.totalProducts >= 6) {
-      searchProducts = data.products.slice(0, 6);
+    const res = await getProducts({ brandSlug: BRAND_SLUG, categoryId: node.id, size: 6 }).catch(() => null);
+    if (res?.success && res.data.totalProducts >= 6) {
+      searchProducts = res.data.products.slice(0, 6);
       break;
     }
   }
