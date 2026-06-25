@@ -22,7 +22,7 @@ function StatusBadge({ status }: { status: string }) {
 export default async function AccountPage() {
   const user = await requireUser();
   const ordersRes = await getOrders(BRAND_SLUG);
-  const orders = ordersRes?.success ? ordersRes.data : [];
+  const orders = ordersRes.success ? ordersRes.data : [];
   const email = user.email ?? "";
   const displayName = user.user_metadata?.display_name ?? "";
   const latestAddress = orders.find((o) => o.shippingAddress)?.shippingAddress ?? null;

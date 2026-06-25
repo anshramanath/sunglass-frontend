@@ -57,11 +57,6 @@ export default function CheckoutPage() {
       `${window.location.origin}/order/success`,
       `${window.location.origin}/order/failure`,
     );
-    if (!res) {
-      setRedirecting(false);
-      setCheckoutError("Unable to start checkout. Please try again.");
-      return;
-    }
     if (!res.success) {
       const invalid = new Set<string>();
       for (const item of res.items) {

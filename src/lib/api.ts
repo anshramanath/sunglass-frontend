@@ -7,17 +7,21 @@ const BASE = process.env.BASE_URL!;
 
 // ── Public catalog ────────────────────────────────────────────────────────────
 
-async function apiFetch<T>(path: string, params: Record<string, string | number>): Promise<ApiResponse<T>> {
-  const url = new URL(`${BASE}${path}`);
-  for (const [key, value] of Object.entries(params)) {
-    url.searchParams.set(key, String(value));
+async function apiFetch(path: string, params: Record<string, string | number>): Promise<Response> {
+  try {
+    const url = new URL(`${BASE}${path}`);
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.set(key, String(value));
+    }
+    return fetch(url.toString(), { next: { revalidate: 60 } });
+  } catch {
+    return new Response(JSON.stringify({ success: false, error: "Network error" }), { status: 503, headers: { "Content-Type": "application/json" } });
   }
-  const res = await fetch(url.toString(), { next: { revalidate: 60 } });
-  return res.json();
 }
 
 export async function getCategories(brandSlug: string): Promise<ApiResponse<CategoryNode[]>> {
-  return apiFetch<CategoryNode[]>("/api/public/categories", { brandSlug });
+  const res = await apiFetch("/api/public/categories", { brandSlug });
+  return res.json();
 }
 
 export async function getProducts(params: {
@@ -34,7 +38,8 @@ export async function getProducts(params: {
     size: params.size ?? 20,
   };
   if (params.filter) query.filter = params.filter;
-  return apiFetch<ProductsResponse>("/api/public/products", query);
+  const res = await apiFetch("/api/public/products", query);
+  return res.json();
 }
 
 export async function getSaleProducts(params: {
@@ -49,60 +54,75 @@ export async function getSaleProducts(params: {
     size: params.size ?? 20,
   };
   if (params.filter) query.filter = params.filter;
-  return apiFetch<ProductsResponse>("/api/public/sale", query);
+  const res = await apiFetch("/api/public/sale", query);
+  return res.json();
 }
 
 export async function getItem(productSlug: string, brandSlug: string): Promise<ApiResponse<ProductDetail>> {
-  return apiFetch<ProductDetail>("/api/public/item", { brandSlug, productSlug });
+  const res = await apiFetch("/api/public/item", { brandSlug, productSlug });
+  return res.json();
 }
 
 export async function searchProducts(brandSlug: string, search: string): Promise<ApiResponse<ProductListItem[]>> {
-  return apiFetch<ProductListItem[]>("/api/public/search", { brandSlug, search });
+  const res = await apiFetch("/api/public/search", { brandSlug, search });
+  return res.json();
 }
 
 export async function validateCart(brandSlug: string, items: { productSlug: string; sku: string; priceCents: number }[]): Promise<ValidateCartItem[]> {
-  const res = await fetch(`${BASE}/api/public/validate-cart`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ brandSlug, items }),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE}/api/public/validate-cart`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ brandSlug, items }),
+    });
+    return res.json();
+  } catch {
+    return [];
+  }
 }
 
 // ── Authenticated user data ───────────────────────────────────────────────────
 
-async function authedFetch<T>(path: string, method: string, body: unknown): Promise<ApiResponse<T> | null> {
+async function authedFetch(path: string, method: string, body: unknown): Promise<Response> {
   const session = await getSession();
-  if (!session) return null;
-  const res = await fetch(`${BASE}${path}`, {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify(body),
-  });
+  if (!session) return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
+  try {
+    return fetch(`${BASE}${path}`, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return new Response(JSON.stringify({ success: false, error: "Network error" }), { status: 503, headers: { "Content-Type": "application/json" } });
+  }
+}
+
+export async function getCart(brandSlug: string): Promise<ApiResponse<CartItem[]>> {
+  const res = await authedFetch("/api/user/cart", "POST", { brandSlug });
   return res.json();
 }
 
-export async function getCart(brandSlug: string): Promise<ApiResponse<CartItem[]> | null> {
-  return authedFetch<CartItem[]>("/api/user/cart", "POST", { brandSlug });
+export async function putCart(brandSlug: string, items: CartItem[]): Promise<ApiResponse<{ synced: number }>> {
+  const res = await authedFetch("/api/user/cart", "PUT", { brandSlug, items });
+  return res.json();
 }
 
-export async function putCart(brandSlug: string, items: CartItem[]): Promise<ApiResponse<{ synced: number }> | null> {
-  return authedFetch<{ synced: number }>("/api/user/cart", "PUT", { brandSlug, items });
+export async function getBookmarks(brandSlug: string): Promise<ApiResponse<BookmarkedItem[]>> {
+  const res = await authedFetch("/api/user/bookmarks", "POST", { brandSlug });
+  return res.json();
 }
 
-export async function getBookmarks(brandSlug: string): Promise<ApiResponse<BookmarkedItem[]> | null> {
-  return authedFetch<BookmarkedItem[]>("/api/user/bookmarks", "POST", { brandSlug });
+export async function putBookmarks(brandSlug: string, items: BookmarkedItem[]): Promise<ApiResponse<{ synced: number }>> {
+  const res = await authedFetch("/api/user/bookmarks", "PUT", { brandSlug, items });
+  return res.json();
 }
 
-export async function putBookmarks(brandSlug: string, items: BookmarkedItem[]): Promise<ApiResponse<{ synced: number }> | null> {
-  return authedFetch<{ synced: number }>("/api/user/bookmarks", "PUT", { brandSlug, items });
-}
-
-export async function getOrders(brandSlug: string): Promise<ApiResponse<Order[]> | null> {
-  return authedFetch<Order[]>("/api/user/orders", "POST", { brandSlug });
+export async function getOrders(brandSlug: string): Promise<ApiResponse<Order[]>> {
+  const res = await authedFetch("/api/user/orders", "POST", { brandSlug });
+  return res.json();
 }
 
 export async function createCheckoutSession(
@@ -110,17 +130,8 @@ export async function createCheckoutSession(
   items: { productSlug: string; sku: string; priceCents: number; quantity: number }[],
   successUrl: string,
   cancelUrl: string,
-): Promise<CheckoutResponse | null> {
-  const session = await getSession();
-  if (!session) return null;
-  const res = await fetch(`${BASE}/api/user/checkout`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify({ brandSlug, items, successUrl, cancelUrl }),
-  });
+): Promise<CheckoutResponse> {
+  const res = await authedFetch("/api/user/checkout", "POST", { brandSlug, items, successUrl, cancelUrl });
   if (res.ok) {
     const json: ApiResponse<{ url: string }> = await res.json();
     return json.success ? { success: true, url: json.data.url } : { success: false, items: [] };

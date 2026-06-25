@@ -47,7 +47,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       try {
         const res = await getCart(BRAND_SLUG);
-        if (res?.success) {
+        if (res.success) {
           setItems(mergeCartItems(localItems, res.data));
           setLoaded(true);
           return;

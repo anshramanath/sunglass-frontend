@@ -40,7 +40,7 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
 
       try {
         const res = await getBookmarks(BRAND_SLUG);
-        if (res?.success) {
+        if (res.success) {
           setItems(mergeBookmarks(localItems, res.data));
           setLoaded(true);
           return;
