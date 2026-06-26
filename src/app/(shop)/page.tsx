@@ -3,140 +3,27 @@ import Image from "next/image";
 import { Suspense } from "react";
 import { getCategories, getProducts } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
-import type { ProductListItem } from "@/lib/types";
 import { collectLeaves } from "@/lib/utils";
 import ProductGrid from "@/components/product/ProductGrid";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
-async function HeroCTAs() {
-  const brand = await getBrand();
-  const res = await getCategories(brand.slug);
-  const tree = res.success ? res.data : [];
-  const leaves = collectLeaves(tree);
-  const first = leaves[0];
-  const shopHref = first ? `/category/${first.path.join("/")}` : "/sale";
-
-  return (
-    <div className="flex items-center gap-6 mt-9">
-      <Link href={shopHref} className="bg-ink text-paper text-[15px] px-7 py-3.5 hover:bg-grey-800 transition-colors duration-200">
-        Shop Sunglasses
-      </Link>
-      <Link href="/sale" className="text-[15px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
-        Shop Sale
-      </Link>
-    </div>
-  );
-}
-
-async function TopCategories() {
-  const brand = await getBrand();
-  const res = await getCategories(brand.slug);
-  const tree = res.success ? res.data : [];
-  const leaves = collectLeaves(tree);
-
-  const tiles = (
-    await Promise.all(
-      leaves.map(async ({ node, path }) => {
-        const r = await getProducts({ brandSlug: brand.slug, categoryId: node.id, size: 1 }).catch(() => null);
-        const product = r?.success ? r.data.products[0] : null;
-        if (!product) return null;
-        const img = product.imageSrc ? { src: product.imageSrc, name: product.imageName ?? "" } : null;
-        return { label: node.name, href: `/category/${path.join("/")}`, img };
-      })
-    )
-  ).filter((t): t is NonNullable<typeof t> => t !== null).slice(0, 5);
-
-  if (tiles.length === 0) return null;
-
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      {tiles.map((tile, i) => (
-        <Link key={tile.href} href={tile.href} className={`group block${i === 4 ? " hidden lg:block" : ""}`}>
-          <div className="bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-3 sm:p-7">
-            {tile.img && (
-              <Image
-                src={tile.img.src}
-                alt={tile.label}
-                width={400}
-                height={500}
-                className="w-full h-full object-contain mix-blend-multiply transition-transform duration-[420ms] ease-standard group-hover:scale-[1.04]"
-              />
-            )}
-          </div>
-          <p className="text-[15px] mt-3">{tile.label}</p>
-        </Link>
-      ))}
-    </div>
-  );
-}
-
 async function BestSellers() {
-  const brand = await getBrand();
-  const res = await getCategories(brand.slug);
-  const tree = res.success ? res.data : [];
-  const leaves = collectLeaves(tree);
-  let products: ProductListItem[] = [];
-  for (const { node } of leaves) {
-    const r = await getProducts({ brandSlug: brand.slug, categoryId: node.id, size: 10 }).catch(() => null);
-    if (r?.success && r.data.totalProducts >= 10) {
-      products = r.data.products;
-      break;
-    }
+  const tree = await getCategories();
+  const leaves = Object.values(collectLeaves(tree));
+  for (const { id } of leaves) {
+    const res = await getProducts({ categoryId: id, size: 10 }).catch(() => null);
+    if (res && res.totalProducts >= 10) return <ProductGrid products={res.products} />;
   }
-  if (products.length === 0) return null;
-  return <ProductGrid products={products} />;
-}
-
-async function EditorialSplit() {
-  const brand = await getBrand();
-  const res = await getCategories(brand.slug);
-  const tree = res.success ? res.data : [];
-  const leaves = collectLeaves(tree);
-  const slots = await Promise.all(
-    [4, 6].map(async (idx) => {
-      const leaf = leaves[idx];
-      if (!leaf) return null;
-      const r = await getProducts({ brandSlug: brand.slug, categoryId: leaf.node.id, size: 1 }).catch(() => null);
-      const product = r?.success ? r.data.products[0] : null;
-      if (!product) return null;
-      const img = product.imageSrc ? { src: product.imageSrc, name: product.imageName ?? "" } : null;
-      return { name: leaf.node.name, href: `/category/${leaf.path.join("/")}`, img };
-    })
-  );
-
-  const [left, right] = slots;
-  const bgs = ["bg-grey-100", "bg-grey-50"];
-
-  return (
-    <section className="grid sm:grid-cols-2">
-      {[left, right].map((slot, i) =>
-        slot ? (
-          <Link key={slot.href} href={slot.href} className={`group relative ${bgs[i]} min-h-[58vh] overflow-hidden flex items-center justify-center p-12${i === 1 ? " hidden sm:flex" : ""}`}>
-            {slot.img && (
-              <Image
-                src={slot.img.src}
-                alt={slot.name}
-                width={600}
-                height={400}
-                className="w-full max-h-[45vh] object-contain mix-blend-multiply transition-transform duration-[600ms] ease-standard group-hover:scale-[1.05]"
-              />
-            )}
-            <div className="absolute bottom-9 left-9">
-              <p className="text-[13px] uppercase tracking-wider text-grey-500">{slot.name}</p>
-              <p className="text-[34px] font-normal mt-2">{brand.editorial[i].body}</p>
-              <span className="inline-block mt-4 text-[15px] underline underline-offset-4 group-hover:opacity-60 transition-opacity duration-200">
-                Shop now
-              </span>
-            </div>
-          </Link>
-        ) : null
-      )}
-    </section>
-  );
+  return null;
 }
 
 export default async function HomePage() {
   const brand = await getBrand();
+  const tree = await getCategories();
+  const leaves = Object.values(collectLeaves(tree));
+  const first = leaves[0];
+  const shopHref = first ? `/category/${first.path}` : "/sale";
+  const bgs = ["bg-grey-100", "bg-grey-50"];
 
   return (
     <>
@@ -158,9 +45,14 @@ export default async function HomePage() {
             <p className="text-[16px] text-grey-600 leading-relaxed mt-6">
               {brand.heroCopy.body}
             </p>
-            <Suspense fallback={null}>
-              <HeroCTAs />
-            </Suspense>
+            <div className="flex items-center gap-6 mt-9">
+              <Link href={shopHref} className="bg-ink text-paper text-[15px] px-7 py-3.5 hover:bg-grey-800 transition-colors duration-200">
+                Shop Sunglasses
+              </Link>
+              <Link href="/sale" className="text-[15px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
+                Shop Sale
+              </Link>
+            </div>
           </div>
         </div>
         <div className="group bg-grey-100 lg:min-h-[80vh] order-1 lg:order-2 flex items-center justify-center p-10 sm:p-16 relative overflow-hidden">
@@ -183,9 +75,25 @@ export default async function HomePage() {
         <div className="mb-9">
           <h2 className="text-[26px] lg:text-[34px] font-normal">Top categories</h2>
         </div>
-        <Suspense fallback={<LoadingSkeleton cols={5} count={5} />}>
-          <TopCategories />
-        </Suspense>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {brand.categoryImages.map((image, i) => {
+            const leaf = leaves[i % leaves.length];
+            return (
+              <Link key={i} href={`/category/${leaf.path}`} className={`group block${i === 4 ? " hidden lg:block" : ""}`}>
+                <div className="bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-3 sm:p-7">
+                  <Image
+                    src={image}
+                    alt={leaf.name}
+                    width={400}
+                    height={500}
+                    className="w-full h-full object-contain mix-blend-multiply transition-transform duration-[420ms] ease-standard group-hover:scale-[1.04]"
+                  />
+                </div>
+                <p className="text-[15px] mt-3">{leaf.name}</p>
+              </Link>
+            );
+          })}
+        </div>
       </section>
 
       {/* ── Best sellers ── */}
@@ -199,9 +107,29 @@ export default async function HomePage() {
       </section>
 
       {/* ── Editorial split ── */}
-      <Suspense fallback={<div className="min-h-[58vh] bg-grey-100" />}>
-        <EditorialSplit />
-      </Suspense>
+      <section className="grid sm:grid-cols-2">
+        {brand.editorial.map((slot, i) => {
+          const leaf = leaves[(4 + i) % leaves.length];
+          return (
+            <Link key={i} href={`/category/${leaf.path}`} className={`group relative ${bgs[i]} min-h-[58vh] overflow-hidden flex items-center justify-center p-12${i === 1 ? " hidden sm:flex" : ""}`}>
+              <Image
+                src={slot.image}
+                alt={slot.body}
+                width={600}
+                height={400}
+                className="w-full max-h-[45vh] object-contain mix-blend-multiply transition-transform duration-[600ms] ease-standard group-hover:scale-[1.05]"
+              />
+              <div className="absolute bottom-9 left-9">
+                <p className="text-[13px] uppercase tracking-wider text-grey-500">{leaf.name}</p>
+                <p className="text-[34px] font-normal mt-2">{slot.body}</p>
+                <span className="inline-block mt-4 text-[15px] underline underline-offset-4 group-hover:opacity-60 transition-opacity duration-200">
+                  Shop now
+                </span>
+              </div>
+            </Link>
+          );
+        })}
+      </section>
     </>
   );
 }

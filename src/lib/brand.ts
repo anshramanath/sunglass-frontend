@@ -13,9 +13,16 @@ const BRANDS = {
       title: "Cut the glare.\nStay sharp.",
       body: "Athletic eyewear tuned for speed, clarity, and all-day comfort under pressure.",
     },
+    categoryImages: [
+      "/prosport-hero.jpg",
+      "/prosport-hero.jpg",
+      "/prosport-hero.jpg",
+      "/prosport-hero.jpg",
+      "/prosport-hero.jpg",
+    ],
     editorial: [
-      { body: "Built for the road ahead" },
-      { body: "See every angle, miss nothing" },
+      { body: "Built for the road ahead", image: "/prosport-hero.jpg" },
+      { body: "See every angle, miss nothing", image: "/prosport-hero.jpg" },
     ],
   },
   "bikershades": {
@@ -30,9 +37,16 @@ const BRANDS = {
       title: "Beat the wind.\nSee the road.",
       body: "Protective rider-first eyewear made for open roads, bright glare, and the miles ahead.",
     },
+    categoryImages: [
+      "/bikershades-hero.jpg",
+      "/bikershades-hero.jpg",
+      "/bikershades-hero.jpg",
+      "/bikershades-hero.jpg",
+      "/bikershades-hero.jpg",
+    ],
     editorial: [
-      { body: "Wind, sun, no limits" },
-      { body: "Miles ahead, nothing missed" },
+      { body: "Wind, sun, no limits", image: "/bikershades-hero.jpg" },
+      { body: "Miles ahead, nothing missed", image: "/bikershades-hero.jpg" },
     ],
   },
   "sunglass-monster": {
@@ -47,9 +61,16 @@ const BRANDS = {
       title: "Bold frames.\nNo apologies.",
       body: "Fashion-forward sunglasses with standout attitude, easy comfort, and all-day wearability.",
     },
+    categoryImages: [
+      "/sunglass-monster-hero.jpg",
+      "/sunglass-monster-hero.jpg",
+      "/sunglass-monster-hero.jpg",
+      "/sunglass-monster-hero.jpg",
+      "/sunglass-monster-hero.jpg",
+    ],
     editorial: [
-      { body: "Colour meets confidence" },
-      { body: "Frame the moment" },
+      { body: "Colour meets confidence", image: "/sunglass-monster-hero.jpg" },
+      { body: "Frame the moment", image: "/sunglass-monster-hero.jpg" },
     ],
   },
 } as const;
