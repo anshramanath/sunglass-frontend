@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${hanken.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans bg-paper text-ink" style={brandStyle}>
-        <Providers>{children}</Providers>
+        <Providers brandSlug={brand.slug}>{children}</Providers>
       </body>
     </html>
   );

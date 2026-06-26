@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
-import { BRAND_SLUG } from "@/lib/brand";
 import { getCart, putCart } from "@/lib/api";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
 import type { CartItem } from "@/lib/types";
@@ -27,53 +26,50 @@ export function itemKey(slug: string, sku: string) {
 function mergeCartItems(local: CartItem[], db: CartItem[]): CartItem[] {
   const map = new Map<string, CartItem>();
   for (const item of local) map.set(itemKey(item.productSlug, item.sku), item);
-  for (const item of db) map.set(itemKey(item.productSlug, item.sku), item); // DB wins on conflict
+  for (const item of db) map.set(itemKey(item.productSlug, item.sku), item);
   return Array.from(map.values());
 }
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ brandSlug, children }: { brandSlug: string; children: ReactNode }) {
   const loggedIn = useLoggedIn();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  // Load localStorage, merge with DB, set items
   useEffect(() => {
     async function sync() {
       let localItems: CartItem[] = [];
       try {
-        const stored = localStorage.getItem(`cart:${BRAND_SLUG}`);
+        const stored = localStorage.getItem(`cart:${brandSlug}`);
         if (stored) localItems = JSON.parse(stored);
       } catch {}
 
-      try {
-        const res = await getCart(BRAND_SLUG);
-        if (res.success) {
-          setItems(mergeCartItems(localItems, res.data));
+      if (loggedIn) {
+        try {
+          const dbItems = await getCart();
+          setItems(mergeCartItems(localItems, dbItems));
           setLoaded(true);
           return;
-        }
-      } catch {}
+        } catch {}
+      }
 
       setItems(localItems);
       setLoaded(true);
     }
     sync();
-  }, [loggedIn]);
+  }, [loggedIn, brandSlug]);
 
-  // Persist to localStorage
   useEffect(() => {
     if (!loaded) return;
-    localStorage.setItem(`cart:${BRAND_SLUG}`, JSON.stringify(items));
-  }, [items, loaded]);
+    localStorage.setItem(`cart:${brandSlug}`, JSON.stringify(items));
+  }, [items, loaded, brandSlug]);
 
-  // Debounced DB sync
   useEffect(() => {
-    if (!loaded) return;
+    if (!loaded || !loggedIn) return;
     const timeout = setTimeout(() => {
-      putCart(BRAND_SLUG, items).catch(() => {});
+      putCart(items).catch(() => {});
     }, 800);
     return () => clearTimeout(timeout);
-  }, [items, loaded]);
+  }, [items, loaded, loggedIn]);
 
   const add = useCallback((item: Omit<CartItem, "quantity">) => {
     setItems((prev) => {

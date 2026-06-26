@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
-import { BRAND_SLUG } from "@/lib/brand";
 import { getBookmarks, putBookmarks } from "@/lib/api";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
 import type { BookmarkedItem } from "@/lib/types";
@@ -20,53 +19,50 @@ const BookmarkContext = createContext<BookmarkContextValue | null>(null);
 function mergeBookmarks(local: BookmarkedItem[], db: BookmarkedItem[]): BookmarkedItem[] {
   const map = new Map<string, BookmarkedItem>();
   for (const item of local) map.set(item.productSlug, item);
-  for (const item of db) map.set(item.productSlug, item); // DB wins on conflict
+  for (const item of db) map.set(item.productSlug, item);
   return Array.from(map.values());
 }
 
-export function BookmarkProvider({ children }: { children: ReactNode }) {
+export function BookmarkProvider({ brandSlug, children }: { brandSlug: string; children: ReactNode }) {
   const loggedIn = useLoggedIn();
   const [items, setItems] = useState<BookmarkedItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  // Load localStorage, merge with DB, set items
   useEffect(() => {
     async function sync() {
       let localItems: BookmarkedItem[] = [];
       try {
-        const stored = localStorage.getItem(`bookmarks:${BRAND_SLUG}`);
+        const stored = localStorage.getItem(`bookmarks:${brandSlug}`);
         if (stored) localItems = JSON.parse(stored);
       } catch {}
 
-      try {
-        const res = await getBookmarks(BRAND_SLUG);
-        if (res.success) {
-          setItems(mergeBookmarks(localItems, res.data));
+      if (loggedIn) {
+        try {
+          const dbItems = await getBookmarks();
+          setItems(mergeBookmarks(localItems, dbItems));
           setLoaded(true);
           return;
-        }
-      } catch {}
+        } catch {}
+      }
 
       setItems(localItems);
       setLoaded(true);
     }
     sync();
-  }, [loggedIn]);
+  }, [loggedIn, brandSlug]);
 
-  // Persist to localStorage
   useEffect(() => {
     if (!loaded) return;
-    localStorage.setItem(`bookmarks:${BRAND_SLUG}`, JSON.stringify(items));
-  }, [items, loaded]);
+    localStorage.setItem(`bookmarks:${brandSlug}`, JSON.stringify(items));
+  }, [items, loaded, brandSlug]);
 
-  // Debounced DB sync
   useEffect(() => {
-    if (!loaded) return;
+    if (!loaded || !loggedIn) return;
     const timeout = setTimeout(() => {
-      putBookmarks(BRAND_SLUG, items).catch(() => {});
+      putBookmarks(items).catch(() => {});
     }, 800);
     return () => clearTimeout(timeout);
-  }, [items, loaded]);
+  }, [items, loaded, loggedIn]);
 
   const isBookmarked = useCallback((slug: string) =>
     items.some((i) => i.productSlug === slug), [items]);
