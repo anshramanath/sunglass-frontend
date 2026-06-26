@@ -3,8 +3,8 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getCategories, getProducts } from "@/lib/api";
-import { BRAND, BRAND_SLUG } from "@/lib/brand";
-import { findPathNodes } from "@/lib/utils";
+import { getBrand } from "@/lib/brand";
+import { collectLeaves } from "@/lib/utils";
 import LoadMoreProducts from "@/components/product/LoadMoreProducts";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
@@ -22,12 +22,11 @@ type Props = {
 };
 
 async function ProductSection({ categoryId, filter, categoryPath }: { categoryId: string; filter?: string; categoryPath: string }) {
-  const res = await getProducts({ brandSlug: BRAND_SLUG, categoryId, filter, size: 20 });
-  if (!res.success) return null;
+  const res = await getProducts({ categoryId, filter, size: 20 });
   return (
     <LoadMoreProducts
-      initialProducts={res.data.products}
-      initialHasNextPage={res.data.hasNextPage}
+      initialProducts={res.products}
+      initialHasNextPage={res.hasNextPage}
       categoryId={categoryId}
       filter={filter}
       categoryPath={categoryPath}
@@ -37,35 +36,30 @@ async function ProductSection({ categoryId, filter, categoryPath }: { categoryId
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { path } = await params;
-  const res = await getCategories(BRAND_SLUG);
-  const tree = res.success ? res.data : [];
-  const nodes = findPathNodes(tree, path);
-  const leaf = nodes?.[nodes.length - 1];
-  return { title: leaf ? `${leaf.name} | ${BRAND.name}` : BRAND.name };
+  const [tree, brand] = await Promise.all([getCategories(), getBrand()]);
+  const leaf = collectLeaves(tree)[path.join("/")];
+  return { title: leaf ? `${leaf.name} | ${brand.name}` : brand.name };
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { path } = await params;
   const { filter } = await searchParams;
-  const res = await getCategories(BRAND_SLUG);
-  const tree = res.success ? res.data : [];
-  const nodes = findPathNodes(tree, path);
-  if (!nodes) notFound();
-
-  const leaf = nodes[nodes.length - 1];
+  const tree = await getCategories();
   const categoryPath = path.join("/");
+  const leaf = collectLeaves(tree)[categoryPath];
+  if (!leaf) notFound();
 
   return (
     <div className="pb-20 lg:pb-28">
       <section className="mx-auto max-w-[1680px] px-5 lg:px-10 pt-8 lg:pt-10">
         <nav className="flex items-center gap-2 text-[13px] text-grey-500">
           <Link href="/" className="hover:text-ink transition-colors duration-200">Home</Link>
-          {nodes.map((node, i) => {
-            const isLast = i === nodes.length - 1;
+          {leaf.breadcrumbs.map((name, i) => {
+            const isLast = i === leaf.breadcrumbs.length - 1;
             return (
-              <span key={node.id} className="flex items-center gap-2">
+              <span key={i} className="flex items-center gap-2">
                 <span className="text-grey-300">/</span>
-                <span className={isLast ? "text-ink" : ""}>{node.name}</span>
+                <span className={isLast ? "text-ink" : ""}>{name}</span>
               </span>
             );
           })}

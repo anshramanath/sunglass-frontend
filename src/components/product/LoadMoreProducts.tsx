@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { getProducts } from "@/lib/api";
-import { BRAND_SLUG } from "@/lib/brand";
 import type { ProductListItem } from "@/lib/types";
 import ProductGrid from "./ProductGrid";
 
@@ -23,11 +22,10 @@ export default function LoadMoreProducts({ initialProducts, initialHasNextPage, 
   function loadMore() {
     startTransition(async () => {
       const next = page + 1;
-      const res = await getProducts({ brandSlug: BRAND_SLUG, categoryId, filter, page: next, size: 20 });
-      if (!res.success) return;
-      setProducts((prev) => [...prev, ...res.data.products]);
+      const res = await getProducts({ categoryId, filter, page: next, size: 20 });
+      setProducts((prev) => [...prev, ...res.products]);
       setPage(next);
-      setHasNextPage(res.data.hasNextPage);
+      setHasNextPage(res.hasNextPage);
     });
   }
 

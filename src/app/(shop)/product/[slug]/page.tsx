@@ -1,10 +1,9 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getItem, getCategories, getProducts } from "@/lib/api";
-import { BRAND, BRAND_SLUG } from "@/lib/brand";
-import { findPathNodes } from "@/lib/utils";
+import { getBrand } from "@/lib/brand";
+import { collectLeaves } from "@/lib/utils";
 import ProductDetail from "@/components/product/ProductDetail";
 import ProductGrid from "@/components/product/ProductGrid";
 
@@ -13,65 +12,63 @@ type Props = {
   searchParams: Promise<{ path?: string; [key: string]: string | undefined }>;
 };
 
-function humanize(slug: string) {
-  return slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+async function ProductName({ slug }: { slug: string }) {
+  const product = await getItem(slug);
+  return <span className="text-ink">{product.name}</span>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const res = await getItem(slug, BRAND_SLUG).catch(() => null);
-  const product = res?.success ? res.data : null;
-  return { title: product ? `${product.name} | ${BRAND.name}` : BRAND.name };
+  const [product, brand] = await Promise.all([getItem(slug).catch(() => null), getBrand()]);
+  return { title: product ? `${product.name} | ${brand.name}` : brand.name };
 }
 
 async function Detail({ slug, attrParams }: { slug: string; attrParams: Record<string, string> }) {
-  const res = await getItem(slug, BRAND_SLUG).catch(() => null);
-  if (!res?.success) notFound();
-  return <ProductDetail product={res.data} slug={slug} initialSelections={attrParams} />;
+  const product = await getItem(slug);
+  return <ProductDetail product={product} slug={slug} initialSelections={attrParams} />;
 }
 
-async function Related({ slug, path }: { slug: string; path: string | undefined }) {
-  if (!path) return null;
-  const categoriesRes = await getCategories(BRAND_SLUG).catch(() => null);
-  const categories = categoriesRes?.success ? categoriesRes.data : null;
-  if (!categories) return null;
-  const categoryNodes = findPathNodes(categories, path.split("/"));
-  const leafCategoryId = categoryNodes?.[categoryNodes.length - 1]?.id;
-  if (!leafCategoryId) return null;
-  const relatedRes = await getProducts({ brandSlug: BRAND_SLUG, categoryId: leafCategoryId, size: 6 }).catch(() => null);
-  const relatedProducts = relatedRes?.success
-    ? relatedRes.data.products.filter((p) => p.slug !== slug).slice(0, 5)
-    : [];
-  if (relatedProducts.length === 0) return null;
+async function Related({ slug, categoryId, categoryPath }: { slug: string; categoryId: string; categoryPath: string }) {
+  const res = await getProducts({ categoryId, size: 6 });
+  const related = res.products.filter((p) => p.slug !== slug).slice(0, 5);
+  if (related.length === 0) return null;
   return (
     <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-16 lg:mt-24">
       <h2 className="text-[22px] font-normal mb-8">You may also like</h2>
-      <ProductGrid products={relatedProducts} categoryPath={path} />
+      <ProductGrid products={related} categoryPath={categoryPath} />
     </section>
   );
 }
 
 export default async function ProductPage({ params, searchParams }: Props) {
   const [{ slug }, { path, ...attrParams }] = await Promise.all([params, searchParams]);
-  const crumbs = path ? path.split("/") : [];
+
+  const tree = await getCategories();
+  const leaf = path ? collectLeaves(tree)[path] : null;
+  const categoryPath = path ?? "";
 
   return (
     <div className="pb-20 lg:pb-28">
       <section className="mx-auto max-w-[1680px] px-5 lg:px-10 pt-8 lg:pt-10">
         <nav className="flex items-center gap-2 text-[13px] text-grey-500">
           <Link href="/" className="hover:text-ink transition-colors duration-200">Home</Link>
-          {crumbs.map((segment, i) => {
-            const href = "/category/" + crumbs.slice(0, i + 1).join("/");
+          {leaf?.breadcrumbs.map((name, i) => {
+            const isLast = i === leaf.breadcrumbs.length - 1;
             return (
-              <span key={segment} className="flex items-center gap-2">
+              <span key={i} className="flex items-center gap-2">
                 <span className="text-grey-300">/</span>
-                <Link href={href} className="hover:text-ink transition-colors duration-200">{humanize(segment)}</Link>
+                {isLast
+                  ? <Link href={`/category/${categoryPath}`} className="hover:text-ink transition-colors duration-200">{name}</Link>
+                  : <span>{name}</span>
+                }
               </span>
             );
           })}
           <span className="flex items-center gap-2">
             <span className="text-grey-300">/</span>
-            <span className="text-ink">{humanize(slug)}</span>
+            <Suspense fallback={<span className="h-3 w-24 bg-grey-150 rounded-sm animate-pulse inline-block" />}>
+              <ProductName slug={slug} />
+            </Suspense>
           </span>
         </nav>
       </section>
@@ -80,9 +77,11 @@ export default async function ProductPage({ params, searchParams }: Props) {
         <Detail slug={slug} attrParams={attrParams as Record<string, string>} />
       </Suspense>
 
-      <Suspense fallback={<RelatedSkeleton />}>
-        <Related slug={slug} path={path} />
-      </Suspense>
+      {leaf && (
+        <Suspense fallback={<RelatedSkeleton />}>
+          <Related slug={slug} categoryId={leaf.id} categoryPath={categoryPath} />
+        </Suspense>
+      )}
     </div>
   );
 }

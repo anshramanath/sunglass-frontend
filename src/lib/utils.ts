@@ -6,30 +6,23 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function findCategoryId(tree: CategoryNode[], segments: string[]): string | null {
-  let current = tree;
-  let node: CategoryNode | null = null;
-  for (const slug of segments) {
-    node = current.find((n) => n.slug === slug) ?? null;
-    if (!node) return null;
-    current = node.children ?? [];
-  }
-  return node?.id ?? null;
-}
+type LeafEntry = { id: string; name: string; path: string; breadcrumbs: string[] };
 
-function collectLeavesHelper(nodes: CategoryNode[], path: string[], result: Record<string, { id: string; name: string; path: string }>): void {
+function collectLeavesHelper(nodes: CategoryNode[], slugPath: string[], namePath: string[], result: Record<string, LeafEntry>): void {
   for (const node of nodes) {
-    const currentPath = [...path, node.slug];
+    const currentSlugPath = [...slugPath, node.slug];
+    const currentNamePath = [...namePath, node.name];
     if (!node.children?.length) {
-      result[node.slug] = { id: node.id, name: node.name, path: currentPath.join("/") };
+      const path = currentSlugPath.join("/");
+      result[path] = { id: node.id, name: node.name, path, breadcrumbs: currentNamePath };
     } else {
-      collectLeavesHelper(node.children, currentPath, result);
+      collectLeavesHelper(node.children, currentSlugPath, currentNamePath, result);
     }
   }
 }
 
-export function collectLeaves(tree: CategoryNode[]): Record<string, { id: string; name: string; path: string }> {
-  const result: Record<string, { id: string; name: string; path: string }> = {};
-  collectLeavesHelper(tree, [], result);
+export function collectLeaves(tree: CategoryNode[]): Record<string, LeafEntry> {
+  const result: Record<string, LeafEntry> = {};
+  collectLeavesHelper(tree, [], [], result);
   return result;
 }
