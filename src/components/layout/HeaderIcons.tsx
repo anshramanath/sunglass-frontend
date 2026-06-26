@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useCart } from "@/components/providers/CartProvider";
 import { useBookmarks } from "@/components/providers/BookmarkProvider";
 import type { ProductListItem } from "@/lib/types";
-import { BRAND, BRAND_SLUG } from "@/lib/brand";
 import { searchProducts } from "@/lib/api";
 import {
   Sheet,
@@ -143,9 +142,8 @@ function SearchPanelContent({ featured, onClose }: { featured: ProductListItem[]
     setLoading(true);
     setNoResults(false);
     const timeout = setTimeout(() => {
-      searchProducts(BRAND_SLUG, query)
-        .then((res) => {
-          const items = res.success ? res.data : [];
+      searchProducts(query)
+        .then((items) => {
           setResults(items);
           setNoResults(items.length === 0);
         })
@@ -205,7 +203,7 @@ function SearchPanelContent({ featured, onClose }: { featured: ProductListItem[]
   );
 }
 
-export default function HeaderIcons({ isSignedIn, searchProducts }: { isSignedIn: boolean; searchProducts: ProductListItem[] }) {
+export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: boolean; featured: ProductListItem[] }) {
   const [openPanel, setOpenPanel] = useState<Panel | null>(null);
   const { count } = useCart();
   const { items: bookmarks } = useBookmarks();
@@ -224,7 +222,7 @@ export default function HeaderIcons({ isSignedIn, searchProducts }: { isSignedIn
             <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
           </svg>
           {bookmarks.length > 0 && (
-            <span key={bookmarks.length} className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-paper text-[10px] grid place-items-center animate-badge-pop" style={{ backgroundColor: BRAND.accent }}>{bookmarks.length}</span>
+            <span key={bookmarks.length} className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-paper text-[10px] grid place-items-center animate-badge-pop" style={{ backgroundColor: "var(--color-brand)" }}>{bookmarks.length}</span>
           )}
         </button>
 
@@ -234,7 +232,7 @@ export default function HeaderIcons({ isSignedIn, searchProducts }: { isSignedIn
             <path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
           {count > 0 && (
-            <span key={count} className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-paper text-[10px] grid place-items-center animate-badge-pop" style={{ backgroundColor: BRAND.accent }}>{count}</span>
+            <span key={count} className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-paper text-[10px] grid place-items-center animate-badge-pop" style={{ backgroundColor: "var(--color-brand)" }}>{count}</span>
           )}
         </button>
 
@@ -256,7 +254,7 @@ export default function HeaderIcons({ isSignedIn, searchProducts }: { isSignedIn
       </div>
 
       <Sheet open={openPanel === "search"} onOpenChange={(o) => !o && setOpenPanel(null)}>
-        <SheetContent aria-describedby={undefined}><SearchPanelContent featured={searchProducts} onClose={() => setOpenPanel(null)} /></SheetContent>
+        <SheetContent aria-describedby={undefined}><SearchPanelContent featured={featured} onClose={() => setOpenPanel(null)} /></SheetContent>
       </Sheet>
       <Sheet open={openPanel === "saved"} onOpenChange={(o) => !o && setOpenPanel(null)}>
         <SheetContent aria-describedby={undefined}><SavedPanelContent onClose={() => setOpenPanel(null)} /></SheetContent>

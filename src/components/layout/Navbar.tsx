@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getCategories, getProducts } from "@/lib/api";
-import { BRAND, BRAND_SLUG } from "@/lib/brand";
+import { getBrand } from "@/lib/brand";
 import { CategoryNode, ProductListItem } from "@/lib/types";
 import { collectLeaves } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/auth";
 import HeaderIcons from "./HeaderIcons";
 
 function CategoryLinks({ nodes, ancestors }: { nodes: CategoryNode[]; ancestors: CategoryNode[] }) {
@@ -34,18 +34,14 @@ function CategoryLinks({ nodes, ancestors }: { nodes: CategoryNode[]; ancestors:
 }
 
 export default async function Navbar() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const [user, brand, tree] = await Promise.all([getUser(), getBrand(), getCategories()]);
   const isSignedIn = !!user;
-  const categoriesRes = await getCategories(BRAND_SLUG).catch(() => null);
-  const categories = categoriesRes?.success ? categoriesRes.data : [];
 
-  let searchProducts: ProductListItem[] = [];
-  const leaves = collectLeaves(categories);
-  for (const { node } of leaves) {
-    const res = await getProducts({ brandSlug: BRAND_SLUG, categoryId: node.id, size: 6 }).catch(() => null);
-    if (res?.success && res.data.totalProducts >= 6) {
-      searchProducts = res.data.products.slice(0, 6);
+  let featured: ProductListItem[] = [];
+  for (const leaf of Object.values(collectLeaves(tree))) {
+    const res = await getProducts({ categoryId: leaf.id, size: 6 }).catch(() => null);
+    if (res && res.totalProducts >= 6) {
+      featured = res.products.slice(0, 6);
       break;
     }
   }
@@ -54,12 +50,12 @@ export default async function Navbar() {
     <header className="sticky top-0 z-40 bg-paper border-b border-grey-200">
       <div className="mx-auto max-w-[1680px] px-5 lg:px-10">
         <div className="h-16 flex items-center gap-6 xl:gap-9">
-          <Link href="/" className="shrink-0" aria-label={`${BRAND.name} home`}>
-            <Image src={BRAND.logo} alt={BRAND.name} width={120} height={28} className="h-7" style={{ width: "auto" }} />
+          <Link href="/" className="shrink-0" aria-label={`${brand.name} home`}>
+            <Image src={brand.logo} alt={brand.name} width={120} height={28} className="h-7" style={{ width: "auto" }} />
           </Link>
 
           <ul className="hidden lg:flex items-center gap-6 xl:gap-7">
-            {categories.map((cat) => (
+            {tree.map((cat) => (
               <li key={cat.id} className="group relative h-16 flex items-center">
                 {cat.children && cat.children.length > 0 ? (
                   <>
@@ -82,13 +78,13 @@ export default async function Navbar() {
               </li>
             ))}
             <li className="h-16 flex items-center">
-              <Link href="/sale" className="block py-0.5 whitespace-nowrap text-[13px] font-medium text-white px-2 rounded-sm" style={{ backgroundColor: BRAND.accent }}>
+              <Link href="/sale" className="block py-0.5 whitespace-nowrap text-[13px] font-medium text-white px-2 rounded-sm" style={{ backgroundColor: "var(--color-brand)" }}>
                 Sale
               </Link>
             </li>
           </ul>
 
-          <HeaderIcons isSignedIn={isSignedIn} searchProducts={searchProducts} />
+          <HeaderIcons isSignedIn={isSignedIn} featured={featured} />
         </div>
       </div>
     </header>
