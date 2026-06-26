@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getItem, getCategories, getProducts } from "@/lib/api";
 import { BRAND, BRAND_SLUG } from "@/lib/brand";
-import { findPathNodes } from "@/lib/categoryUtils";
+import { findPathNodes } from "@/lib/utils";
 import ProductDetail from "@/components/product/ProductDetail";
 import ProductGrid from "@/components/product/ProductGrid";
 

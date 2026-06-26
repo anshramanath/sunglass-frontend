@@ -3,8 +3,26 @@
 All endpoints return:
 ```json
 { "success": true,  "data": { ... } }
-{ "success": false, "error": "Message" }
+{ "success": false, "message": "Error description" }
+{ "success": false, "message": "Error description", "data": { ... } }
 ```
+
+The third shape is only used by `/validate-cart` and `/checkout` on 404/409/422 — `data` contains the per-item validation array.
+
+**Status codes**
+| Status | Meaning |
+|--------|---------|
+| `2xx` | Success |
+| `400` | Bad request — missing or invalid params |
+| `401` | Unauthorized — missing or invalid token |
+| `404` | Resource not found |
+| `409` | Conflict — e.g. price changed |
+| `422` | Unprocessable — multiple validation failures |
+| `500` | Server error — DB or internal failure |
+
+Network failures never reach the server. Handle them client-side.
+
+An incorrect `brandSlug` is not an error — list endpoints return an empty array with `200`. Only `/api/public/item` returns `404` for a missing slug because it uses `.single()` which treats zero rows as an error.
 
 Authenticated endpoints require `Authorization: Bearer <supabase_access_token>`.
 
@@ -16,7 +34,9 @@ Authenticated endpoints require `Authorization: Bearer <supabase_access_token>`.
 
 Returns all brands.
 
-**Response**
+**Errors:** `500` DB failure
+
+**Response `200`**
 ```json
 [
   { "name": "BikerShades", "slug": "bikershades" }
@@ -34,7 +54,9 @@ Returns the full category tree for a brand, sorted by `sortOrder` at every level
 |-------|----------|-------------|
 | brandSlug | yes | Brand slug |
 
-**Response**
+**Errors:** `400` missing brandSlug · `500` DB failure
+
+**Response `200`**
 ```json
 [
   {
@@ -72,7 +94,11 @@ Paginated products for a category. Default page size is 20. Returns one product 
 | `25-plus` | `min_price_cents ≥ 2500` |
 | `sale` | `sale = true` |
 
-**Response**
+Unknown filter slugs are silently ignored — all products are returned.
+
+**Errors:** `400` missing brandSlug or categoryId · `500` DB failure
+
+**Response `200`**
 ```json
 {
   "products": [
@@ -121,7 +147,9 @@ Paginated sale products (`sale = true`). Same response shape as `/products` exce
 | page | no | 1 | Page number |
 | size | no | 20 | Results per page (max 100) |
 
-**Response** — same shape as `/products` without the `sale` field on each product.
+**Errors:** `400` missing brandSlug · `500` DB failure
+
+**Response `200`** — same shape as `/products` without the `sale` field on each product.
 
 ---
 
@@ -135,7 +163,9 @@ Full product detail including all variations, all images, and description images
 | brandSlug | yes | Brand slug |
 | productSlug | yes | Product slug |
 
-**Response**
+**Errors:** `400` missing params · `404` product not found · `500` DB failure
+
+**Response `200`**
 ```json
 {
   "id": "uuid",
@@ -197,7 +227,9 @@ Case-insensitive product name search. Returns up to 6 results.
 | brandSlug | yes | Brand slug |
 | search | yes | Search query |
 
-**Response**
+**Errors:** `400` missing params · `500` DB failure
+
+**Response `200`**
 ```json
 [
   {
@@ -221,6 +253,8 @@ Case-insensitive product name search. Returns up to 6 results.
 
 Checks whether each cart item exists and whether the price matches the current DB price. Call on cart page entry and before checkout.
 
+**Errors:** `400` missing params · `500` DB failure
+
 **Status codes**
 | Status | Meaning |
 |--------|---------|
@@ -239,12 +273,19 @@ Checks whether each cart item exists and whether the price matches the current D
 }
 ```
 
-**Response**
+**Response `200`**
 ```json
 [
+  { "productSlug": "sport-sunglasses", "sku": "SKU-BLK", "exists": true, "priceCents": 1650, "priceChanged": false }
+]
+```
+
+**Response `404`/`409`/`422`**
+```json
+{ "success": false, "message": "Cart validation failed", "data": [
   { "productSlug": "sport-sunglasses", "sku": "SKU-BLK", "exists": true,  "priceCents": 1650, "priceChanged": false },
   { "productSlug": "old-product",      "sku": "SKU-OLD", "exists": false, "priceCents": null, "priceChanged": false }
-]
+]}
 ```
 
 ---
@@ -257,12 +298,14 @@ All require `Authorization: Bearer <supabase_access_token>`. Queries are scoped 
 
 Returns the user's cart items for a brand.
 
+**Errors:** `400` missing brandSlug · `401` invalid token · `500` DB failure
+
 **Body**
 ```json
 { "brandSlug": "sunglass-monster" }
 ```
 
-**Response**
+**Response `200`**
 ```json
 [
   {
@@ -284,6 +327,8 @@ Returns the user's cart items for a brand.
 
 Replaces the user's cart for a brand (delete + insert). Pass an empty array to clear.
 
+**Errors:** `400` missing params · `401` invalid token · `500` DB failure
+
 **Body**
 ```json
 {
@@ -303,7 +348,7 @@ Replaces the user's cart for a brand (delete + insert). Pass an empty array to c
 }
 ```
 
-**Response**
+**Response `200`**
 ```json
 { "synced": 1 }
 ```
@@ -314,12 +359,14 @@ Replaces the user's cart for a brand (delete + insert). Pass an empty array to c
 
 Returns the user's bookmarks for a brand.
 
+**Errors:** `400` missing brandSlug · `401` invalid token · `500` DB failure
+
 **Body**
 ```json
 { "brandSlug": "sunglass-monster" }
 ```
 
-**Response**
+**Response `200`**
 ```json
 [
   {
@@ -337,6 +384,8 @@ Returns the user's bookmarks for a brand.
 
 Replaces the user's bookmarks for a brand (delete + insert). Pass an empty array to clear.
 
+**Errors:** `400` missing params · `401` invalid token · `500` DB failure
+
 **Body**
 ```json
 {
@@ -352,7 +401,7 @@ Replaces the user's bookmarks for a brand (delete + insert). Pass an empty array
 }
 ```
 
-**Response**
+**Response `200`**
 ```json
 { "synced": 1 }
 ```
@@ -363,12 +412,14 @@ Replaces the user's bookmarks for a brand (delete + insert). Pass an empty array
 
 Returns the user's order history for a brand, newest first.
 
+**Errors:** `400` missing brandSlug · `401` invalid token · `500` DB failure
+
 **Body**
 ```json
 { "brandSlug": "sunglass-monster" }
 ```
 
-**Response**
+**Response `200`**
 ```json
 [
   {
@@ -410,6 +461,8 @@ Creates a Stripe checkout session. Returns a redirect URL. Stripe collects the s
 
 Prices, name, images, and attributes are pulled from the DB — the frontend only needs to send `productSlug`, `sku`, `priceCents`, and `quantity`. Idempotent — same cart state and order count returns the same session URL; any DB change (price, name, image) produces a new session.
 
+**Errors:** `400` missing params · `401` invalid token · `500` Stripe session creation failed
+
 **Status codes**
 | Status | Meaning |
 |--------|---------|
@@ -440,11 +493,11 @@ Prices, name, images, and attributes are pulled from the DB — the frontend onl
 { "url": "https://checkout.stripe.com/..." }
 ```
 
-**Response `404`/`409`/`422`** — same shape as `/validate-cart`.
+**Response `404`/`409`/`422`** — same shape as `/validate-cart` error response.
 ```json
-[
+{ "success": false, "message": "Cart validation failed", "data": [
   { "productSlug": "sport-sunglasses", "sku": "SKU-BLK", "exists": true, "priceCents": 1800, "priceChanged": true }
-]
+]}
 ```
 
 ---

@@ -1,8 +1,9 @@
-export const BRAND_SLUG = process.env.NEXT_PUBLIC_BRAND_SLUG!;
+"use server";
 
-export const BRANDS = {
+const BRANDS = {
   "prosport-sunglasses": {
     name: "proSPORT Sunglasses",
+    slug: "prosport-sunglasses",
     description: "Athletic sunglasses built for speed, clarity, and all-day performance.",
     logo: "/prosport-logo.jpg",
     hero: "/prosport-hero.jpg",
@@ -19,6 +20,7 @@ export const BRANDS = {
   },
   "bikershades": {
     name: "BikerShades",
+    slug: "bikershades",
     description: "Rider-first eyewear made for wind, glare, and the road ahead.",
     logo: "/bikershades-logo.jpg",
     hero: "/bikershades-hero.jpg",
@@ -35,6 +37,7 @@ export const BRANDS = {
   },
   "sunglass-monster": {
     name: "Sunglass Monster",
+    slug: "sunglass-monster",
     description: "Bold, fashion-forward sunglasses with standout style and easy all-day wear.",
     logo: "/sunglass-monster-logo.jpg",
     hero: "/sunglass-monster-hero.jpg",
@@ -51,8 +54,6 @@ export const BRANDS = {
   },
 } as const;
 
-export function getBrand(brandSlug: string) {
-  return BRANDS[brandSlug as keyof typeof BRANDS] ?? BRANDS["prosport-sunglasses"];
+export async function getBrand() {
+  return BRANDS[process.env.BRAND_SLUG as keyof typeof BRANDS];
 }
-
-export const BRAND = getBrand(BRAND_SLUG);

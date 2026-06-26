@@ -1,5 +1,3 @@
-export type Brand = { id: string; name: string; slug: string };
-
 export type CategoryNode = {
   id: string;
   name: string;
@@ -9,6 +7,7 @@ export type CategoryNode = {
 };
 
 export type ListVariation = {
+  id: string;
   option: string;
   slug: string;
   value?: string;
@@ -117,8 +116,12 @@ export type Order = {
   items: OrderItem[];
 };
 
-export type ApiResponse<T> = { success: true; data: T } | { success: false; error: string };
+export type ApiResponse<T, E = never> = { success: true; data: T } | { success: false; message: string; data?: E };
 
 export type ValidateCartItem = { productSlug: string; sku: string; exists: boolean; priceCents: number | null; priceChanged: boolean };
 
-export type CheckoutResponse = { success: true; url: string } | { success: false; items: ValidateCartItem[] };
+export type CartValidationResult = { data: ValidateCartItem[]; status: number };
+
+export type CheckoutUrl = { url: string };
+
+export type SyncedResponse = { synced: number };

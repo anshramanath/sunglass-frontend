@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import { Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
-import { BRAND } from "@/lib/brand";
+import { getBrand } from "@/lib/brand";
 import Providers from "@/components/providers/Providers";
 
 const hanken = Hanken_Grotesk({
@@ -11,15 +11,15 @@ const hanken = Hanken_Grotesk({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: BRAND.name,
-  description: BRAND.description,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getBrand();
+  return { title: brand.name, description: brand.description };
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const brand = await getBrand();
   const brandStyle = {
-    "--color-brand": BRAND.accent,
-    "--color-sale": BRAND.accent,
+    "--color-brand": brand.accent,
   } as CSSProperties;
 
   return (

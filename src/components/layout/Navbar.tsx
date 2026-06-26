@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getCategories, getProducts } from "@/lib/api";
 import { BRAND, BRAND_SLUG } from "@/lib/brand";
 import { CategoryNode, ProductListItem } from "@/lib/types";
-import { collectLeaves } from "@/lib/categoryUtils";
+import { collectLeaves } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
 import HeaderIcons from "./HeaderIcons";
 

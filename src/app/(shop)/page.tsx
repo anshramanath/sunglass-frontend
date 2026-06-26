@@ -2,14 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
 import { getCategories, getProducts } from "@/lib/api";
-import { BRAND, BRAND_SLUG } from "@/lib/brand";
+import { getBrand } from "@/lib/brand";
 import type { ProductListItem } from "@/lib/types";
-import { collectLeaves } from "@/lib/categoryUtils";
+import { collectLeaves } from "@/lib/utils";
 import ProductGrid from "@/components/product/ProductGrid";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
 async function HeroCTAs() {
-  const res = await getCategories(BRAND_SLUG);
+  const brand = await getBrand();
+  const res = await getCategories(brand.slug);
   const tree = res.success ? res.data : [];
   const leaves = collectLeaves(tree);
   const first = leaves[0];
@@ -28,14 +29,15 @@ async function HeroCTAs() {
 }
 
 async function TopCategories() {
-  const res = await getCategories(BRAND_SLUG);
+  const brand = await getBrand();
+  const res = await getCategories(brand.slug);
   const tree = res.success ? res.data : [];
   const leaves = collectLeaves(tree);
 
   const tiles = (
     await Promise.all(
       leaves.map(async ({ node, path }) => {
-        const r = await getProducts({ brandSlug: BRAND_SLUG, categoryId: node.id, size: 1 }).catch(() => null);
+        const r = await getProducts({ brandSlug: brand.slug, categoryId: node.id, size: 1 }).catch(() => null);
         const product = r?.success ? r.data.products[0] : null;
         if (!product) return null;
         const img = product.imageSrc ? { src: product.imageSrc, name: product.imageName ?? "" } : null;
@@ -69,12 +71,13 @@ async function TopCategories() {
 }
 
 async function BestSellers() {
-  const res = await getCategories(BRAND_SLUG);
+  const brand = await getBrand();
+  const res = await getCategories(brand.slug);
   const tree = res.success ? res.data : [];
   const leaves = collectLeaves(tree);
   let products: ProductListItem[] = [];
   for (const { node } of leaves) {
-    const r = await getProducts({ brandSlug: BRAND_SLUG, categoryId: node.id, size: 10 }).catch(() => null);
+    const r = await getProducts({ brandSlug: brand.slug, categoryId: node.id, size: 10 }).catch(() => null);
     if (r?.success && r.data.totalProducts >= 10) {
       products = r.data.products;
       break;
@@ -85,14 +88,15 @@ async function BestSellers() {
 }
 
 async function EditorialSplit() {
-  const res = await getCategories(BRAND_SLUG);
+  const brand = await getBrand();
+  const res = await getCategories(brand.slug);
   const tree = res.success ? res.data : [];
   const leaves = collectLeaves(tree);
   const slots = await Promise.all(
     [4, 6].map(async (idx) => {
       const leaf = leaves[idx];
       if (!leaf) return null;
-      const r = await getProducts({ brandSlug: BRAND_SLUG, categoryId: leaf.node.id, size: 1 }).catch(() => null);
+      const r = await getProducts({ brandSlug: brand.slug, categoryId: leaf.node.id, size: 1 }).catch(() => null);
       const product = r?.success ? r.data.products[0] : null;
       if (!product) return null;
       const img = product.imageSrc ? { src: product.imageSrc, name: product.imageName ?? "" } : null;
@@ -119,7 +123,7 @@ async function EditorialSplit() {
             )}
             <div className="absolute bottom-9 left-9">
               <p className="text-[13px] uppercase tracking-wider text-grey-500">{slot.name}</p>
-              <p className="text-[34px] font-normal mt-2">{BRAND.editorial[i].body}</p>
+              <p className="text-[34px] font-normal mt-2">{brand.editorial[i].body}</p>
               <span className="inline-block mt-4 text-[15px] underline underline-offset-4 group-hover:opacity-60 transition-opacity duration-200">
                 Shop now
               </span>
@@ -131,7 +135,9 @@ async function EditorialSplit() {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const brand = await getBrand();
+
   return (
     <>
       {/* ── Hero ── */}
@@ -139,10 +145,10 @@ export default function HomePage() {
         <div className="bg-grey-50 flex items-center px-6 sm:px-12 lg:px-16 py-20 lg:py-0 lg:min-h-[80vh] order-2 lg:order-1">
           <div className="max-w-md">
             <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium">
-              {BRAND.heroCopy.eyebrow}
+              {brand.heroCopy.eyebrow}
             </p>
             <h1 className="text-[56px] lg:text-[68px] font-normal tracking-[-0.01em] leading-[1.03] mt-5">
-              {BRAND.heroCopy.title.split("\n").map((line, index) => (
+              {brand.heroCopy.title.split("\n").map((line, index) => (
                 <span key={line}>
                   {index > 0 && <br />}
                   {line}
@@ -150,7 +156,7 @@ export default function HomePage() {
               ))}
             </h1>
             <p className="text-[16px] text-grey-600 leading-relaxed mt-6">
-              {BRAND.heroCopy.body}
+              {brand.heroCopy.body}
             </p>
             <Suspense fallback={null}>
               <HeroCTAs />
@@ -159,8 +165,8 @@ export default function HomePage() {
         </div>
         <div className="group bg-grey-100 lg:min-h-[80vh] order-1 lg:order-2 flex items-center justify-center p-10 sm:p-16 relative overflow-hidden">
           <Image
-            src={BRAND.hero}
-            alt={`${BRAND.name} hero eyewear`}
+            src={brand.hero}
+            alt={`${brand.name} hero eyewear`}
             width={900}
             height={600}
             className="w-full max-h-[60vh] object-contain mix-blend-multiply transition-transform duration-[600ms] ease-standard group-hover:scale-[1.04]"
