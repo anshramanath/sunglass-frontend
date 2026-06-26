@@ -52,7 +52,7 @@ export default function ProductCard({ product, categoryPath }: { product: Produc
           <span className="text-[13px] text-grey-400">No image</span>
         )}
         {product.sale && (
-          <span className="absolute top-3 right-3 bg-sale text-paper text-[11px] uppercase tracking-wide font-medium px-2 py-1">
+          <span className="absolute top-3 right-3 text-paper text-[11px] uppercase tracking-wide font-medium px-2 py-1" style={{ backgroundColor: "var(--color-brand)" }}>
             Sale
           </span>
         )}
@@ -82,7 +82,7 @@ export default function ProductCard({ product, categoryPath }: { product: Produc
           {product.salePriceCents ? (
             <>
               <span className="text-grey-500 line-through mr-1.5">{formatPrice(product.minPriceCents)}</span>
-              <span className="text-sale">{formatPrice(product.salePriceCents)}</span>
+              <span style={{ color: "var(--color-brand)" }}>{formatPrice(product.salePriceCents)}</span>
             </>
           ) : (
             <span className="text-grey-700">{price}</span>

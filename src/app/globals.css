@@ -26,8 +26,6 @@
   /* Design system — monochrome + brand */
   --color-ink: #000000;
   --color-paper: #ffffff;
-  --color-brand: #2EA3DC;
-  --color-sale: #2EA3DC;
   --color-grey-950: #141414;
   --color-grey-800: #333333;
   --color-grey-700: #4A4A4A;
@@ -88,21 +86,14 @@ body {
   background-color: var(--color-brand);
 }
 
+.border-brand {
+  border-color: var(--color-brand);
+}
+
 .decoration-brand {
   text-decoration-color: var(--color-brand);
 }
 
-.text-sale {
-  color: var(--color-sale);
-}
-
-.bg-sale {
-  background-color: var(--color-sale);
-}
-
-.decoration-sale {
-  text-decoration-color: var(--color-sale);
-}
 
 @keyframes announcement-marquee {
   from { transform: translateX(0); }

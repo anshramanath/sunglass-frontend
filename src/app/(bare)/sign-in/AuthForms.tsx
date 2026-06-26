@@ -73,7 +73,7 @@ export default function AuthForms() {
             {showPw ? "Hide" : "Show"}
           </button>
         </div>
-        {error && <p className="text-[13px] text-sale">{error}</p>}
+        {error && <p className="text-[13px] text-brand">{error}</p>}
         <button
           type="submit"
           disabled={isPending}

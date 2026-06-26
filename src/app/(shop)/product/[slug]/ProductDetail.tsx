@@ -148,7 +148,7 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
           {onSale ? (
             <>
               <span className="text-grey-500 line-through mr-2">{formatPrice(regularCents)}</span>
-              <span className="text-sale">{formatPrice(priceCents)}</span>
+              <span style={{ color: "var(--color-brand)" }}>{formatPrice(priceCents)}</span>
             </>
           ) : (
             formatPrice(priceCents)

@@ -124,7 +124,7 @@ export default function CheckoutPage() {
                         <button onClick={() => remove(item.productSlug, item.sku)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
                       </div>
                       {item.attribute.length > 0 && <p className="text-[13px] text-grey-500 mt-0.5 truncate">{item.attribute.map((a) => a.option).join(" / ")}</p>}
-                      {item.sku && invalidItems.has(`${item.productSlug}:${item.sku}`) && <p className="text-[13px] text-sale mt-0.5">This item is no longer available</p>}
+                      {item.sku && invalidItems.has(`${item.productSlug}:${item.sku}`) && <p className="text-[13px] text-brand mt-0.5">This item is no longer available</p>}
                       <div className="flex items-center justify-between mt-4">
                         <div className="inline-flex items-center border border-grey-300">
                           <button onClick={() => updateQty(item.productSlug, item.sku, item.quantity - 1)} className="w-8 h-8 grid place-items-center text-grey-600 hover:bg-grey-100 transition-colors duration-200">&minus;</button>
@@ -165,7 +165,7 @@ export default function CheckoutPage() {
             </div>
             <p className="text-[13px] text-grey-500 mt-2.5">Applicable tax is calculated and shown on the next step.</p>
 
-            {checkoutError && <p className="text-[13px] text-sale mt-5 text-center">{checkoutError}</p>}
+            {checkoutError && <p className="text-[13px] text-brand mt-5 text-center">{checkoutError}</p>}
             <button
               type="button"
               onClick={handleProceed}

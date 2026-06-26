@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { requireUser } from "@/lib/auth";
 import { getOrders } from "@/lib/api";
-import { BRAND, BRAND_SLUG } from "@/lib/brand";
+import { getBrand } from "@/lib/brand";
 import SignOutButton from "./SignOutButton";
 
 function fmt(cents: number) {
@@ -13,7 +13,7 @@ function StatusBadge({ status }: { status: string }) {
   const label = status.charAt(0).toUpperCase() + status.slice(1);
   const shipped = status === "shipped";
   return (
-    <span className={`text-[11px] uppercase tracking-wider font-medium px-2.5 py-1 border ${shipped ? "text-sale border-sale" : "text-ink border-grey-300"}`}>
+    <span className={`text-[11px] uppercase tracking-wider font-medium px-2.5 py-1 border ${shipped ? "text-brand border-brand" : "text-ink border-grey-300"}`}>
       {label}
     </span>
   );
@@ -21,8 +21,8 @@ function StatusBadge({ status }: { status: string }) {
 
 export default async function AccountPage() {
   const user = await requireUser();
-  const ordersRes = await getOrders(BRAND_SLUG);
-  const orders = ordersRes.success ? ordersRes.data : [];
+  const orders = await getOrders();
+  const brand = getBrand();
   const email = user.email ?? "";
   const displayName = user.user_metadata?.display_name ?? "";
   const latestAddress = orders.find((o) => o.shippingAddress)?.shippingAddress ?? null;
@@ -32,8 +32,8 @@ export default async function AccountPage() {
       <header className="border-b border-grey-200">
         <div className="mx-auto max-w-[1100px] px-5 lg:px-10">
           <div className="h-16 flex items-center justify-between gap-4">
-            <Link href="/" className="shrink-0" aria-label={`${BRAND.name} home`}>
-              <Image src={BRAND.logo} alt={BRAND.name} width={120} height={28} className="h-8 w-auto" />
+            <Link href="/" className="shrink-0" aria-label={`${brand.name} home`}>
+              <Image src={brand.logo} alt={brand.name} width={120} height={28} className="h-8 w-auto" />
             </Link>
             <Link href="/" className="flex items-center gap-1.5 whitespace-nowrap text-[13px] hover:opacity-60 transition-opacity duration-200">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
