@@ -5,7 +5,6 @@ import Image from "next/image";
 import { ProductDetail as ProductDetailType, Variation } from "@/lib/types";
 import { useCart } from "@/components/providers/CartProvider";
 import { useBookmarks } from "@/components/providers/BookmarkProvider";
-import { BRAND } from "@/lib/brand";
 import ImageGallery from "./ImageGallery";
 
 function SizingAccordion({ images }: { images: { src: string; name: string }[] }) {
@@ -231,7 +230,7 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
             className="w-14 grid place-items-center border border-grey-300 hover:border-ink transition-colors duration-200"
             aria-label={isItemBookmarked ? "Remove from saved" : "Save product"}
           >
-            <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill={isItemBookmarked ? BRAND.accent : "none"} stroke={isItemBookmarked ? BRAND.accent : "currentColor"} strokeWidth="1.5">
+            <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill={isItemBookmarked ? "var(--color-brand)" : "none"} stroke={isItemBookmarked ? "var(--color-brand)" : "currentColor"} strokeWidth="1.5">
               <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
             </svg>
           </button>

@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { getCategories, getProducts } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { collectLeaves } from "@/lib/utils";
-import LoadMoreProducts from "@/components/product/LoadMoreProducts";
+import LoadMoreProducts from "./LoadMoreProducts";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
 const FILTERS = [

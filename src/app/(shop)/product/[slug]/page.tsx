@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { getItem, getCategories, getProducts } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { collectLeaves } from "@/lib/utils";
-import ProductDetail from "@/components/product/ProductDetail";
+import ProductDetail from "./ProductDetail";
 import ProductGrid from "@/components/product/ProductGrid";
 
 type Props = {

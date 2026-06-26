@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { getProducts } from "@/lib/api";
 import type { ProductListItem } from "@/lib/types";
-import ProductGrid from "./ProductGrid";
+import ProductGrid from "@/components/product/ProductGrid";
 
 type Props = {
   initialProducts: ProductListItem[];

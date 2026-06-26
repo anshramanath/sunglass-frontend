@@ -2,12 +2,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getSaleProducts } from "@/lib/api";
-import { BRAND, BRAND_SLUG } from "@/lib/brand";
-import LoadMoreSaleProducts from "@/components/product/LoadMoreSaleProducts";
+import { getBrand } from "@/lib/brand";
+import LoadMoreSaleProducts from "./LoadMoreSaleProducts";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: `Sale | ${BRAND.name}` };
 
 const FILTERS = [
   { label: "Under $15", slug: "under-15" },
@@ -17,13 +16,17 @@ const FILTERS = [
 
 type Props = { searchParams: Promise<{ filter?: string }> };
 
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getBrand();
+  return { title: `Sale | ${brand.name}` };
+}
+
 async function SaleProducts({ filter }: { filter?: string }) {
-  const res = await getSaleProducts({ brandSlug: BRAND_SLUG, filter, size: 20 });
-  if (!res.success) return null;
+  const res = await getSaleProducts({ filter, size: 20 });
   return (
     <LoadMoreSaleProducts
-      initialProducts={res.data.products}
-      initialHasNextPage={res.data.hasNextPage}
+      initialProducts={res.products}
+      initialHasNextPage={res.hasNextPage}
       filter={filter}
     />
   );
