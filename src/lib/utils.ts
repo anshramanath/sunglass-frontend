@@ -17,19 +17,19 @@ export function findCategoryId(tree: CategoryNode[], segments: string[]): string
   return node?.id ?? null;
 }
 
-function collectLeavesHelper(nodes: CategoryNode[], path: string[], result: Record<string, { id: string; path: string }>): void {
+function collectLeavesHelper(nodes: CategoryNode[], path: string[], result: Record<string, { id: string; name: string; path: string }>): void {
   for (const node of nodes) {
     const currentPath = [...path, node.slug];
     if (!node.children?.length) {
-      result[node.slug] = { id: node.id, path: currentPath.join("/") };
+      result[node.slug] = { id: node.id, name: node.name, path: currentPath.join("/") };
     } else {
       collectLeavesHelper(node.children, currentPath, result);
     }
   }
 }
 
-export function collectLeaves(tree: CategoryNode[]): Record<string, { id: string; path: string }> {
-  const result: Record<string, { id: string; path: string }> = {};
+export function collectLeaves(tree: CategoryNode[]): Record<string, { id: string; name: string; path: string }> {
+  const result: Record<string, { id: string; name: string; path: string }> = {};
   collectLeavesHelper(tree, [], result);
   return result;
 }
