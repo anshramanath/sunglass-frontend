@@ -39,7 +39,7 @@ export default function SignInPage() {
           className="w-full h-full object-contain mix-blend-multiply"
         />
         <Link href="/" className="absolute top-9 left-10" aria-label={`${brand.name} home`}>
-          <Image src={brand.logo} alt={brand.name} width={120} height={36} className="h-9 w-auto object-contain" />
+          <Image src={brand.logo} alt={brand.name} width={120} height={36} className="h-9 object-contain" style={{ width: "auto" }} />
         </Link>
       </div>
 
@@ -67,7 +67,7 @@ export default function SignInPage() {
 
           {/* Mobile logo */}
           <Link href="/" className="lg:hidden mb-8" aria-label={`${brand.name} home`}>
-            <Image src={brand.logo} alt={brand.name} width={120} height={32} className="h-8 w-auto object-contain" />
+            <Image src={brand.logo} alt={brand.name} width={120} height={32} className="h-8 object-contain" style={{ width: "auto" }} />
           </Link>
 
           <p className="text-[15px] text-grey-700">

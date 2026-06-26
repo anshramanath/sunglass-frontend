@@ -33,7 +33,7 @@ export default async function AccountPage() {
         <div className="mx-auto max-w-[1100px] px-5 lg:px-10">
           <div className="h-16 flex items-center justify-between gap-4">
             <Link href="/" className="shrink-0" aria-label={`${brand.name} home`}>
-              <Image src={brand.logo} alt={brand.name} width={120} height={28} className="h-8 w-auto" />
+              <Image src={brand.logo} alt={brand.name} width={120} height={28} className="h-8" style={{ width: "auto" }} />
             </Link>
             <Link href="/" className="flex items-center gap-1.5 whitespace-nowrap text-[13px] hover:opacity-60 transition-opacity duration-200">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
