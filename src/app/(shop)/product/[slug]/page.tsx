@@ -45,8 +45,6 @@ export default async function ProductPage({ params, searchParams }: Props) {
 
   const tree = await getCategories();
   const leaf = path ? collectLeaves(tree)[path] : null;
-  const categoryPath = path ?? "";
-
   return (
     <div className="pb-20 lg:pb-28">
       <section className="mx-auto max-w-[1680px] px-5 lg:px-10 pt-8 lg:pt-10">
@@ -58,7 +56,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
               <span key={i} className="flex items-center gap-2">
                 <span className="text-grey-300">/</span>
                 {isLast
-                  ? <Link href={`/category/${categoryPath}`} className="hover:text-ink transition-colors duration-200">{name}</Link>
+                  ? <Link href={`/category/${leaf.path}`} className="hover:text-ink transition-colors duration-200">{name}</Link>
                   : <span>{name}</span>
                 }
               </span>
@@ -79,7 +77,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
 
       {leaf && (
         <Suspense fallback={<RelatedSkeleton />}>
-          <Related slug={slug} categoryId={leaf.id} categoryPath={categoryPath} />
+          <Related slug={slug} categoryId={leaf.id} categoryPath={leaf.path} />
         </Suspense>
       )}
     </div>
