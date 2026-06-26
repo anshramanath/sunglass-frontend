@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { BRAND } from "@/lib/brand";
+import { getBrand } from "@/lib/brand";
 import AuthForms from "./AuthForms";
 
 const BENEFITS = [
@@ -23,21 +23,23 @@ const BENEFITS = [
   },
 ];
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const brand = await getBrand();
+
   return (
     <div className="lg:grid lg:grid-cols-2 lg:min-h-screen">
 
       {/* ── Left — product image ── */}
       <div className="relative hidden lg:flex items-center justify-center bg-grey-50 overflow-hidden p-20">
         <Image
-          src={BRAND.hero}
-          alt={`${BRAND.name} eyewear`}
+          src={brand.hero}
+          alt={`${brand.name} eyewear`}
           width={600}
           height={600}
           className="w-full h-full object-contain mix-blend-multiply"
         />
-        <Link href="/" className="absolute top-9 left-10" aria-label={`${BRAND.name} home`}>
-          <Image src={BRAND.logo} alt={BRAND.name} width={120} height={36} className="h-9 w-auto object-contain" />
+        <Link href="/" className="absolute top-9 left-10" aria-label={`${brand.name} home`}>
+          <Image src={brand.logo} alt={brand.name} width={120} height={36} className="h-9 w-auto object-contain" />
         </Link>
       </div>
 
@@ -64,8 +66,8 @@ export default function SignInPage() {
         <div className="flex-1 flex flex-col justify-center w-full max-w-[380px] mx-auto py-10">
 
           {/* Mobile logo */}
-          <Link href="/" className="lg:hidden mb-8" aria-label={`${BRAND.name} home`}>
-            <Image src={BRAND.logo} alt={BRAND.name} width={120} height={32} className="h-8 w-auto object-contain" />
+          <Link href="/" className="lg:hidden mb-8" aria-label={`${brand.name} home`}>
+            <Image src={brand.logo} alt={brand.name} width={120} height={32} className="h-8 w-auto object-contain" />
           </Link>
 
           <p className="text-[15px] text-grey-700">
