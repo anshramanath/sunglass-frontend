@@ -23,8 +23,8 @@ const BENEFITS = [
   },
 ];
 
-export default async function SignInPage() {
-  const brand = await getBrand();
+export default function SignInPage() {
+  const brand = getBrand();
 
   return (
     <div className="lg:grid lg:grid-cols-2 lg:min-h-screen">

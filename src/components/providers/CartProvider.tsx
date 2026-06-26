@@ -2,8 +2,11 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 import { getCart, putCart } from "@/lib/api";
+import { getBrand } from "@/lib/brand";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
 import type { CartItem } from "@/lib/types";
+
+const brandSlug = getBrand().slug;
 
 export type { CartItem };
 
@@ -30,7 +33,7 @@ function mergeCartItems(local: CartItem[], db: CartItem[]): CartItem[] {
   return Array.from(map.values());
 }
 
-export function CartProvider({ brandSlug, children }: { brandSlug: string; children: ReactNode }) {
+export function CartProvider({ children }: { children: ReactNode }) {
   const loggedIn = useLoggedIn();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -56,12 +59,12 @@ export function CartProvider({ brandSlug, children }: { brandSlug: string; child
       setLoaded(true);
     }
     sync();
-  }, [loggedIn, brandSlug]);
+  }, [loggedIn]);
 
   useEffect(() => {
     if (!loaded) return;
     localStorage.setItem(`cart:${brandSlug}`, JSON.stringify(items));
-  }, [items, loaded, brandSlug]);
+  }, [items, loaded]);
 
   useEffect(() => {
     if (!loaded || !loggedIn) return;

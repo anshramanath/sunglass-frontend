@@ -1,5 +1,3 @@
-"use server";
-
 const BRANDS = {
   "prosport-sunglasses": {
     name: "proSPORT Sunglasses",
@@ -75,6 +73,6 @@ const BRANDS = {
   },
 } as const;
 
-export async function getBrand() {
-  return BRANDS[process.env.BRAND_SLUG as keyof typeof BRANDS];
+export function getBrand() {
+  return BRANDS[process.env.NEXT_PUBLIC_BRAND_SLUG as keyof typeof BRANDS];
 }

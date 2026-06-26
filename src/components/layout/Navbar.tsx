@@ -34,7 +34,8 @@ function CategoryLinks({ nodes, ancestors }: { nodes: CategoryNode[]; ancestors:
 }
 
 export default async function Navbar() {
-  const [user, brand, tree] = await Promise.all([getUser(), getBrand(), getCategories()]);
+  const brand = getBrand();
+  const [user, tree] = await Promise.all([getUser(), getCategories()]);
   const isSignedIn = !!user;
 
   let featured: ProductListItem[] = [];

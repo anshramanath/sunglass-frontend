@@ -5,8 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/providers/CartProvider";
 import { validateCart, createCheckoutSession } from "@/lib/api";
-import { getSession } from "@/lib/auth";
-import { BRAND, BRAND_SLUG } from "@/lib/brand";
+import { getBrand } from "@/lib/brand";
+
+const brand = getBrand();
 
 function fmt(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
@@ -30,10 +31,10 @@ export default function CheckoutPage() {
   useEffect(() => {
     const validateItems = items.filter((i) => i.sku).map((i) => ({ productSlug: i.productSlug, sku: i.sku!, priceCents: i.priceCents }));
     if (validateItems.length === 0) return;
-    validateCart(BRAND_SLUG, validateItems)
-      .then((items) => {
+    validateCart(validateItems)
+      .then((result) => {
         const invalid = new Set<string>();
-        for (const item of items) {
+        for (const item of result.data) {
           if (!item.exists || item.priceChanged) invalid.add(`${item.productSlug}:${item.sku}`);
         }
         setInvalidItems(invalid);
@@ -43,23 +44,17 @@ export default function CheckoutPage() {
 
   async function handleProceed() {
     setCheckoutError(null);
-    const session = await getSession();
-    if (!session) {
-      window.location.href = "/signin";
-      return;
-    }
     const checkoutItems = items.filter((i) => i.sku && !invalidItems.has(`${i.productSlug}:${i.sku}`));
     if (checkoutItems.length === 0) return;
     setRedirecting(true);
     const res = await createCheckoutSession(
-      BRAND_SLUG,
       checkoutItems.map((i) => ({ productSlug: i.productSlug, sku: i.sku!, priceCents: i.priceCents, quantity: i.quantity })),
       `${window.location.origin}/order/success`,
       `${window.location.origin}/order/failure`,
     );
-    if (!res.success) {
+    if ("data" in res) {
       const invalid = new Set<string>();
-      for (const item of res.items) {
+      for (const item of res.data) {
         if (!item.exists || item.priceChanged) invalid.add(`${item.productSlug}:${item.sku}`);
       }
       setInvalidItems(invalid);
@@ -76,8 +71,8 @@ export default function CheckoutPage() {
       <header className="border-b border-grey-200">
         <div className="mx-auto max-w-[1100px] px-5 lg:px-10">
           <div className="h-16 flex items-center justify-between relative">
-            <Link href="/" className="shrink-0" aria-label={`${BRAND.name} home`}>
-              <Image src={BRAND.logo} alt={BRAND.name} width={120} height={28} className="h-8 w-auto" />
+            <Link href="/" className="shrink-0" aria-label={`${brand.name} home`}>
+              <Image src={brand.logo} alt={brand.name} width={120} height={28} className="h-8 w-auto" />
             </Link>
             <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 text-[13px] text-grey-500 whitespace-nowrap">
               <LockIcon className="w-4 h-4" />

@@ -5,7 +5,7 @@ import { redirect, notFound } from "next/navigation";
 import { getToken, getUser } from "@/lib/auth";
 
 const SERVER_BASE_URL = process.env.SERVER_BASE_URL!;
-const BRAND_SLUG = process.env.BRAND_SLUG!;
+const BRAND_SLUG = process.env.NEXT_PUBLIC_BRAND_SLUG!;
 
 // ── Public catalog ────────────────────────────────────────────────────────────
 

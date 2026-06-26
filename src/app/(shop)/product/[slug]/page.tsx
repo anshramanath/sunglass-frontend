@@ -19,8 +19,9 @@ async function ProductName({ slug }: { slug: string }) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const [product, brand] = await Promise.all([getItem(slug).catch(() => null), getBrand()]);
-  return { title: product ? `${product.name} | ${brand.name}` : brand.name };
+  const product = await getItem(slug).catch(() => null);
+  const { name } = getBrand();
+  return { title: product ? `${product.name} | ${name}` : name };
 }
 
 async function Detail({ slug, attrParams }: { slug: string; attrParams: Record<string, string> }) {

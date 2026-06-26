@@ -2,8 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { getBrand } from "@/lib/brand";
 
-export default async function Footer() {
-  const brand = await getBrand();
+export default function Footer() {
+  const brand = getBrand();
 
   return (
     <footer className="bg-grey-50 border-t border-grey-200">

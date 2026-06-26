@@ -18,7 +18,7 @@ async function BestSellers() {
 }
 
 export default async function HomePage() {
-  const brand = await getBrand();
+  const brand = getBrand();
   const tree = await getCategories();
   const leaves = Object.values(collectLeaves(tree));
   const first = leaves[0];

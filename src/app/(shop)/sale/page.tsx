@@ -16,9 +16,8 @@ const FILTERS = [
 
 type Props = { searchParams: Promise<{ filter?: string }> };
 
-export async function generateMetadata(): Promise<Metadata> {
-  const brand = await getBrand();
-  return { title: `Sale | ${brand.name}` };
+export function generateMetadata(): Metadata {
+  return { title: `Sale | ${getBrand().name}` };
 }
 
 async function SaleProducts({ filter }: { filter?: string }) {

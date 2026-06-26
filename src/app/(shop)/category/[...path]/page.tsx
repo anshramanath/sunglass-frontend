@@ -36,9 +36,10 @@ async function ProductSection({ categoryId, filter, categoryPath }: { categoryId
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { path } = await params;
-  const [tree, brand] = await Promise.all([getCategories(), getBrand()]);
+  const tree = await getCategories();
   const leaf = collectLeaves(tree)[path.join("/")];
-  return { title: leaf ? `${leaf.name} | ${brand.name}` : brand.name };
+  const { name } = getBrand();
+  return { title: leaf ? `${leaf.name} | ${name}` : name };
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {

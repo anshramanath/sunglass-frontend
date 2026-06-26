@@ -2,8 +2,11 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 import { getBookmarks, putBookmarks } from "@/lib/api";
+import { getBrand } from "@/lib/brand";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
 import type { BookmarkedItem } from "@/lib/types";
+
+const brandSlug = getBrand().slug;
 
 export type { BookmarkedItem };
 
@@ -23,7 +26,7 @@ function mergeBookmarks(local: BookmarkedItem[], db: BookmarkedItem[]): Bookmark
   return Array.from(map.values());
 }
 
-export function BookmarkProvider({ brandSlug, children }: { brandSlug: string; children: ReactNode }) {
+export function BookmarkProvider({ children }: { children: ReactNode }) {
   const loggedIn = useLoggedIn();
   const [items, setItems] = useState<BookmarkedItem[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -49,12 +52,12 @@ export function BookmarkProvider({ brandSlug, children }: { brandSlug: string; c
       setLoaded(true);
     }
     sync();
-  }, [loggedIn, brandSlug]);
+  }, [loggedIn]);
 
   useEffect(() => {
     if (!loaded) return;
     localStorage.setItem(`bookmarks:${brandSlug}`, JSON.stringify(items));
-  }, [items, loaded, brandSlug]);
+  }, [items, loaded]);
 
   useEffect(() => {
     if (!loaded || !loggedIn) return;

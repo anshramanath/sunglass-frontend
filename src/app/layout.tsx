@@ -11,13 +11,13 @@ const hanken = Hanken_Grotesk({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const brand = await getBrand();
+export function generateMetadata(): Metadata {
+  const brand = getBrand();
   return { title: brand.name, description: brand.description };
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const brand = await getBrand();
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const brand = getBrand();
   const brandStyle = {
     "--color-brand": brand.accent,
   } as CSSProperties;
@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${hanken.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans bg-paper text-ink" style={brandStyle}>
-        <Providers brandSlug={brand.slug}>{children}</Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
