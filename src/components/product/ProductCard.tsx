@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ProductListItem, ListVariation } from "@/lib/types";
 import { useBookmarks } from "@/components/providers/BookmarkProvider";
-import { BRAND } from "@/lib/brand";
 
 const MAX_SWATCHES = 5;
 
@@ -73,7 +72,7 @@ export default function ProductCard({ product, categoryPath }: { product: Produc
             className="shrink-0 grid place-items-center text-ink hover:opacity-60 transition-opacity duration-200"
             aria-label={saved ? `Remove ${product.name} from saved` : `Save ${product.name}`}
           >
-            <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill={saved ? BRAND.accent : "none"} stroke={saved ? BRAND.accent : "currentColor"} strokeWidth="1.5">
+            <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill={saved ? "var(--color-brand)" : "none"} stroke={saved ? "var(--color-brand)" : "currentColor"} strokeWidth="1.5">
               <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
             </svg>
           </button>
