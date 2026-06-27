@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useCart } from "@/components/providers/CartProvider";
-import { useBookmarks } from "@/components/providers/BookmarkProvider";
+import { useCartItems, useCartCount, useCartTotal, useRemoveFromCart, useIncrementQty, useDecrementQty } from "@/components/providers/CartProvider";
+import { useBookmarkItems, useToggleBookmark } from "@/components/providers/BookmarkProvider";
 import type { ProductListItem } from "@/lib/types";
 import { searchProducts } from "@/lib/api";
 import {
@@ -29,7 +29,12 @@ function fmt(cents: number) {
 }
 
 function BagPanelContent({ onClose }: { onClose: () => void }) {
-  const { items, remove, updateQty, totalCents, count } = useCart();
+  const items = useCartItems();
+  const remove = useRemoveFromCart();
+  const increment = useIncrementQty();
+  const decrement = useDecrementQty();
+  const totalCents = useCartTotal();
+  const count = useCartCount();
   return (
     <>
       <SheetTitle className="sr-only">My Bag</SheetTitle>
@@ -59,14 +64,14 @@ function BagPanelContent({ onClose }: { onClose: () => void }) {
                 <div className="flex-1 min-w-0 flex flex-col">
                   <div className="flex items-start justify-between gap-4">
                     <Link href={href} onClick={onClose} className="block text-[16px] font-medium leading-snug truncate">{item.name}</Link>
-                    <button onClick={() => remove(item.productSlug, item.sku)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
+                    <button onClick={() => remove(item)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
                   </div>
                   {item.attribute.length > 0 && <p className="text-[14px] text-grey-500 mt-1 truncate">{item.attribute.map((a) => a.option).join(" / ")}</p>}
                   <div className="flex items-center justify-between mt-4">
                     <div className="inline-flex items-center border border-grey-300">
-                      <button onClick={() => updateQty(item.productSlug, item.sku, item.quantity - 1)} className="w-9 h-9 grid place-items-center text-lg hover:bg-grey-100 transition-colors duration-200">&minus;</button>
+                      <button onClick={() => decrement(item)} disabled={item.quantity <= 1} className="w-9 h-9 grid place-items-center text-lg hover:bg-grey-100 transition-colors duration-200 disabled:opacity-30">&minus;</button>
                       <span className="w-9 text-center text-[15px]">{item.quantity}</span>
-                      <button onClick={() => updateQty(item.productSlug, item.sku, item.quantity + 1)} className="w-9 h-9 grid place-items-center text-lg hover:bg-grey-100 transition-colors duration-200">+</button>
+                      <button onClick={() => increment(item)} className="w-9 h-9 grid place-items-center text-lg hover:bg-grey-100 transition-colors duration-200">+</button>
                     </div>
                     <p className="text-[16px]">{fmt(item.priceCents * item.quantity)}</p>
                   </div>
@@ -94,7 +99,8 @@ function BagPanelContent({ onClose }: { onClose: () => void }) {
 }
 
 function SavedPanelContent({ onClose }: { onClose: () => void }) {
-  const { items, remove } = useBookmarks();
+  const items = useBookmarkItems();
+  const toggle = useToggleBookmark();
   return (
     <>
       <SheetTitle className="sr-only">Saved</SheetTitle>
@@ -119,7 +125,7 @@ function SavedPanelContent({ onClose }: { onClose: () => void }) {
                 <div className="flex-1 min-w-0 flex flex-col">
                   <div className="flex items-start justify-between gap-4">
                     <Link href={`/product/${item.productSlug}`} onClick={onClose} className="block text-[16px] font-medium leading-snug">{item.name}</Link>
-                    <button onClick={() => remove(item.productSlug)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
+                    <button onClick={() => toggle(item)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
                   </div>
                 </div>
               </div>
@@ -205,8 +211,8 @@ function SearchPanelContent({ featured, onClose }: { featured: ProductListItem[]
 
 export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: boolean; featured: ProductListItem[] }) {
   const [openPanel, setOpenPanel] = useState<Panel | null>(null);
-  const { count } = useCart();
-  const { items: bookmarks } = useBookmarks();
+  const count = useCartCount();
+  const bookmarks = useBookmarkItems();
 
   return (
     <>

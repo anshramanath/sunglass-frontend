@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ProductListItem, ListVariation } from "@/lib/types";
-import { useBookmarks } from "@/components/providers/BookmarkProvider";
+import { useIsBookmarked, useToggleBookmark } from "@/components/providers/BookmarkProvider";
 
 const MAX_SWATCHES = 5;
 
@@ -15,11 +15,12 @@ function formatPrice(cents: number): string {
 }
 
 export default function ProductCard({ product, categoryPath }: { product: ProductListItem; categoryPath?: string }) {
-  const { toggle, isBookmarked } = useBookmarks();
+  const toggle = useToggleBookmark();
+  const isBookmarked = useIsBookmarked(product.slug);
   const router = useRouter();
   const [hoveredVar, setHoveredVar] = useState<ListVariation | null>(null);
 
-  const saved = isBookmarked(product.slug);
+  const saved = isBookmarked;
   const colorVariations = (product.variations ?? []).filter((v) => v.value);
   const visibleVars = colorVariations.slice(0, MAX_SWATCHES);
   const overflow = colorVariations.length - MAX_SWATCHES;

@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/components/providers/CartProvider";
+import { useClearCart } from "@/components/providers/CartProvider";
 
 export default function OrderSuccessPage() {
-  const { clear } = useCart();
+  const clear = useClearCart();
   const router = useRouter();
   const [seconds, setSeconds] = useState(5);
 

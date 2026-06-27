@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getCart, putCart } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
@@ -8,16 +8,9 @@ import type { CartItem } from "@/lib/types";
 
 const brandSlug = getBrand().slug;
 
-export type { CartItem };
-
 type CartContextValue = {
-  items: CartItem[];
-  add: (item: Omit<CartItem, "quantity">) => void;
-  remove: (productSlug: string, sku: string) => void;
-  updateQty: (productSlug: string, sku: string, qty: number) => void;
-  clear: () => void;
-  totalCents: number;
-  count: number;
+  items: Map<string, CartItem>;
+  setItems: React.Dispatch<React.SetStateAction<Map<string, CartItem>>>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -26,16 +19,16 @@ export function itemKey(slug: string, sku: string) {
   return `${slug}:${sku}`;
 }
 
-function mergeCartItems(local: CartItem[], db: CartItem[]): CartItem[] {
+function mergeCartItems(local: CartItem[], db: CartItem[]): Map<string, CartItem> {
   const map = new Map<string, CartItem>();
   for (const item of local) map.set(itemKey(item.productSlug, item.sku), item);
   for (const item of db) map.set(itemKey(item.productSlug, item.sku), item);
-  return Array.from(map.values());
+  return map;
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const loggedIn = useLoggedIn();
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<Map<string, CartItem>>(new Map());
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -46,74 +39,121 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (stored) localItems = JSON.parse(stored);
       } catch {}
 
+      let dbItems: CartItem[] = [];
       if (loggedIn) {
-        try {
-          const dbItems = await getCart();
-          setItems(mergeCartItems(localItems, dbItems));
-          setLoaded(true);
-          return;
-        } catch {}
+        try { dbItems = await getCart(); } catch {}
       }
 
-      setItems(localItems);
+      setItems(mergeCartItems(localItems, dbItems));
       setLoaded(true);
     }
+
     sync();
   }, [loggedIn]);
 
   useEffect(() => {
     if (!loaded) return;
-    localStorage.setItem(`cart:${brandSlug}`, JSON.stringify(items));
-  }, [items, loaded]);
+
+    localStorage.setItem(`cart:${brandSlug}`, JSON.stringify([...items.values()]));
+  }, [items]);
 
   useEffect(() => {
     if (!loaded || !loggedIn) return;
+
     const timeout = setTimeout(() => {
-      putCart(items).catch(() => {});
+      putCart([...items.values()]).catch(() => {});
     }, 800);
+    
     return () => clearTimeout(timeout);
-  }, [items, loaded, loggedIn]);
-
-  const add = useCallback((item: Omit<CartItem, "quantity">) => {
-    setItems((prev) => {
-      const key = itemKey(item.productSlug, item.sku);
-      const existing = prev.find((i) => itemKey(i.productSlug, i.sku) === key);
-      if (existing) {
-        return prev.map((i) =>
-          itemKey(i.productSlug, i.sku) === key ? { ...i, quantity: i.quantity + 1 } : i
-        );
-      }
-      return [...prev, { ...item, quantity: 1 }];
-    });
-  }, []);
-
-  const remove = useCallback((productSlug: string, sku: string) => {
-    setItems((prev) => prev.filter((i) => itemKey(i.productSlug, i.sku) !== itemKey(productSlug, sku)));
-  }, []);
-
-  const clear = useCallback(() => setItems([]), []);
-
-  const updateQty = useCallback((productSlug: string, sku: string, qty: number) => {
-    if (qty <= 0) { remove(productSlug, sku); return; }
-    setItems((prev) =>
-      prev.map((i) =>
-        itemKey(i.productSlug, i.sku) === itemKey(productSlug, sku) ? { ...i, quantity: qty } : i
-      )
-    );
-  }, [remove]);
-
-  const totalCents = items.reduce((sum, i) => sum + i.priceCents * i.quantity, 0);
-  const count = items.reduce((sum, i) => sum + i.quantity, 0);
+  }, [items]);
 
   return (
-    <CartContext.Provider value={{ items, add, remove, updateQty, clear, totalCents, count }}>
+    <CartContext.Provider value={{ items, setItems }}>
       {children}
     </CartContext.Provider>
   );
 }
 
-export function useCart() {
+function useCartContext() {
   const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart must be used within CartProvider");
+  if (!ctx) throw new Error("Cart hooks must be used within CartProvider");
   return ctx;
+}
+
+export function useCartItems() {
+  return [...useCartContext().items.values()];
+}
+
+export function useCartCount() {
+  let count = 0;
+  for (const item of useCartContext().items.values()) count += item.quantity;
+  return count;
+}
+
+export function useCartTotal() {
+  let total = 0;
+  for (const item of useCartContext().items.values()) total += item.priceCents * item.quantity;
+  return total;
+}
+
+export function useAddToCart() {
+  const { setItems } = useCartContext();
+  return (item: Omit<CartItem, "quantity">) => setItems((prev) => {
+    const key = itemKey(item.productSlug, item.sku);
+    const next = new Map(prev);
+    const existing = next.get(key);
+    if (existing) {
+      next.set(key, { ...existing, quantity: existing.quantity + 1 });
+    } else {
+      next.set(key, {
+        productId: item.productId,
+        productSlug: item.productSlug,
+        sku: item.sku,
+        attribute: item.attribute,
+        name: item.name,
+        imageSrc: item.imageSrc,
+        priceCents: item.priceCents,
+        quantity: 1,
+      });
+    }
+    return next;
+  });
+}
+
+export function useRemoveFromCart() {
+  const { setItems } = useCartContext();
+  return (item: CartItem) => setItems((prev) => {
+    const next = new Map(prev);
+    next.delete(itemKey(item.productSlug, item.sku));
+    return next;
+  });
+}
+
+export function useIncrementQty() {
+  const { setItems } = useCartContext();
+  return (item: CartItem) => setItems((prev) => {
+    const key = itemKey(item.productSlug, item.sku);
+    const existing = prev.get(key);
+    if (!existing) return prev;
+    const next = new Map(prev);
+    next.set(key, { ...existing, quantity: existing.quantity + 1 });
+    return next;
+  });
+}
+
+export function useDecrementQty() {
+  const { setItems } = useCartContext();
+  return (item: CartItem) => setItems((prev) => {
+    const key = itemKey(item.productSlug, item.sku);
+    const existing = prev.get(key);
+    if (!existing || existing.quantity <= 1) return prev;
+    const next = new Map(prev);
+    next.set(key, { ...existing, quantity: existing.quantity - 1 });
+    return next;
+  });
+}
+
+export function useClearCart() {
+  const { setItems } = useCartContext();
+  return () => setItems(new Map());
 }

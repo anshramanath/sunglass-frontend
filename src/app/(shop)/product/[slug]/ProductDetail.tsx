@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ProductDetail as ProductDetailType, Variation } from "@/lib/types";
-import { useCart } from "@/components/providers/CartProvider";
-import { useBookmarks } from "@/components/providers/BookmarkProvider";
+import { useAddToCart } from "@/components/providers/CartProvider";
+import { useIsBookmarked, useToggleBookmark } from "@/components/providers/BookmarkProvider";
 import ImageGallery from "./ImageGallery";
 
 function SizingAccordion({ images }: { images: { src: string; name: string }[] }) {
@@ -86,8 +86,9 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
   }));
 
   const [selections, setSelections] = useState<Record<string, string | null>>(defaultSelections);
-  const { add: addToCart } = useCart();
-  const { toggle: toggleBookmark, isBookmarked } = useBookmarks();
+  const addToCart = useAddToCart();
+  const toggleBookmark = useToggleBookmark();
+  const isBookmarked = useIsBookmarked(product.slug);
 
   const hasVariations = product.variations.length > 0;
   const variation = hasVariations ? resolveVariation(product.variations, attrNames, selections) : null;
@@ -129,7 +130,7 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
     toggleBookmark({ productId: product.id, productSlug: slug, name: product.name, imageSrc: thumbnail });
   }
 
-  const isItemBookmarked = isBookmarked(slug);
+  const isItemBookmarked = isBookmarked;
 
   return (
     <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-6 lg:mt-8 grid lg:grid-cols-[minmax(0,640px)_1fr] gap-10 lg:gap-16 items-start">

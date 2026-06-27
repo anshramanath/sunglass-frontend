@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getBookmarks, putBookmarks } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
@@ -8,27 +8,23 @@ import type { BookmarkedItem } from "@/lib/types";
 
 const brandSlug = getBrand().slug;
 
-export type { BookmarkedItem };
-
 type BookmarkContextValue = {
-  items: BookmarkedItem[];
-  toggle: (item: BookmarkedItem) => void;
-  isBookmarked: (slug: string) => boolean;
-  remove: (slug: string) => void;
+  items: Map<string, BookmarkedItem>;
+  setItems: React.Dispatch<React.SetStateAction<Map<string, BookmarkedItem>>>;
 };
 
 const BookmarkContext = createContext<BookmarkContextValue | null>(null);
 
-function mergeBookmarks(local: BookmarkedItem[], db: BookmarkedItem[]): BookmarkedItem[] {
+function mergeBookmarks(local: BookmarkedItem[], db: BookmarkedItem[]): Map<string, BookmarkedItem> {
   const map = new Map<string, BookmarkedItem>();
   for (const item of local) map.set(item.productSlug, item);
   for (const item of db) map.set(item.productSlug, item);
-  return Array.from(map.values());
+  return map;
 }
 
 export function BookmarkProvider({ children }: { children: ReactNode }) {
   const loggedIn = useLoggedIn();
-  const [items, setItems] = useState<BookmarkedItem[]>([]);
+  const [items, setItems] = useState<Map<string, BookmarkedItem>>(new Map());
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -39,58 +35,70 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
         if (stored) localItems = JSON.parse(stored);
       } catch {}
 
+      let dbItems: BookmarkedItem[] = [];
       if (loggedIn) {
-        try {
-          const dbItems = await getBookmarks();
-          setItems(mergeBookmarks(localItems, dbItems));
-          setLoaded(true);
-          return;
-        } catch {}
+        try { dbItems = await getBookmarks(); } catch {}
       }
 
-      setItems(localItems);
+      setItems(mergeBookmarks(localItems, dbItems));
       setLoaded(true);
     }
+
     sync();
   }, [loggedIn]);
 
   useEffect(() => {
     if (!loaded) return;
-    localStorage.setItem(`bookmarks:${brandSlug}`, JSON.stringify(items));
-  }, [items, loaded]);
+
+    localStorage.setItem(`bookmarks:${brandSlug}`, JSON.stringify([...items.values()]));
+  }, [items]);
 
   useEffect(() => {
     if (!loaded || !loggedIn) return;
+
     const timeout = setTimeout(() => {
-      putBookmarks(items).catch(() => {});
+      putBookmarks([...items.values()]).catch(() => {});
     }, 800);
+    
     return () => clearTimeout(timeout);
-  }, [items, loaded, loggedIn]);
-
-  const isBookmarked = useCallback((slug: string) =>
-    items.some((i) => i.productSlug === slug), [items]);
-
-  const toggle = useCallback((item: BookmarkedItem) => {
-    setItems((prev) =>
-      prev.some((i) => i.productSlug === item.productSlug)
-        ? prev.filter((i) => i.productSlug !== item.productSlug)
-        : [...prev, item]
-    );
-  }, []);
-
-  const remove = useCallback((slug: string) => {
-    setItems((prev) => prev.filter((i) => i.productSlug !== slug));
-  }, []);
+  }, [items]);
 
   return (
-    <BookmarkContext.Provider value={{ items, toggle, isBookmarked, remove }}>
+    <BookmarkContext.Provider value={{ items, setItems }}>
       {children}
     </BookmarkContext.Provider>
   );
 }
 
-export function useBookmarks() {
+function useBookmarkContext() {
   const ctx = useContext(BookmarkContext);
-  if (!ctx) throw new Error("useBookmarks must be used within BookmarkProvider");
+  if (!ctx) throw new Error("Bookmark hooks must be used within BookmarkProvider");
   return ctx;
 }
+
+export function useBookmarkItems() {
+  return [...useBookmarkContext().items.values()];
+}
+
+export function useIsBookmarked(slug: string) {
+  return useBookmarkContext().items.has(slug);
+}
+
+export function useToggleBookmark() {
+  const { setItems } = useBookmarkContext();
+  return (item: BookmarkedItem) => setItems((prev) => {
+    const next = new Map(prev);
+    if (next.has(item.productSlug)) {
+      next.delete(item.productSlug);
+    } else {
+      next.set(item.productSlug, {
+        productId: item.productId,
+        productSlug: item.productSlug,
+        name: item.name,
+        imageSrc: item.imageSrc,
+      });
+    }
+    return next;
+  });
+}
+

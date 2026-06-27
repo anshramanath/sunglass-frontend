@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useCart } from "@/components/providers/CartProvider";
+import { useCartItems, useCartTotal, useCartCount, useRemoveFromCart, useIncrementQty, useDecrementQty } from "@/components/providers/CartProvider";
 import { validateCart, createCheckoutSession } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 
@@ -23,7 +23,12 @@ function LockIcon({ className }: { className?: string }) {
 }
 
 export default function CheckoutPage() {
-  const { items, totalCents, remove, updateQty, count } = useCart();
+  const items = useCartItems();
+  const totalCents = useCartTotal();
+  const count = useCartCount();
+  const remove = useRemoveFromCart();
+  const increment = useIncrementQty();
+  const decrement = useDecrementQty();
   const [redirecting, setRedirecting] = useState(false);
   const [invalidItems, setInvalidItems] = useState<Set<string>>(new Set());
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -121,15 +126,15 @@ export default function CheckoutPage() {
                     <div className="flex-1 min-w-0 flex flex-col">
                       <div className="flex items-start justify-between gap-4">
                         <Link href={`/product/${item.productSlug}`} className="block text-[15px] truncate hover:opacity-60 transition-opacity duration-200">{item.name}</Link>
-                        <button onClick={() => remove(item.productSlug, item.sku)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
+                        <button onClick={() => remove(item)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
                       </div>
                       {item.attribute.length > 0 && <p className="text-[13px] text-grey-500 mt-0.5 truncate">{item.attribute.map((a) => a.option).join(" / ")}</p>}
                       {item.sku && invalidItems.has(`${item.productSlug}:${item.sku}`) && <p className="text-[13px] text-brand mt-0.5">This item is no longer available</p>}
                       <div className="flex items-center justify-between mt-4">
                         <div className="inline-flex items-center border border-grey-300">
-                          <button onClick={() => updateQty(item.productSlug, item.sku, item.quantity - 1)} className="w-8 h-8 grid place-items-center text-grey-600 hover:bg-grey-100 transition-colors duration-200">&minus;</button>
+                          <button onClick={() => decrement(item)} disabled={item.quantity <= 1} className="w-8 h-8 grid place-items-center text-grey-600 hover:bg-grey-100 transition-colors duration-200 disabled:opacity-30">&minus;</button>
                           <span className="w-9 text-center text-[15px] tabular-nums">{item.quantity}</span>
-                          <button onClick={() => updateQty(item.productSlug, item.sku, item.quantity + 1)} className="w-8 h-8 grid place-items-center text-grey-600 hover:bg-grey-100 transition-colors duration-200">+</button>
+                          <button onClick={() => increment(item)} className="w-8 h-8 grid place-items-center text-grey-600 hover:bg-grey-100 transition-colors duration-200">+</button>
                         </div>
                         <p className="text-[15px]">{fmt(item.priceCents * item.quantity)}</p>
                       </div>
