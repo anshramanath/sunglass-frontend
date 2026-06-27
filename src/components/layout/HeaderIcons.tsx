@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCartItems, useCartCount, useCartTotal, useRemoveFromCart, useIncrementQty, useDecrementQty } from "@/components/providers/CartProvider";
 import { useBookmarkItems, useToggleBookmark } from "@/components/providers/BookmarkProvider";
+import { useLoggedIn } from "@/components/providers/AuthProvider";
 import type { ProductListItem } from "@/lib/types";
 import { searchProducts } from "@/lib/api";
 import {
@@ -211,8 +212,10 @@ function SearchPanelContent({ featured, onClose }: { featured: ProductListItem[]
 
 export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: boolean; featured: ProductListItem[] }) {
   const [openPanel, setOpenPanel] = useState<Panel | null>(null);
+  const loggedIn = useLoggedIn();
   const count = useCartCount();
   const bookmarks = useBookmarkItems();
+  const isActuallySignedIn = isSignedIn && loggedIn;
 
   return (
     <>
@@ -242,7 +245,7 @@ export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: bool
           )}
         </button>
 
-        {isSignedIn ? (
+        {isActuallySignedIn ? (
           <Link href="/account" className="hidden sm:grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Account">
             <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />

@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getBookmarks, putBookmarks } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
-import { useLoggedIn } from "@/components/providers/AuthProvider";
+import { useLoggedIn, useSetLoggedIn } from "@/components/providers/AuthProvider";
 import type { BookmarkedItem } from "@/lib/types";
 
 const brandSlug = getBrand().slug;
@@ -24,6 +24,7 @@ function mergeBookmarks(local: BookmarkedItem[], db: BookmarkedItem[]): Map<stri
 
 export function BookmarkProvider({ children }: { children: ReactNode }) {
   const loggedIn = useLoggedIn();
+  const setLoggedIn = useSetLoggedIn();
   const [items, setItems] = useState<Map<string, BookmarkedItem>>(new Map());
   const [loaded, setLoaded] = useState(false);
 
@@ -37,7 +38,9 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
 
       let dbItems: BookmarkedItem[] = [];
       if (loggedIn) {
-        try { dbItems = await getBookmarks(); } catch {}
+        try { dbItems = await getBookmarks(); } catch (e) {
+          if (e instanceof Error && e.message === "Unauthorized") setLoggedIn(false);
+        }
       }
 
       setItems(mergeBookmarks(localItems, dbItems));

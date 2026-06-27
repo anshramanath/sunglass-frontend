@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getCart, putCart } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
-import { useLoggedIn } from "@/components/providers/AuthProvider";
+import { useLoggedIn, useSetLoggedIn } from "@/components/providers/AuthProvider";
 import type { CartItem } from "@/lib/types";
 
 const brandSlug = getBrand().slug;
@@ -28,6 +28,7 @@ function mergeCartItems(local: CartItem[], db: CartItem[]): Map<string, CartItem
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const loggedIn = useLoggedIn();
+  const setLoggedIn = useSetLoggedIn();
   const [items, setItems] = useState<Map<string, CartItem>>(new Map());
   const [loaded, setLoaded] = useState(false);
 
@@ -41,7 +42,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       let dbItems: CartItem[] = [];
       if (loggedIn) {
-        try { dbItems = await getCart(); } catch {}
+        try { dbItems = await getCart(); } catch (e) {
+          if (e instanceof Error && e.message === "Unauthorized") setLoggedIn(false);
+        }
       }
 
       setItems(mergeCartItems(localItems, dbItems));

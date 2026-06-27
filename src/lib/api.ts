@@ -66,11 +66,11 @@ export async function getProducts(params: {
   if (!json.success) {
     switch(res.status) {
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
-      
+        throw new Error("Service unavailable");
+
       default:
         redirect("/try-again");
     }
@@ -99,11 +99,11 @@ export async function getSaleProducts(params: {
   if (!json.success) {
     switch(res.status) {
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
-      
+        throw new Error("Service unavailable");
+
       default:
         redirect("/try-again");
     }
@@ -123,11 +123,11 @@ export async function getItem(productSlug: string): Promise<ProductDetail> {
         notFound();
 
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
-      
+        throw new Error("Service unavailable");
+
       default:
         redirect("/try-again");
     }
@@ -144,11 +144,11 @@ export async function searchProducts(search: string): Promise<ProductListItem[]>
   if (!json.success) {
     switch(res.status) {
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
-      
+        throw new Error("Service unavailable");
+
       default:
         redirect("/try-again");
     }
@@ -179,10 +179,10 @@ export async function validateCart(items: { productSlug: string; sku: string; pr
   if (!json.success) {
     switch(res.status) {
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
+        throw new Error("Service unavailable");
 
       default:
         return { data: json.data ?? [], status: res.status };
@@ -222,13 +222,13 @@ export async function getCart(): Promise<CartItem[]> {
   if (!json.success) {
     switch(res.status) {
       case 401:
-        redirect("/sign-in");
+        throw new Error("Unauthorized");
 
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
+        throw new Error("Service unavailable");
 
       default:
         redirect("/try-again");
@@ -240,19 +240,19 @@ export async function getCart(): Promise<CartItem[]> {
 
 export async function putCart(items: CartItem[]): Promise<SyncedResponse> {
   const res = await authedFetch("/api/user/cart", "PUT", { brandSlug: BRAND_SLUG, items });
-  
+
   const json: ApiResponse<SyncedResponse> = await res.json();
 
   if (!json.success) {
     switch(res.status) {
       case 401:
-        redirect("/sign-in");
+        throw new Error("Unauthorized");
 
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
+        throw new Error("Service unavailable");
 
       default:
         redirect("/try-again");
@@ -270,13 +270,13 @@ export async function getBookmarks(): Promise<BookmarkedItem[]> {
   if (!json.success) {
     switch(res.status) {
       case 401:
-        redirect("/sign-in");
+        throw new Error("Unauthorized");
 
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
+        throw new Error("Service unavailable");
 
       default:
         redirect("/try-again");
@@ -294,13 +294,13 @@ export async function putBookmarks(items: BookmarkedItem[]): Promise<SyncedRespo
   if (!json.success) {
     switch(res.status) {
       case 401:
-        redirect("/sign-in");
+        throw new Error("Unauthorized");
 
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
+        throw new Error("Service unavailable");
 
       default:
         redirect("/try-again");
@@ -321,10 +321,10 @@ export async function getOrders(): Promise<Order[]> {
         redirect("/sign-in");
 
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
+        throw new Error("Service unavailable");
 
       default:
         redirect("/try-again");
@@ -349,10 +349,10 @@ export async function createCheckoutSession(
         redirect("/sign-in");
 
       case 500:
-        redirect("/try-again");
+        throw new Error("Server error");
 
       case 503:
-        redirect("/try-again");
+        throw new Error("Service unavailable");
 
       default:
         return { data: json.data ?? [], status: res.status };
