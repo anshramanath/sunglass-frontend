@@ -32,7 +32,7 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
     async function sync() {
       let localItems: BookmarkedItem[] = [];
       try {
-        const stored = localStorage.getItem(`bookmarks:${brandSlug}`);
+        const stored = localStorage.getItem(`${brandSlug}:bookmarks`);
         if (stored) localItems = JSON.parse(stored);
       } catch {}
 
@@ -53,7 +53,7 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded) return;
 
-    localStorage.setItem(`bookmarks:${brandSlug}`, JSON.stringify([...items.values()]));
+    localStorage.setItem(`${brandSlug}:bookmarks`, JSON.stringify([...items.values()]));
   }, [items]);
 
   useEffect(() => {

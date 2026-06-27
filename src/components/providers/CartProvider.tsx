@@ -36,7 +36,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     async function sync() {
       let localItems: CartItem[] = [];
       try {
-        const stored = localStorage.getItem(`cart:${brandSlug}`);
+        const stored = localStorage.getItem(`${brandSlug}:cart`);
         if (stored) localItems = JSON.parse(stored);
       } catch {}
 
@@ -57,7 +57,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded) return;
 
-    localStorage.setItem(`cart:${brandSlug}`, JSON.stringify([...items.values()]));
+    localStorage.setItem(`${brandSlug}:cart`, JSON.stringify([...items.values()]));
   }, [items]);
 
   useEffect(() => {
