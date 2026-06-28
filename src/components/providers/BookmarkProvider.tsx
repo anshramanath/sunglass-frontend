@@ -60,7 +60,9 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
     if (!loaded || !loggedIn) return;
 
     const timeout = setTimeout(() => {
-      putBookmarks([...items.values()]).catch(() => {});
+      putBookmarks([...items.values()]).catch((e) => {
+        if (e instanceof Error && e.message === "Unauthorized") setLoggedIn(false);
+      });
     }, 800);
     
     return () => clearTimeout(timeout);

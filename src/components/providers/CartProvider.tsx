@@ -64,7 +64,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!loaded || !loggedIn) return;
 
     const timeout = setTimeout(() => {
-      putCart([...items.values()]).catch(() => {});
+      putCart([...items.values()]).catch((e) => {
+        if (e instanceof Error && e.message === "Unauthorized") setLoggedIn(false);
+      });
     }, 800);
     
     return () => clearTimeout(timeout);

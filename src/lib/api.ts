@@ -1,10 +1,10 @@
 "use server";
 
-import type { ApiResponse, BookmarkedItem, CartItem, CartValidationResult, CategoryNode, CheckoutUrl, Order, ProductDetail, ProductListItem, ProductsResponse, SyncedResponse, ValidateCartItem } from "./types";
+import type { ApiResponse, BookmarkedItem, CartItem, CartValidationResult, CategoryNode, CheckoutUrl, Order, ProductDetail, ProductListItem, ProductsResponse, SyncedResponse, ValidateCartItem } from "@/lib/types";
 import { redirect, notFound } from "next/navigation";
 import { getToken, getUser } from "@/lib/auth";
 
-const SERVER_BASE_URL = process.env.SERVER_BASE_URL!;
+const SERVER_BASE_URL = process.env.NEXT_PUBLIC_SERVER_BASE_URL!;
 const BRAND_SLUG = process.env.NEXT_PUBLIC_BRAND_SLUG!;
 
 // ── Public catalog ────────────────────────────────────────────────────────────
