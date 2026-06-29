@@ -10,11 +10,15 @@ export default function OrderSuccessPage() {
   const [seconds, setSeconds] = useState(5);
 
   useEffect(() => {
+    clear();
+  }, []);
+
+  useEffect(() => {
     if (seconds <= 0) {
-      clear();
       router.push("/");
       return;
     }
+    
     const t = setTimeout(() => setSeconds((s) => s - 1), 1000);
     return () => clearTimeout(t);
   }, [seconds]);
