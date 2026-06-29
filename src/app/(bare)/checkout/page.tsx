@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useCartItems, useCartTotal, useCartCount, useRemoveFromCart, useIncrementQty, useDecrementQty } from "@/components/providers/CartProvider";
+import { useCartItems, useCartTotal, useCartCount, useRemoveFromCart, useIncrementQty, useDecrementQty, useUpdateCartPrice } from "@/components/providers/CartProvider";
 import { validateCart, createCheckoutSession } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 
@@ -27,42 +27,59 @@ export default function CheckoutPage() {
   const totalCents = useCartTotal();
   const count = useCartCount();
   const remove = useRemoveFromCart();
+  const updatePrice = useUpdateCartPrice();
   const increment = useIncrementQty();
   const decrement = useDecrementQty();
   const [redirecting, setRedirecting] = useState(false);
-  const [invalidItems, setInvalidItems] = useState<Set<string>>(new Set());
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
+  function applyValidation(data: { productSlug: string; sku: string; exists: boolean; priceCents: number | null; priceChanged: boolean }[]) {
+    setCheckoutError(null);
+
+    let removed = 0;
+    let updated = 0;
+    for (const validated of data) {
+      const cartItem = items.find((i) => i.productSlug === validated.productSlug && i.sku === validated.sku)!;
+      if (!validated.exists) {
+        remove(cartItem);
+        removed++;
+      } else if (validated.priceChanged) {
+        updatePrice(cartItem, validated.priceCents!);
+        updated++;
+      }
+    }
+    
+    const parts: string[] = [];
+    if (removed > 0) parts.push(`${removed} item${removed > 1 ? "s" : ""} removed`);
+    if (updated > 0) parts.push(`${updated} item price${updated > 1 ? "s" : ""} updated`);
+    if (parts.length > 0) setCheckoutError(parts.join(" · "));
+  }
+
   useEffect(() => {
-    const validateItems = items.filter((i) => i.sku).map((i) => ({ productSlug: i.productSlug, sku: i.sku!, priceCents: i.priceCents }));
+    const validateItems = items.map((i) => ({ productSlug: i.productSlug, sku: i.sku, priceCents: i.priceCents }));
+
     if (validateItems.length === 0) return;
-    validateCart(validateItems)
-      .then((result) => {
-        const invalid = new Set<string>();
-        for (const item of result.data) {
-          if (!item.exists || item.priceChanged) invalid.add(`${item.productSlug}:${item.sku}`);
-        }
-        setInvalidItems(invalid);
-      })
-      .catch(() => {});
-  }, [items]);
+
+    async function validate() {
+      try {
+        const result = await validateCart(validateItems);
+        applyValidation(result.data);
+      } catch {}
+    }
+
+    validate();
+  }, []);
 
   async function handleProceed() {
-    setCheckoutError(null);
-    const checkoutItems = items.filter((i) => i.sku && !invalidItems.has(`${i.productSlug}:${i.sku}`));
-    if (checkoutItems.length === 0) return;
+    if (items.length === 0) return;
     setRedirecting(true);
     const res = await createCheckoutSession(
-      checkoutItems.map((i) => ({ productSlug: i.productSlug, sku: i.sku!, priceCents: i.priceCents, quantity: i.quantity })),
+      items.map((i) => ({ productSlug: i.productSlug, sku: i.sku, priceCents: i.priceCents, quantity: i.quantity })),
       `${window.location.origin}/order/success`,
       `${window.location.origin}/order/failure`,
     );
     if ("data" in res) {
-      const invalid = new Set<string>();
-      for (const item of res.data) {
-        if (!item.exists || item.priceChanged) invalid.add(`${item.productSlug}:${item.sku}`);
-      }
-      setInvalidItems(invalid);
+      applyValidation(res.data);
       setRedirecting(false);
       return;
     }
@@ -117,11 +134,9 @@ export default function CheckoutPage() {
                 <p className="text-[15px] text-grey-500 py-6">Your bag is empty.</p>
               ) : (
                 items.map((item) => (
-                  <div key={`${item.productSlug}:${item.sku ?? "no-sku"}`} className={`flex gap-5 py-6${item.sku && invalidItems.has(`${item.productSlug}:${item.sku}`) ? " opacity-50" : ""}`}>
+                  <div key={`${item.productSlug}:${item.sku}`} className="flex gap-5 py-6">
                     <Link href={`/product/${item.productSlug}`} className="block w-20 shrink-0 self-start bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-2">
-                      {item.imageSrc && (
-                        <Image src={item.imageSrc} alt={item.name} width={80} height={100} className="w-full h-full object-contain mix-blend-multiply" />
-                      )}
+                      <Image src={item.imageSrc} alt={item.name} width={80} height={100} className="w-full h-full object-contain mix-blend-multiply" />
                     </Link>
                     <div className="flex-1 min-w-0 flex flex-col">
                       <div className="flex items-start justify-between gap-4">
@@ -129,7 +144,6 @@ export default function CheckoutPage() {
                         <button onClick={() => remove(item)} className="shrink-0 text-[13px] text-grey-400 hover:text-ink transition-colors duration-200">Remove</button>
                       </div>
                       {item.attribute.length > 0 && <p className="text-[13px] text-grey-500 mt-0.5 truncate">{item.attribute.map((a) => a.option).join(" / ")}</p>}
-                      {item.sku && invalidItems.has(`${item.productSlug}:${item.sku}`) && <p className="text-[13px] text-brand mt-0.5">This item is no longer available</p>}
                       <div className="flex items-center justify-between mt-4">
                         <div className="inline-flex items-center border border-grey-300">
                           <button onClick={() => decrement(item)} disabled={item.quantity <= 1} className="w-8 h-8 grid place-items-center text-grey-600 hover:bg-grey-100 transition-colors duration-200 disabled:opacity-30">&minus;</button>

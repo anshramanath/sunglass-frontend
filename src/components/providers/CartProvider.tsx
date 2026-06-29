@@ -158,6 +158,18 @@ export function useDecrementQty() {
   });
 }
 
+export function useUpdateCartPrice() {
+  const { setItems } = useCartContext();
+  return (item: CartItem, priceCents: number) => setItems((prev) => {
+    const key = itemKey(item.productSlug, item.sku);
+    const existing = prev.get(key);
+    if (!existing) return prev;
+    const next = new Map(prev);
+    next.set(key, { ...existing, priceCents });
+    return next;
+  });
+}
+
 export function useClearCart() {
   const { setItems } = useCartContext();
   return () => setItems(new Map());
