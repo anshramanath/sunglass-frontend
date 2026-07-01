@@ -9,13 +9,8 @@ import ProductGrid from "@/components/product/ProductGrid";
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ path?: string; [key: string]: string | undefined }>;
+  searchParams: Promise<{ path?: string; color?: string }>;
 };
-
-async function ProductName({ slug }: { slug: string }) {
-  const product = await getItem(slug);
-  return <span className="text-ink">{product.name}</span>;
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -24,9 +19,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: product ? `${product.name} | ${name}` : name };
 }
 
-async function Detail({ slug, attrParams }: { slug: string; attrParams: Record<string, string> }) {
+async function ProductName({ slug }: { slug: string }) {
   const product = await getItem(slug);
-  return <ProductDetail product={product} slug={slug} initialSelections={attrParams} />;
+  return <span className="text-ink">{product.name}</span>;
+}
+
+async function Detail({ slug, color }: { slug: string; color: string | undefined }) {
+  const product = await getItem(slug);
+  return <ProductDetail product={product} selectedColor={color} />;
 }
 
 async function Related({ slug, categoryId }: { slug: string; categoryId: string }) {
@@ -42,10 +42,11 @@ async function Related({ slug, categoryId }: { slug: string; categoryId: string 
 }
 
 export default async function ProductPage({ params, searchParams }: Props) {
-  const [{ slug }, { path, ...attrParams }] = await Promise.all([params, searchParams]);
+  const [{ slug }, { path, color }] = await Promise.all([params, searchParams]);
 
   const tree = await getCategories();
   const leaf = path ? collectLeaves(tree)[path] : null;
+  
   return (
     <div className="pb-20 lg:pb-28">
       <section className="mx-auto max-w-[1680px] px-5 lg:px-10 pt-8 lg:pt-10">
@@ -73,7 +74,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
       </section>
 
       <Suspense fallback={<DetailSkeleton />}>
-        <Detail slug={slug} attrParams={attrParams as Record<string, string>} />
+        <Detail slug={slug} color={color} />
       </Suspense>
 
       {leaf && (

@@ -43,11 +43,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
-  const { path } = await params;
-  const { filter } = await searchParams;
+  const [{ path }, { filter }] = await Promise.all([params, searchParams]);
+  
   const tree = await getCategories();
   const categoryPath = path.join("/");
   const leaf = collectLeaves(tree)[categoryPath];
+  
   if (!leaf) notFound();
 
   return (
