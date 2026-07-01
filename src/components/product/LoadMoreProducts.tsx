@@ -1,18 +1,16 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { getProducts } from "@/lib/api";
 import type { ProductListItem } from "@/lib/types";
 import ProductGrid from "@/components/product/ProductGrid";
 
 type Props = {
   initialProducts: ProductListItem[];
   initialHasNextPage: boolean;
-  categoryId: string;
-  filter?: string;
+  fetchPage: (page: number) => Promise<{ products: ProductListItem[]; hasNextPage: boolean }>;
 };
 
-export default function LoadMoreProducts({ initialProducts, initialHasNextPage, categoryId, filter }: Props) {
+export default function LoadMore({ initialProducts, initialHasNextPage, fetchPage }: Props) {
   const [products, setProducts] = useState(initialProducts);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
@@ -21,7 +19,7 @@ export default function LoadMoreProducts({ initialProducts, initialHasNextPage, 
   function loadMore() {
     startTransition(async () => {
       const next = page + 1;
-      const res = await getProducts({ categoryId, filter, page: next, size: 20 });
+      const res = await fetchPage(next);
       setProducts((prev) => [...prev, ...res.products]);
       setPage(next);
       setHasNextPage(res.hasNextPage);

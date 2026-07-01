@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { getCategories, getProducts } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { collectLeaves } from "@/lib/utils";
-import LoadMoreProducts from "./LoadMoreProducts";
+import LoadMore from "./LoadMore";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
 const FILTERS = [
@@ -23,8 +23,9 @@ type Props = {
 
 async function ProductSection({ categoryId, filter }: { categoryId: string; filter?: string }) {
   const res = await getProducts({ categoryId, filter, size: 20 });
+  
   return (
-    <LoadMoreProducts
+    <LoadMore
       initialProducts={res.products}
       initialHasNextPage={res.hasNextPage}
       categoryId={categoryId}

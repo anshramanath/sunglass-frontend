@@ -29,14 +29,14 @@ async function Detail({ slug, attrParams }: { slug: string; attrParams: Record<s
   return <ProductDetail product={product} slug={slug} initialSelections={attrParams} />;
 }
 
-async function Related({ slug, categoryId, categoryPath }: { slug: string; categoryId: string; categoryPath: string }) {
+async function Related({ slug, categoryId }: { slug: string; categoryId: string }) {
   const res = await getProducts({ categoryId, size: 6 });
   const related = res.products.filter((p) => p.slug !== slug).slice(0, 5);
   if (related.length === 0) return null;
   return (
     <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-16 lg:mt-24">
       <h2 className="text-[22px] font-normal mb-8">You may also like</h2>
-      <ProductGrid products={related} categoryPath={categoryPath} />
+      <ProductGrid products={related} />
     </section>
   );
 }
@@ -78,7 +78,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
 
       {leaf && (
         <Suspense fallback={<RelatedSkeleton />}>
-          <Related slug={slug} categoryId={leaf.id} categoryPath={leaf.path} />
+          <Related slug={slug} categoryId={leaf.id} />
         </Suspense>
       )}
     </div>

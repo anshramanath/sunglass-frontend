@@ -3,12 +3,11 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getSaleProducts } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
-import LoadMoreSaleProducts from "./LoadMoreSaleProducts";
+import LoadMore from "./LoadMore";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
-export const dynamic = "force-dynamic";
-
 const FILTERS = [
+  { label: "All",       slug: null },
   { label: "Under $15", slug: "under-15" },
   { label: "$15 – $25", slug: "15-25" },
   { label: "$25+",      slug: "25-plus" },
@@ -22,8 +21,9 @@ export function generateMetadata(): Metadata {
 
 async function SaleProducts({ filter }: { filter?: string }) {
   const res = await getSaleProducts({ filter, size: 20 });
+  
   return (
-    <LoadMoreSaleProducts
+    <LoadMore
       initialProducts={res.products}
       initialHasNextPage={res.hasNextPage}
       filter={filter}
@@ -49,11 +49,11 @@ export default async function SalePage({ searchParams }: Props) {
       <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-7 lg:mt-9">
         <div className="flex items-center gap-2.5 overflow-x-auto pb-1">
           {FILTERS.map(({ label, slug }) => {
-            const isActive = filter === slug;
-            const href = isActive ? "/sale" : `/sale?filter=${slug}`;
+            const isActive = slug === null ? !filter : filter === slug;
+            const href = slug === null || isActive ? "/sale" : `/sale?filter=${slug}`;
             return (
               <Link
-                key={slug}
+                key={slug ?? "all"}
                 href={href}
                 className={`shrink-0 whitespace-nowrap border transition-colors duration-200 h-9 px-4 text-[13px] flex items-center ${
                   isActive ? "border-ink bg-ink text-paper" : "border-grey-300 hover:border-ink text-ink"
