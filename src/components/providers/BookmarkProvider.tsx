@@ -85,8 +85,8 @@ export function useBookmarkItems() {
   return [...useBookmarkContext().items.values()];
 }
 
-export function useIsBookmarked(slug: string) {
-  return useBookmarkContext().items.has(slug);
+export function useIsBookmarked(item: { slug: string }) {
+  return useBookmarkContext().items.has(item.slug);
 }
 
 export function useToggleBookmark() {

@@ -10,10 +10,9 @@ type Props = {
   initialHasNextPage: boolean;
   categoryId: string;
   filter?: string;
-  categoryPath: string;
 };
 
-export default function LoadMoreProducts({ initialProducts, initialHasNextPage, categoryId, filter, categoryPath }: Props) {
+export default function LoadMoreProducts({ initialProducts, initialHasNextPage, categoryId, filter }: Props) {
   const [products, setProducts] = useState(initialProducts);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
@@ -31,7 +30,7 @@ export default function LoadMoreProducts({ initialProducts, initialHasNextPage, 
 
   return (
     <>
-      <ProductGrid products={products} categoryPath={categoryPath} />
+      <ProductGrid products={products} />
       {hasNextPage && (
         <div className="flex justify-center mt-16">
           <button

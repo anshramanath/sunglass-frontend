@@ -21,7 +21,7 @@ type Props = {
   searchParams: Promise<{ filter?: string }>;
 };
 
-async function ProductSection({ categoryId, filter, categoryPath }: { categoryId: string; filter?: string; categoryPath: string }) {
+async function ProductSection({ categoryId, filter }: { categoryId: string; filter?: string }) {
   const res = await getProducts({ categoryId, filter, size: 20 });
   return (
     <LoadMoreProducts
@@ -29,7 +29,6 @@ async function ProductSection({ categoryId, filter, categoryPath }: { categoryId
       initialHasNextPage={res.hasNextPage}
       categoryId={categoryId}
       filter={filter}
-      categoryPath={categoryPath}
     />
   );
 }
@@ -39,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tree = await getCategories();
   const leaf = collectLeaves(tree)[path.join("/")];
   const { name } = getBrand();
-  return { title: leaf ? `${leaf.name} | ${name}` : name };
+  return { title: `${leaf.name} | ${name}` };
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
@@ -89,7 +88,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
       <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-6">
         <Suspense key={filter ?? "all"} fallback={<LoadingSkeleton />}>
-          <ProductSection categoryId={leaf.id} filter={filter} categoryPath={categoryPath} />
+          <ProductSection categoryId={leaf.id} filter={filter} />
         </Suspense>
       </section>
     </div>

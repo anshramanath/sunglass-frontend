@@ -24,8 +24,8 @@ export type ProductListItem = {
   salePriceCents: number | null;
   featured: boolean;
   sale: boolean;
-  imageSrc: string | null;
-  imageName: string | null;
+  imageSrc: string;
+  imageName: string;
   variations?: ListVariation[];
 };
 

@@ -88,7 +88,7 @@ export default function ProductDetail({ product, slug, initialSelections = {} }:
   const [selections, setSelections] = useState<Record<string, string | null>>(defaultSelections);
   const addToCart = useAddToCart();
   const toggleBookmark = useToggleBookmark();
-  const isBookmarked = useIsBookmarked(product.slug);
+  const isBookmarked = useIsBookmarked(product);
 
   const hasVariations = product.variations.length > 0;
   const variation = hasVariations ? resolveVariation(product.variations, attrNames, selections) : null;
