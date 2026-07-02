@@ -18,7 +18,7 @@ export default function ProductCard({ product }: { product: ProductListItem }) {
   const categoryPath = pathname.startsWith("/category/") ? pathname.slice("/category/".length) : null;
 
   const saved = isBookmarked;
-  const colorVariations = (product.variations ?? []).filter((v) => v.value);
+  const colorVariations = product.variations.filter((v) => v.value);
   const visibleVars = colorVariations.slice(0, MAX_SWATCHES);
   const overflow = colorVariations.length - MAX_SWATCHES;
 
@@ -77,7 +77,7 @@ export default function ProductCard({ product }: { product: ProductListItem }) {
         </div>
 
         <Link href={href} className="block text-[15px] mt-1 hover:opacity-60 transition-opacity duration-200">
-          {product.sale ? (
+          {product.sale && !product.variations.length ? (
             <>
               <span className="text-grey-500 line-through mr-1.5">{formatPrice(product.minPriceCents)}</span>
               <span style={{ color: "var(--color-brand)" }}>{formatPrice(product.salePriceCents!)}</span>

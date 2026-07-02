@@ -26,7 +26,7 @@ export type ProductListItem = {
   sale: boolean;
   imageSrc: string;
   imageName: string;
-  variations?: ListVariation[];
+  variations: ListVariation[];
 };
 
 export type ProductsResponse = {

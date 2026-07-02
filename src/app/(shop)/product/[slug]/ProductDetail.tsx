@@ -40,7 +40,7 @@ export default function ProductDetail({ product, initialSelections }: { product:
   const addToCart = useAddToCart();
   const toggleBookmark = useToggleBookmark();
   const isBookmarked = useIsBookmarked(product);
-
+  
   const variation = product.variations.length > 0 ? resolveVariation(product.variations, selections) : null;
   const images = variation?.images.length ? variation.images : product.productImages;
   const sku = variation?.sku ?? product.sku;
@@ -48,7 +48,6 @@ export default function ProductDetail({ product, initialSelections }: { product:
   const salePriceCents = variation?.salePriceCents ?? product.salePriceCents;
   const regularPriceCents = variation?.regularPriceCents ?? product.minPriceCents;
   const onSale = variation?.sale ?? product.sale;
-  const showRange = !variation && product.minPriceCents !== product.maxPriceCents;
 
   const availableByAttr = Object.fromEntries(
     attrNames
@@ -96,8 +95,10 @@ export default function ProductDetail({ product, initialSelections }: { product:
 
         {/* Price */}
         <p className="text-[18px] mt-3">
-          {showRange ? (
-            `${formatPrice(product.minPriceCents)} – ${formatPrice(product.maxPriceCents)}`
+          {!sku ? (
+            product.minPriceCents === product.maxPriceCents
+              ? formatPrice(product.minPriceCents)
+              : `${formatPrice(product.minPriceCents)} – ${formatPrice(product.maxPriceCents)}`
           ) : onSale ? (
             <>
               <span className="text-grey-500 line-through mr-2">{formatPrice(regularPriceCents)}</span>
