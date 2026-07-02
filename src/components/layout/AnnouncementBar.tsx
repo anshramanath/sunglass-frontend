@@ -1,3 +1,4 @@
+import { getBrand, getBrands } from "@/lib/brand";
 
 const MESSAGES = [
   "Free Standard Shipping on All Orders Over $75",
@@ -5,12 +6,6 @@ const MESSAGES = [
   "New HD Polarized Lenses Just Dropped",
   "Lifetime Lens Warranty on Every Frame",
   "Free 30-Day Returns",
-];
-
-const BRANDS = [
-  { label: "Monster", href: "#" },
-  { label: "Biker",   href: "#" },
-  { label: "proSPORT", href: "#" },
 ];
 
 function Separator() {
@@ -22,7 +17,7 @@ function Sequence() {
     <>
       {MESSAGES.map((text, i) => (
         <span key={i} className="contents">
-          <a href="#" className="text-[13px] text-grey-600 hover:text-ink transition-colors duration-200 whitespace-nowrap">{text}</a>
+          <span className="text-[13px] text-grey-600 whitespace-nowrap">{text}</span>
           <Separator />
         </span>
       ))}
@@ -31,20 +26,23 @@ function Sequence() {
 }
 
 export default function AnnouncementBar() {
+  const brands = getBrands();
+  const current = getBrand();
+
   return (
     <div className="bg-grey-50 border-b border-grey-200">
       <div className="flex items-stretch h-9">
 
         <div className="flex items-stretch gap-6 pl-5 lg:pl-10 pr-6 shrink-0 relative z-10 bg-grey-50">
-          {BRANDS.map(({ label, href }, i) => {
-            const isActive = i === 0;
+          {brands.map(({ shortName, slug, url }) => {
+            const isActive = slug === current.slug;
             return isActive ? (
-              <span key={label} className="flex items-center text-[13px] font-medium text-ink whitespace-nowrap border-b-2" style={{ borderColor: '#000' }}>
-                {label}
+              <span key={slug} className="flex items-center text-[13px] font-medium text-ink whitespace-nowrap border-b-2" style={{ borderColor: '#000' }}>
+                {shortName}
               </span>
             ) : (
-              <a key={label} href={href} className="flex items-center text-[13px] text-grey-500 hover:text-ink transition-colors duration-200 whitespace-nowrap">
-                {label}
+              <a key={slug} href={url} className="flex items-center text-[13px] text-grey-500 hover:text-ink transition-colors duration-200 whitespace-nowrap">
+                {shortName}
               </a>
             );
           })}

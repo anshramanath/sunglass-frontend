@@ -1,7 +1,9 @@
 const BRANDS = {
   "prosport-sunglasses": {
     name: "proSPORT Sunglasses",
+    shortName: "proSport",
     slug: "prosport-sunglasses",
+    url: "https://prosport-sunglasses.vercel.app",
     description: "Athletic sunglasses built for speed, clarity, and all-day performance.",
     logo: "/prosport-sunglasses/logo.jpg",
     hero: "/prosport-sunglasses/hero.jpg",
@@ -25,7 +27,9 @@ const BRANDS = {
   },
   "bikershades": {
     name: "BikerShades",
+    shortName: "BikerShades",
     slug: "bikershades",
+    url: "https://bikershades.vercel.app",
     description: "Rider-first eyewear made for wind, glare, and the road ahead.",
     logo: "/bikershades/logo.jpg",
     hero: "/bikershades/hero.jpg",
@@ -49,7 +53,9 @@ const BRANDS = {
   },
   "sunglass-monster": {
     name: "Sunglass Monster",
+    shortName: "SGM",
     slug: "sunglass-monster",
+    url: "https://sunglass-monster.vercel.app",
     description: "Bold, fashion-forward sunglasses with standout style and easy all-day wear.",
     logo: "/sunglass-monster/logo.jpg",
     hero: "/sunglass-monster/hero.jpg",
@@ -75,4 +81,11 @@ const BRANDS = {
 
 export function getBrand() {
   return BRANDS[process.env.NEXT_PUBLIC_BRAND_SLUG as keyof typeof BRANDS];
+}
+
+export function getBrands() {
+  const current = getBrand();
+  return Object.values(BRANDS)
+    .map(({ shortName, slug, url }) => ({ shortName, slug, url }))
+    .sort((a, b) => (a.slug === current.slug ? -1 : b.slug === current.slug ? 1 : 0));
 }
