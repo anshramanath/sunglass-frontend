@@ -116,7 +116,7 @@ export default function ProductDetail({ product, initialSelections }: { product:
         {attrNames.length > 0 && (
           <div className="mt-8 flex flex-col gap-6">
             {attrNames.map((attrName) => {
-              const options = product.attributes.find((a) => a.name === attrName)?.options ?? [];
+              const options = [...(product.attributes.find((a) => a.name === attrName)?.options ?? [])].sort((a, b) => parseFloat(a.option) - parseFloat(b.option));
               const available = availableByAttr[attrName];
               const attrSelected = selections[attrName];
               const isColor = attrName === "color";
