@@ -42,17 +42,14 @@ src/
 │   ├── layout/
 │   │   ├── Navbar.tsx               # Top nav — logo, category links, icon strip
 │   │   ├── HeaderIcons.tsx          # Search, saved, and bag slide-out panels
-│   │   ├── NavMenu.tsx              # Mega menu for category navigation
 │   │   ├── AnnouncementBar.tsx      # Scrolling top banner, brand switcher
 │   │   └── Footer.tsx
 │   │
 │   ├── product/
 │   │   ├── ProductCard.tsx          # Grid card — color swatches, hover preview, heart
-│   │   ├── ProductDetail.tsx        # Buy rail — variation selector, add to bag, bookmark
 │   │   ├── ProductGrid.tsx          # Responsive product grid
-│   │   ├── ImageGallery.tsx         # Thumbnail strip + main image viewer
-│   │   ├── LoadMoreProducts.tsx     # Infinite scroll for category pages
-│   │   └── LoadMoreSaleProducts.tsx # Infinite scroll for sale page
+│   │   └── LoadMoreProducts.tsx     # Generic infinite scroll — takes a fetchPage callback
+│   │                                # Route-level LoadMore.tsx wrappers close over their own fetch fn
 │   │
 │   ├── providers/
 │   │   ├── Providers.tsx            # Wraps all client providers
@@ -61,12 +58,15 @@ src/
 │   │   └── BookmarkProvider.tsx     # Bookmark state — localStorage + debounced DB sync
 │   │
 │   └── shared/
-│       └── LoadingSkeleton.tsx      # Pulse skeleton for product grids
+│       ├── Sheet.tsx                # Radix sheet primitive (slide-out panels)
+│       ├── LoadingSkeleton.tsx      # Pulse skeleton for product grids
+│       └── EmptyState.tsx           # Empty state for product grids
 │
 └── lib/
     ├── api.ts                       # All fetch calls to sunglass-server
     ├── auth.ts                      # requireUser() — server-side session guard
-    ├── brand.ts                     # BRAND config — name, slug, logo, accent color
+    ├── brand.ts                     # Brand config — getBrand(), getBrands(), shortName, url
+    ├── utils.ts                     # formatPrice(), collectLeaves()
     └── types.ts                     # Shared TypeScript types
 ```
 
@@ -80,22 +80,26 @@ src/
 - Product detail page with Suspense streaming — breadcrumb renders instantly from URL params, product detail and related products stream in parallel
 
 ### Product Detail
-- Variation selector with color-first ordering — color is always the primary attribute and always fully available regardless of other selections
-- Secondary attrs (e.g. lens type) filtered by what combinations exist with the selected color
-- Color attributes render as hex circles with `ring-offset` selection ring; other attrs render as text buttons
-- URL carries color as a slug (`?color=gloss-black`) — resolved to option name on load
+- `selections: Record<string, string>` — maps attr name → slug, starts empty or from URL params
+- Color is always first; other attrs show only options available given current selections (`availableByAttr`)
+- Unavailable options are clickable (resets selections) with a diagonal SVG line overlay — not `disabled`
+- Selecting the same option again deselects it; selecting a different option in an already-chosen attr resets all other selections
+- Price display: no SKU resolved → show range or single; SKU resolved + on sale → strikethrough; else → regular price
+- URL carries all selected attrs as params (`?color=gloss-black&size=medium`) — all are applied as `initialSelections` on load
 - Image gallery switches to the selected variation's images automatically
 
 ### ProductCard
-- Color swatches sourced from `product.variations` (deduped by color slug, one entry per unique color)
-- Hover previews the variation image; click navigates to the product page with `?color=slug`
-- Up to 5 swatches shown, `+ N` for overflow
-- Heart bookmark button, Sale and Best Seller badges
+- Color swatches sourced from `product.variations`, rendered as `<Link>` elements (not buttons)
+- Hover previews the variation image; `href` includes `?color=slug` for the hovered swatch
+- Up to 5 swatches shown, `+N` text for overflow
+- Sale badge and Best Seller badge on the image; strikethrough price only for simple (non-variable) products on sale
+- `categoryPath` derived internally from `usePathname()` — not passed as a prop
 
 ### Cart
 - Identity key: `${productSlug}:${sku}` — composite because two products can share a SKU
 - Persists to localStorage immediately and to DB with 800ms debounce
-- On Stripe redirect back, a 5-second countdown on the success page delays `clear()` until the async DB sync has completed, preventing the sync from restoring cleared items
+- Checkout validates cart on mount — removes non-existent items, updates stale prices in place via `useUpdateCartPrice`
+- Cart cleared immediately on the success page (mount), not at countdown end
 
 ### Account
 - Order history with status badge, line items, and per-order shipping address
@@ -110,4 +114,4 @@ src/
 
 ## Multi-brand
 
-All API calls include `brand_slug`. The `BRAND` config in `src/lib/brand.ts` sets the active brand — name, slug, logo, and accent color. One deployment per brand.
+All API calls include `brand_slug`. `src/lib/brand.ts` defines all brands with name, slug, logo, accent color, `shortName`, and `url`. `getBrand()` returns the active brand via `NEXT_PUBLIC_BRAND_SLUG`. `getBrands()` returns all brands sorted with the active brand first — used by the announcement bar brand switcher. One deployment per brand.
