@@ -6,12 +6,9 @@ import Image from "next/image";
 import { useCartItems, useCartTotal, useCartCount, useRemoveFromCart, useIncrementQty, useDecrementQty, useUpdateCartPrice } from "@/components/providers/CartProvider";
 import { validateCart, createCheckoutSession } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
+import { formatPrice } from "@/lib/utils";
 
 const brand = getBrand();
-
-function fmt(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
-}
 
 function LockIcon({ className }: { className?: string }) {
   return (
@@ -150,7 +147,7 @@ export default function CheckoutPage() {
                           <span className="w-9 text-center text-[15px] tabular-nums">{item.quantity}</span>
                           <button onClick={() => increment(item)} className="w-8 h-8 grid place-items-center text-grey-600 hover:bg-grey-100 transition-colors duration-200">+</button>
                         </div>
-                        <p className="text-[15px]">{fmt(item.priceCents * item.quantity)}</p>
+                        <p className="text-[15px]">{formatPrice(item.priceCents * item.quantity)}</p>
                       </div>
                     </div>
                   </div>
@@ -173,14 +170,14 @@ export default function CheckoutPage() {
             </div>
 
             <dl className="mt-6 space-y-2.5 text-[15px]">
-              <div className="flex justify-between"><dt className="text-grey-600">Subtotal</dt><dd>{fmt(totalCents)}</dd></div>
+              <div className="flex justify-between"><dt className="text-grey-600">Subtotal</dt><dd>{formatPrice(totalCents)}</dd></div>
               <div className="flex justify-between"><dt className="text-grey-600">Shipping</dt><dd>Free</dd></div>
               <div className="flex justify-between"><dt className="text-grey-600">Tax</dt><dd className="text-grey-500">Calculated at payment</dd></div>
             </dl>
 
             <div className="flex justify-between items-baseline mt-5 pt-5 border-t border-grey-200">
               <span className="text-[15px]">Order Total</span>
-              <span className="text-[21px]">{fmt(totalCents)}</span>
+              <span className="text-[21px]">{formatPrice(totalCents)}</span>
             </div>
             <p className="text-[13px] text-grey-500 mt-2.5">Applicable tax is calculated and shown on the next step.</p>
 

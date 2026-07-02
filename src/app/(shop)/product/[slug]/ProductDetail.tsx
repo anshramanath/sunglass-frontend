@@ -6,11 +6,7 @@ import { useAddToCart } from "@/components/providers/CartProvider";
 import { useIsBookmarked, useToggleBookmark } from "@/components/providers/BookmarkProvider";
 import ImageGallery from "./ImageGallery";
 import SizingAccordion from "./SizingAccordion";
-
-function formatPrice(cents: number) {
-  const d = cents / 100;
-  return d % 1 === 0 ? `$${d}` : `$${d.toFixed(2)}`;
-}
+import { formatPrice } from "@/lib/utils";
 
 function getAvailableOptions(
   variations: Variation[],

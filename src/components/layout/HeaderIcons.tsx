@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCartItems, useCartCount, useCartTotal, useRemoveFromCart, useIncrementQty, useDecrementQty } from "@/components/providers/CartProvider";
-import { useBookmarkItems, useToggleBookmark } from "@/components/providers/BookmarkProvider";
+import { useBookmarkItems, useBookmarkCount, useToggleBookmark } from "@/components/providers/BookmarkProvider";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
 import type { ProductListItem } from "@/lib/types";
 import { searchProducts } from "@/lib/api";
@@ -13,7 +13,8 @@ import {
   SheetContent,
   SheetTitle,
   SheetClose,
-} from "@/components/ui/sheet";
+} from "@/components/shared/Sheet";
+import { formatPrice } from "@/lib/utils";
 
 type Panel = "search" | "saved" | "bag";
 
@@ -23,10 +24,6 @@ function CloseIcon() {
       <path d="M18 6 6 18M6 6l12 12" />
     </svg>
   );
-}
-
-function fmt(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
 }
 
 function BagPanelContent({ onClose }: { onClose: () => void }) {
@@ -74,7 +71,7 @@ function BagPanelContent({ onClose }: { onClose: () => void }) {
                       <span className="w-9 text-center text-[15px]">{item.quantity}</span>
                       <button onClick={() => increment(item)} className="w-9 h-9 grid place-items-center text-lg hover:bg-grey-100 transition-colors duration-200">+</button>
                     </div>
-                    <p className="text-[16px]">{fmt(item.priceCents * item.quantity)}</p>
+                    <p className="text-[16px]">{formatPrice(item.priceCents * item.quantity)}</p>
                   </div>
                 </div>
               </div>
@@ -87,7 +84,7 @@ function BagPanelContent({ onClose }: { onClose: () => void }) {
         <div className="border-t border-grey-200 px-8 py-7">
           <div className="flex items-center justify-between text-[16px]">
             <span>Subtotal</span>
-            <span>{fmt(totalCents)}</span>
+            <span>{formatPrice(totalCents)}</span>
           </div>
           <p className="text-[13px] text-grey-500 mt-1.5">Shipping &amp; taxes calculated at checkout.</p>
           <Link href="/checkout" onClick={onClose} className="block w-full bg-ink text-paper text-[15px] text-center py-4 mt-5 hover:bg-grey-800 transition-colors duration-200">
@@ -200,7 +197,7 @@ function SearchPanelContent({ featured, onClose }: { featured: ProductListItem[]
                   )}
                 </div>
                 <p className="mt-2 text-[15px]">{p.name}</p>
-                <p className="text-[15px] text-grey-600">{fmt(p.salePriceCents ?? p.minPriceCents)}</p>
+                <p className="text-[15px] text-grey-600">{formatPrice(p.salePriceCents ?? p.minPriceCents)}</p>
               </Link>
             ))}
           </div>
@@ -214,7 +211,7 @@ export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: bool
   const [openPanel, setOpenPanel] = useState<Panel | null>(null);
   const loggedIn = useLoggedIn();
   const count = useCartCount();
-  const bookmarks = useBookmarkItems();
+  const bookmarkCount = useBookmarkCount();
   const isActuallySignedIn = isSignedIn && loggedIn;
 
   return (
@@ -230,8 +227,8 @@ export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: bool
           <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
           </svg>
-          {bookmarks.length > 0 && (
-            <span key={bookmarks.length} className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-paper text-[10px] grid place-items-center animate-badge-pop" style={{ backgroundColor: "var(--color-brand)" }}>{bookmarks.length}</span>
+          {bookmarkCount > 0 && (
+            <span key={bookmarkCount} className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-paper text-[10px] grid place-items-center animate-badge-pop" style={{ backgroundColor: "var(--color-brand)" }}>{bookmarkCount}</span>
           )}
         </button>
 

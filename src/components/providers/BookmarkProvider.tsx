@@ -85,6 +85,10 @@ export function useBookmarkItems() {
   return [...useBookmarkContext().items.values()];
 }
 
+export function useBookmarkCount() {
+  return useBookmarkContext().items.size;
+}
+
 export function useIsBookmarked(item: { slug: string }) {
   return useBookmarkContext().items.has(item.slug);
 }

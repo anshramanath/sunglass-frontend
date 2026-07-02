@@ -21,6 +21,10 @@ function collectLeavesHelper(nodes: CategoryNode[], slugPath: string[], namePath
   }
 }
 
+export function formatPrice(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
 export function collectLeaves(tree: CategoryNode[]): Record<string, LeafEntry> {
   const result: Record<string, LeafEntry> = {};
   collectLeavesHelper(tree, [], [], result);

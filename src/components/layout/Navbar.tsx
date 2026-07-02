@@ -11,7 +11,7 @@ function CategoryLinks({ nodes, ancestors }: { nodes: CategoryNode[]; ancestors:
   return (
     <>
       {nodes.map((node) =>
-        node.children && node.children.length > 0 ? (
+        node.children ? (
           <li key={node.id}>
             <p className="text-ink font-medium mb-3">{node.name}</p>
             <ul className="space-y-3 pl-4">
@@ -22,7 +22,7 @@ function CategoryLinks({ nodes, ancestors }: { nodes: CategoryNode[]; ancestors:
           <li key={node.id}>
             <Link
               href={`/category/${[...ancestors, node].map((n) => n.slug).join("/")}`}
-              className="hover:text-ink transition-colors duration-200"
+              className="hover:text-ink hover:underline underline-offset-[4px] decoration-1 transition-colors duration-200"
             >
               {node.name}
             </Link>
@@ -58,14 +58,14 @@ export default async function Navbar() {
           <ul className="hidden lg:flex items-center gap-6 xl:gap-7">
             {tree.map((cat) => (
               <li key={cat.id} className="group relative h-16 flex items-center">
-                {cat.children && cat.children.length > 0 ? (
+                {cat.children ? (
                   <>
-                    <span className="block py-1 whitespace-nowrap text-[15px] font-medium cursor-default hover:underline underline-offset-[6px] decoration-1 decoration-ink">
+                    <span className="block py-1 whitespace-nowrap text-[15px] font-medium cursor-default">
                       {cat.name}
                     </span>
                     <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 absolute left-0 top-full z-50 bg-paper border border-grey-150 shadow-pop">
                       <div className="px-9 py-8 min-w-[180px]">
-                        <ul className="space-y-4 text-[16px] text-grey-600">
+                        <ul className="space-y-4 text-[15px] text-grey-600">
                           <CategoryLinks nodes={cat.children} ancestors={[cat]} />
                         </ul>
                       </div>

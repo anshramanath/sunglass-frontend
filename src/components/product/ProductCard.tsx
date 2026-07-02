@@ -6,13 +6,9 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ProductListItem, ListVariation } from "@/lib/types";
 import { useIsBookmarked, useToggleBookmark } from "@/components/providers/BookmarkProvider";
+import { formatPrice } from "@/lib/utils";
 
 const MAX_SWATCHES = 5;
-
-function formatPrice(cents: number): string {
-  const d = cents / 100;
-  return d % 1 === 0 ? `$${d}` : `$${d.toFixed(2)}`;
-}
 
 export default function ProductCard({ product }: { product: ProductListItem }) {
   const toggle = useToggleBookmark();

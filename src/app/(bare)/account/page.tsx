@@ -3,11 +3,8 @@ import Image from "next/image";
 import { requireUser } from "@/lib/auth";
 import { getOrders } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
+import { formatPrice } from "@/lib/utils";
 import SignOutButton from "./SignOutButton";
-
-function fmt(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
-}
 
 function StatusBadge({ status }: { status: string }) {
   const label = status.charAt(0).toUpperCase() + status.slice(1);
@@ -118,14 +115,14 @@ export default async function AccountPage() {
                               {item.attribute ? `${item.attribute} · ` : ""}Qty {item.quantity}
                             </p>
                           </div>
-                          <p className="text-[15px] shrink-0">{fmt(item.priceCents * item.quantity)}</p>
+                          <p className="text-[15px] shrink-0">{formatPrice(item.priceCents * item.quantity)}</p>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   <div className="px-5 sm:px-6 py-4 border-t border-grey-200">
-                    <p className="text-[15px]"><span className="text-grey-500">Total</span> {fmt(order.totalCents)}</p>
+                    <p className="text-[15px]"><span className="text-grey-500">Total</span> {formatPrice(order.totalCents)}</p>
                     {order.shippingAddress && (
                       <p className="text-[13px] text-grey-500 mt-1">
                         {order.shippingAddress.name} · {order.shippingAddress.line1}{order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}, {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
