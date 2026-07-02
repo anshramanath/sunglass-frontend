@@ -15,85 +15,79 @@ function formatPrice(cents: number) {
 function getAvailableOptions(
   variations: Variation[],
   attrName: string,
-  selections: Record<string, string | null>
+  otherSelections: Record<string, string>
 ): Set<string> {
-  const others = Object.entries(selections).filter(([k, v]) => k !== attrName && v !== null);
+  const others = Object.entries(otherSelections) as [string, string][];
   const matching = variations.filter((v) =>
     others.every(([name, slug]) => v.attribute.some((a) => a.name === name && a.slug === slug))
   );
   return new Set(matching.flatMap((v) => v.attribute.filter((a) => a.name === attrName).map((a) => a.slug)));
 }
 
-function resolveVariation(
-  variations: Variation[],
-  attrNames: string[],
-  selections: Record<string, string | null>
-): Variation | null {
-  if (attrNames.some((n) => !selections[n])) return null;
+function resolveVariation(variations: Variation[], selections: Record<string, string>): Variation | null {
+  const entries = Object.entries(selections) as [string, string][];
+  if (entries.length === 0) return null;
   return variations.find((v) =>
-    attrNames.every((name) => v.attribute.some((a) => a.name === name && a.slug === selections[name]))
+    v.attribute.length === entries.length &&
+    entries.every(([name, val]) => v.attribute.some((a) => a.name === name && a.slug === val))
   ) ?? null;
 }
 
-export default function ProductDetail({ product, selectedColor }: { product: ProductDetailType; selectedColor: string | undefined }) {
+export default function ProductDetail({ product, initialSelections }: { product: ProductDetailType; initialSelections: Record<string, string> }) {
   const rawAttrNames = product.attributes.map((a) => a.name);
   const attrNames = rawAttrNames.includes("color")
     ? ["color", ...rawAttrNames.filter((n) => n !== "color")]
     : rawAttrNames;
 
-  const defaultSelections = Object.fromEntries(attrNames.map((n) => {
-    if (n === "color" && selectedColor) return [n, selectedColor];
-    const firstVar = product.variations[0];
-    const match = firstVar?.attribute.find((a) => a.name === n);
-    return [n, match?.slug ?? null];
-  }));
-
-  const [selections, setSelections] = useState<Record<string, string | null>>(defaultSelections);
+  const [selections, setSelections] = useState<Record<string, string>>(initialSelections);
+  
   const addToCart = useAddToCart();
   const toggleBookmark = useToggleBookmark();
   const isBookmarked = useIsBookmarked(product);
 
-  const hasVariations = product.variations.length > 0;
-  const variation = hasVariations ? resolveVariation(product.variations, attrNames, selections) : null;
+  const variation = product.variations.length > 0 ? resolveVariation(product.variations, selections) : null;
   const images = variation?.images.length ? variation.images : product.productImages;
-  const sku = hasVariations ? (variation?.sku ?? null) : (product.sku ?? null);
+  const sku = variation?.sku ?? product.sku;
 
-  const priceCents = variation
-    ? (variation.sale && variation.salePriceCents != null ? variation.salePriceCents : variation.regularPriceCents)
-    : (product.salePriceCents ?? product.minPriceCents);
-  const regularCents = variation?.regularPriceCents ?? product.minPriceCents;
-  const onSale = variation
-    ? (variation.sale && variation.salePriceCents != null)
-    : !!product.salePriceCents;
+  const salePriceCents = variation?.salePriceCents ?? product.salePriceCents;
+  const regularPriceCents = variation?.regularPriceCents ?? product.minPriceCents;
+  const onSale = variation?.sale ?? product.sale;
+  const showRange = !variation && product.minPriceCents !== product.maxPriceCents;
+
+  const availableByAttr = Object.fromEntries(
+    attrNames
+      .filter((name) => !(name in selections))
+      .map((name) => [name, getAvailableOptions(product.variations, name, selections)])
+  ) as Record<string, Set<string>>;
 
   function select(attrName: string, slug: string) {
-    setSelections((prev) => ({ ...prev, [attrName]: slug }));
+    if (attrName in selections && selections[attrName] === slug) {
+      const { [attrName]: _, ...rest } = selections;
+      setSelections(rest as Record<string, string>);
+    } else if (attrName in selections && selections[attrName] !== slug) {
+      setSelections({ [attrName]: slug });
+    } else if (!availableByAttr[attrName].has(slug)) {
+      setSelections({ [attrName]: slug });
+    } else {
+      setSelections({ ...selections, [attrName]: slug });
+    }
   }
 
   function handleAddToBag() {
-    if (!sku) return;
     addToCart({
       productId: product.id,
       productSlug: product.slug,
-      attribute: attrNames.map((n) => {
-        const attrSlug = selections[n] ?? "";
-        const option = product.attributes.find((a) => a.name === n)?.options.find((o) => o.slug === attrSlug)?.option ?? attrSlug;
-        return { name: n, option, slug: attrSlug };
+      attribute: Object.entries(selections).map(([name, slug]) => {
+        const option = product.attributes.find((a) => a.name === name)?.options.find((o) => o.slug === slug)?.option ?? slug;
+        return { name, option, slug };
       }),
       name: product.name,
-      sku,
-      imageSrc: images[0]?.src ?? "",
-      priceCents,
+      sku: sku!,
+      imageSrc: images[0].src,
+      priceCents: onSale ? salePriceCents! : regularPriceCents,
     });
   }
 
-  function handleBookmark() {
-    const thumbnail = images[0]?.src ?? product.productImages[0]?.src;
-    if (!thumbnail) return;
-    toggleBookmark({ productId: product.id, productSlug: product.slug, name: product.name, imageSrc: thumbnail });
-  }
-
-  const isItemBookmarked = isBookmarked;
 
   return (
     <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-6 lg:mt-8 grid lg:grid-cols-[minmax(0,640px)_1fr] gap-10 lg:gap-16 items-start">
@@ -102,74 +96,84 @@ export default function ProductDetail({ product, selectedColor }: { product: Pro
       {/* Buy rail */}
       <div className="max-w-md">
 
-        {product.sku && (
-          <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium">{product.sku}</p>
-        )}
         <h1 className="text-[34px] lg:text-[44px] font-normal tracking-[-0.01em] mt-2.5">{product.name}</h1>
 
         {/* Price */}
         <p className="text-[18px] mt-3">
-          {onSale ? (
+          {showRange ? (
+            `${formatPrice(product.minPriceCents)} – ${formatPrice(product.maxPriceCents)}`
+          ) : onSale ? (
             <>
-              <span className="text-grey-500 line-through mr-2">{formatPrice(regularCents)}</span>
-              <span style={{ color: "var(--color-brand)" }}>{formatPrice(priceCents)}</span>
+              <span className="text-grey-500 line-through mr-2">{formatPrice(regularPriceCents)}</span>
+              <span style={{ color: "var(--color-brand)" }}>{formatPrice(salePriceCents!)}</span>
             </>
           ) : (
-            formatPrice(priceCents)
+            formatPrice(regularPriceCents)
           )}
         </p>
 
         {/* Variation selector */}
         {attrNames.length > 0 && (
           <div className="mt-8 flex flex-col gap-6">
-            {attrNames.map((attrName, attrIndex) => {
-              const allAttrs = product.attributes.find((a) => a.name === attrName)?.options ?? [];
-              const available = getAvailableOptions(product.variations, attrName, attrIndex === 0 ? {} : selections);
-              const isColor = allAttrs.some((o) => o.value);
+            {attrNames.map((attrName) => {
+              const options = product.attributes.find((a) => a.name === attrName)?.options ?? [];
+              const available = availableByAttr[attrName];
+              const attrSelected = selections[attrName];
+              const isColor = attrName === "color";
               return (
                 <div key={attrName}>
                   <p className="text-[15px] mb-3">
                     {attrName}
-                    {selections[attrName] && (
+                    {attrSelected && (
                       <span className="text-grey-600 ml-2">
-                        — {allAttrs.find((o) => o.slug === selections[attrName])?.option}
+                        — {options.find((o) => o.slug === attrSelected)!.option}
                       </span>
                     )}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {isColor ? allAttrs.map((o) => {
-                      const isAvailable = available.has(o.slug);
+                    {isColor ? options.map((o) => {
+                      const isAvailable = attrSelected ? true : available.has(o.slug);
                       const isSelected = selections[attrName] === o.slug;
                       return (
                         <button
                           key={o.slug}
                           type="button"
                           title={o.option}
-                          disabled={!isAvailable}
                           onClick={() => select(attrName, o.slug)}
-                          className={`w-7 h-7 rounded-full border border-grey-200 transition-all duration-150 ${
-                            isSelected ? "ring-[1.5px] ring-ink ring-offset-1" : isAvailable ? "hover:ring-[1.5px] hover:ring-grey-400 hover:ring-offset-1" : "opacity-30 cursor-not-allowed"
+                          className={`relative w-7 h-7 rounded-full border border-grey-200 transition-all duration-150 ${
+                            isSelected ? "ring-[1.5px] ring-ink ring-offset-1" : isAvailable ? "hover:ring-[1.5px] hover:ring-grey-400 hover:ring-offset-1" : ""
                           }`}
                           style={{ backgroundColor: o.value }}
-                        />
+                        >
+                          {!isAvailable && (
+                            <svg className="absolute inset-0 w-full h-full rounded-full" viewBox="0 0 28 28" preserveAspectRatio="none">
+                              <line x1="0" y1="0" x2="28" y2="28" stroke="rgba(255,255,255,0.85)" strokeWidth="2" />
+                            </svg>
+                          )}
+                        </button>
                       );
-                    }) : allAttrs.map((o) => {
-                      const isAvailable = available.has(o.slug);
+                    }) : options.map((o) => {
+                      const isAvailable = attrSelected ? true : available.has(o.slug);
                       const isSelected = selections[attrName] === o.slug;
                       return (
                         <button
                           key={o.slug}
-                          disabled={!isAvailable}
+                          type="button"
                           onClick={() => select(attrName, o.slug)}
-                          className={`border px-3.5 py-2 text-[13px] transition-colors duration-200 ${
+                          className={`relative border px-3.5 py-2 text-[13px] transition-colors duration-200 ${
                             isSelected
                               ? "border-ink bg-ink text-paper"
                               : isAvailable
                               ? "border-grey-300 hover:border-ink"
-                              : "border-grey-200 text-grey-300 cursor-not-allowed"
+                              : "border-grey-200 text-grey-300"
                           }`}
                         >
                           {o.option}
+                          {!isAvailable && (
+                            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                              <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" strokeWidth="1" />
+                            </svg>
+                          )}
                         </button>
                       );
                     })}
@@ -187,14 +191,14 @@ export default function ProductDetail({ product, selectedColor }: { product: Pro
             disabled={!sku}
             className="flex-1 bg-ink text-paper text-[15px] py-4 hover:bg-grey-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add to Bag — {formatPrice(priceCents)}
+            Add to Bag — {formatPrice(onSale ? salePriceCents! : regularPriceCents)}
           </button>
           <button
-            onClick={handleBookmark}
+            onClick={() => toggleBookmark({ productId: product.id, productSlug: product.slug, name: product.name, imageSrc: images[0].src })}
             className="w-14 grid place-items-center border border-grey-300 hover:border-ink transition-colors duration-200"
-            aria-label={isItemBookmarked ? "Remove from saved" : "Save product"}
+            aria-label={isBookmarked ? "Remove from saved" : "Save product"}
           >
-            <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill={isItemBookmarked ? "var(--color-brand)" : "none"} stroke={isItemBookmarked ? "var(--color-brand)" : "currentColor"} strokeWidth="1.5">
+            <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill={isBookmarked ? "var(--color-brand)" : "none"} stroke={isBookmarked ? "var(--color-brand)" : "currentColor"} strokeWidth="1.5">
               <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
             </svg>
           </button>

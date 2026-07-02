@@ -9,7 +9,7 @@ import ProductGrid from "@/components/product/ProductGrid";
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ path?: string; color?: string }>;
+  searchParams: Promise<{ path?: string; [key: string]: string | undefined }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -24,9 +24,9 @@ async function ProductName({ slug }: { slug: string }) {
   return <span className="text-ink">{product.name}</span>;
 }
 
-async function Detail({ slug, color }: { slug: string; color: string | undefined }) {
+async function Detail({ slug, initialSelections }: { slug: string; initialSelections: Record<string, string> }) {
   const product = await getItem(slug);
-  return <ProductDetail product={product} selectedColor={color} />;
+  return <ProductDetail product={product} initialSelections={initialSelections} />;
 }
 
 async function Related({ slug, categoryId }: { slug: string; categoryId: string }) {
@@ -42,7 +42,10 @@ async function Related({ slug, categoryId }: { slug: string; categoryId: string 
 }
 
 export default async function ProductPage({ params, searchParams }: Props) {
-  const [{ slug }, { path, color }] = await Promise.all([params, searchParams]);
+  const [{ slug }, { path, ...attrParams }] = await Promise.all([params, searchParams]);
+  const initialSelections = Object.fromEntries(
+    Object.entries(attrParams).filter((entry): entry is [string, string] => typeof entry[1] === "string")
+  );
 
   const tree = await getCategories();
   const leaf = path ? collectLeaves(tree)[path] : null;
@@ -74,7 +77,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
       </section>
 
       <Suspense fallback={<DetailSkeleton />}>
-        <Detail slug={slug} color={color} />
+        <Detail slug={slug} initialSelections={initialSelections} />
       </Suspense>
 
       {leaf && (

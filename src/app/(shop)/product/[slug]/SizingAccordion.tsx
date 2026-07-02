@@ -5,6 +5,7 @@ import Image from "next/image";
 
 export default function SizingAccordion({ images }: { images: { src: string; name: string }[] }) {
   const [open, setOpen] = useState(false);
+  
   return (
     <div className="mt-8 border-t border-grey-200">
       <div className="border-b border-grey-200">

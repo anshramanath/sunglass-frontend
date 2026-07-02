@@ -8,14 +8,6 @@ type ProductImage = { src: string; name: string };
 export default function ImageGallery({ images }: { images: ProductImage[] }) {
   const [selected, setSelected] = useState(0);
 
-  if (images.length === 0) {
-    return (
-      <div className="bg-grey-100 aspect-[4/5] flex items-center justify-center text-[13px] text-grey-400">
-        No image
-      </div>
-    );
-  }
-
   return (
     <div className="grid grid-cols-[64px_1fr] sm:grid-cols-[76px_1fr] gap-3 sm:gap-4 lg:sticky lg:top-24">
       {/* Thumbnails */}
