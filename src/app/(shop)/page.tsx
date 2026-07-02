@@ -76,7 +76,7 @@ export default async function HomePage() {
           <h2 className="text-[26px] lg:text-[34px] font-normal">Top categories</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {brand.categoryImages.map((image, i) => {
+          {leaves.length > 0 && brand.categoryImages.map((image, i) => {
             const leaf = leaves[i % leaves.length];
             return (
               <Link key={i} href={`/category/${leaf.path}`} className={`group block${i === 4 ? " hidden lg:block" : ""}`}>
@@ -108,7 +108,7 @@ export default async function HomePage() {
 
       {/* ── Editorial split ── */}
       <section className="grid sm:grid-cols-2">
-        {brand.editorial.map((slot, i) => {
+        {leaves.length > 0 && brand.editorial.map((slot, i) => {
           const leaf = leaves[(4 + i) % leaves.length];
           return (
             <Link key={i} href={`/category/${leaf.path}`} className={`group relative ${bgs[i]} min-h-[58vh] overflow-hidden flex items-center justify-center p-12${i === 1 ? " hidden sm:flex" : ""}`}>
