@@ -191,7 +191,7 @@ export default function ProductDetail({ product, initialSelections }: { product:
             disabled={!sku}
             className="flex-1 bg-ink text-paper text-[15px] py-4 hover:bg-grey-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add to Bag — {formatPrice(onSale ? salePriceCents! : regularPriceCents)}
+            Add to Bag{sku && ` — ${formatPrice(onSale ? salePriceCents! : regularPriceCents)}`}
           </button>
           <button
             onClick={() => toggleBookmark({ productId: product.id, productSlug: product.slug, name: product.name, imageSrc: images[0].src })}
