@@ -104,7 +104,7 @@ export default async function HomePage() {
       {/* ── Editorial split ── */}
       <section className="grid sm:grid-cols-2">
         {leaves.length > 0 && brand.editorial.map((slot, i) => {
-          const leaf = leaves[(4 + i) % leaves.length];
+          const leaf = leaves[(5 + i) % leaves.length];
           return (
             <Link key={i} href={`/category/${leaf.path}`} className={`group relative ${bgs[i]} min-h-[58vh] overflow-hidden flex items-center justify-center p-12${i === 1 ? " hidden sm:flex" : ""}`}>
               <Image
