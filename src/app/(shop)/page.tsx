@@ -1,20 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-import { getCategories, getProducts } from "@/lib/api";
+import { getCategories, getFiller } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { collectLeaves } from "@/lib/utils";
 import ProductGrid from "@/components/product/ProductGrid";
 import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
 
 async function BestSellers() {
-  const tree = await getCategories();
-  const leaves = Object.values(collectLeaves(tree));
-  for (const { id } of leaves) {
-    const res = await getProducts({ categoryId: id, size: 10 }).catch(() => null);
-    if (res && res.totalProducts >= 10) return <ProductGrid products={res.products} />;
-  }
-  return null;
+  const products = await getFiller(10);
+  return <ProductGrid products={products} />;
 }
 
 export default async function HomePage() {

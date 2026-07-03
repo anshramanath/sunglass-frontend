@@ -44,6 +44,27 @@ export async function getCategories(): Promise<CategoryNode[]> {
   return json.data;
 }
 
+export async function getFiller(n: number): Promise<ProductListItem[]> {
+  const res = await apiFetch("/api/public/filler", { brandSlug: BRAND_SLUG, n });
+
+  const json: ApiResponse<ProductListItem[]> = await res.json();
+
+  if (!json.success) {
+    switch(res.status) {
+      case 500:
+        throw new Error("Server error");
+
+      case 503:
+        throw new Error("Service unavailable");
+      
+      default:
+        redirect("/try-again");
+    }
+  }
+
+  return json.data;
+}
+
 export async function getProducts(params: {
   categoryId: string;
   filter?: string;

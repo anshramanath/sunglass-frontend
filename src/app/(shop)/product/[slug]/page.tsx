@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getItem, getCategories, getProducts } from "@/lib/api";
+import { getItem, getCategories, getFiller } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { collectLeaves } from "@/lib/utils";
 import ProductDetail from "./ProductDetail";
@@ -29,14 +29,12 @@ async function Detail({ slug, initialSelections }: { slug: string; initialSelect
   return <ProductDetail product={product} initialSelections={initialSelections} />;
 }
 
-async function Related({ slug, categoryId }: { slug: string; categoryId: string }) {
-  const res = await getProducts({ categoryId, size: 6 });
-  const related = res.products.filter((p) => p.slug !== slug).slice(0, 5);
-  if (related.length === 0) return null;
+async function Related() {
+  const products = await getFiller(5);
   return (
     <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-16 lg:mt-24">
       <h2 className="text-[22px] font-normal mb-8">You may also like</h2>
-      <ProductGrid products={related} />
+      <ProductGrid products={products} />
     </section>
   );
 }
@@ -80,11 +78,9 @@ export default async function ProductPage({ params, searchParams }: Props) {
         <Detail slug={slug} initialSelections={initialSelections} />
       </Suspense>
 
-      {leaf && (
-        <Suspense fallback={<RelatedSkeleton />}>
-          <Related slug={slug} categoryId={leaf.id} />
-        </Suspense>
-      )}
+      <Suspense fallback={<RelatedSkeleton />}>
+        <Related />
+      </Suspense>
     </div>
   );
 }
