@@ -111,6 +111,7 @@ export type Order = {
   id: string;
   status: string;
   totalCents: number;
+  refundedCents: number | null;
   shippingAddress: ShippingAddress | null;
   createdAt: string;
   items: OrderItem[];

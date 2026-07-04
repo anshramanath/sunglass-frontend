@@ -6,11 +6,18 @@ import { getBrand } from "@/lib/brand";
 import { formatPrice } from "@/lib/utils";
 import SignOutButton from "./SignOutButton";
 
+const STATUS: Record<string, { label: string; colored: boolean }> = {
+  processing:          { label: "Processing",          colored: false },
+  shipped:             { label: "Shipped",             colored: true  },
+  delivered:           { label: "Delivered",           colored: false },
+  partially_refunded:  { label: "Partially Refunded",  colored: true  },
+  refunded:            { label: "Refunded",            colored: true  },
+};
+
 function StatusBadge({ status }: { status: string }) {
-  const label = status.charAt(0).toUpperCase() + status.slice(1);
-  const shipped = status === "shipped";
+  const { label, colored } = STATUS[status];
   return (
-    <span className={`text-[11px] uppercase tracking-wider font-medium px-2.5 py-1 border ${shipped ? "text-brand border-brand" : "text-ink border-grey-300"}`}>
+    <span className={`text-[11px] uppercase tracking-wider font-medium px-2.5 py-1 border ${colored ? "text-brand border-brand" : "text-ink border-grey-300"}`}>
       {label}
     </span>
   );
@@ -123,6 +130,9 @@ export default async function AccountPage() {
 
                   <div className="px-5 sm:px-6 py-4 border-t border-grey-200">
                     <p className="text-[15px]"><span className="text-grey-500">Total</span> {formatPrice(order.totalCents)}</p>
+                    {order.refundedCents && (
+                      <p className="text-[15px] mt-0.5" style={{ color: "var(--color-brand)" }}><span className="text-grey-500">Refunded</span> {formatPrice(order.refundedCents)}</p>
+                    )}
                     {order.shippingAddress && (
                       <p className="text-[13px] text-grey-500 mt-1">
                         {order.shippingAddress.name} · {order.shippingAddress.line1}{order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}, {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
