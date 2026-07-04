@@ -1,21 +1,13 @@
 import { getBrand, getBrands } from "@/lib/brand";
 
-const MESSAGES = [
-  "Free Standard Shipping on All Orders Over $75",
-  "Summer Clearance — Up to 50% Off",
-  "New HD Polarized Lenses Just Dropped",
-  "Lifetime Lens Warranty on Every Frame",
-  "Free 30-Day Returns",
-];
-
 function Separator() {
   return <span className="mx-7 w-1 h-1 rounded-full bg-grey-300 shrink-0 inline-block" />;
 }
 
-function Sequence() {
+function Sequence({ messages }: { messages: readonly string[] }) {
   return (
     <>
-      {MESSAGES.map((text, i) => (
+      {messages.map((text, i) => (
         <span key={i} className="contents">
           <span className="text-[13px] text-grey-600 whitespace-nowrap">{text}</span>
           <Separator />
@@ -28,6 +20,7 @@ function Sequence() {
 export default function AnnouncementBar() {
   const brands = getBrands();
   const current = getBrand();
+  const { announcements } = current;
 
   return (
     <div className="bg-grey-50 border-b border-grey-200">
@@ -50,8 +43,8 @@ export default function AnnouncementBar() {
 
         <div className="relative flex-1 overflow-hidden" style={{ maskImage: "linear-gradient(to right, transparent, black 2.5rem, black calc(100% - 2.5rem), transparent)" }}>
           <div className="flex items-center h-9 w-max announcement-marquee">
-            <Sequence />
-            <Sequence />
+            <Sequence messages={announcements} />
+            <Sequence messages={announcements} />
           </div>
         </div>
 
