@@ -37,7 +37,7 @@ export default function AnnouncementBar() {
           {brands.map(({ shortName, slug, url }) => {
             const isActive = slug === current.slug;
             return isActive ? (
-              <span key={slug} className="flex items-center text-[13px] font-medium text-ink whitespace-nowrap border-b-2" style={{ borderColor: '#000' }}>
+              <span key={slug} className="flex items-center text-[13px] font-medium whitespace-nowrap border-b-2" style={{ color: "var(--color-brand)", borderColor: "var(--color-brand)" }}>
                 {shortName}
               </span>
             ) : (
