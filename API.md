@@ -493,7 +493,7 @@ Returns the user's order history for a brand, newest first.
 ]
 ```
 
-`attribute` is a display string (e.g. `"Gloss Black / Standard"`) for variation products, or `null` for simple products. Order status values: `processing`, `shipped`, `delivered`.
+`attribute` is a display string (e.g. `"Gloss Black / Standard"`) for variation products, or `null` for simple products. Order status values: `processing`, `shipped`, `delivered`, `refunded`, `partially_refunded`.
 
 ---
 
@@ -548,6 +548,8 @@ Prices, name, images, and attributes are pulled from the DB — the frontend onl
 
 ### POST /api/webhooks/stripe
 
-Stripe webhook handler. Verified via `stripe-signature` header. Only handles `checkout.session.completed`.
+Stripe webhook handler. Verified via `stripe-signature` header. Handles the following events:
 
-On payment completion: inserts an `orders` row with status `processing` and `order_items` rows derived from the expanded Stripe line items. Idempotent — duplicate deliveries are ignored via `stripe_session_id` unique constraint.
+**`checkout.session.completed`** — inserts an `orders` row with status `processing` and `order_items` rows derived from the expanded Stripe line items. Idempotent via `stripe_session_id` unique constraint.
+
+**`charge.refunded`** — updates the order matched by `stripe_payment_intent`. Sets `refunded_cents` to the cumulative refunded amount and status to `refunded` (full) or `partially_refunded` (partial). All other events return `200` and are ignored.
