@@ -249,6 +249,48 @@ Case-insensitive product name search. Returns up to 6 results.
 
 ---
 
+### GET /api/public/filler
+
+Returns `n` randomly shuffled products for a brand. Fetches `2n` from the DB and shuffles in JS. No category, filters, or pagination. Same product shape as `/products`.
+
+**Query Params**
+| Param | Required | Default | Description |
+|-------|----------|---------|-------------|
+| brandSlug | yes | — | Brand slug |
+| n | no | 20 | Number of products to return (max 100) |
+
+**Errors:** `400` missing brandSlug · `500` DB failure
+
+**Response `200`**
+```json
+[
+  {
+    "id": "uuid",
+    "name": "Sport Sunglasses",
+    "slug": "sport-sunglasses",
+    "minPriceCents": 1650,
+    "maxPriceCents": 1995,
+    "salePriceCents": null,
+    "featured": false,
+    "sale": false,
+    "imageSrc": "https://...",
+    "imageName": "Sport Sunglasses Front",
+    "variations": [
+      {
+        "id": "uuid",
+        "option": "Gloss Black",
+        "slug": "gloss-black",
+        "value": "#000000",
+        "imageSrc": "https://...",
+        "imageName": "Gloss Black Angle"
+      }
+    ]
+  }
+]
+```
+
+---
+
 ### POST /api/public/validate-cart
 
 Checks whether each cart item exists and whether the price matches the current DB price. Call on cart page entry and before checkout.
