@@ -65,11 +65,6 @@ export default function SignInPage() {
         {/* Centered content */}
         <div className="flex-1 flex flex-col justify-center w-full max-w-[380px] mx-auto py-10">
 
-          {/* Mobile logo */}
-          <Link href="/" className="lg:hidden mb-8" aria-label={`${brand.name} home`}>
-            <Image src={brand.logo} alt={brand.name} width={120} height={32} className="h-8 object-contain" style={{ width: "auto" }} />
-          </Link>
-
           <p className="text-[15px] text-grey-700">
             Sign in or create an account to enjoy the benefits
           </p>

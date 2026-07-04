@@ -285,7 +285,7 @@ function NavPanelContent({ tree, isSignedIn }: { tree: CategoryNode[]; isSignedI
           <CloseIcon />
         </SheetClose>
       </div>
-      <div className="flex-1 overflow-y-auto px-6 py-4 pb-16">
+      <div className="flex-1 overflow-y-auto px-6 py-4 pb-6">
         {tree.map((node, i) => {
           const isLast = i === tree.length - 1;
           return (
