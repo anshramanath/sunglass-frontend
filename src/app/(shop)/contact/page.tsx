@@ -7,7 +7,7 @@ export default function ContactPage() {
         <div className="mt-9 space-y-7">
           <div>
             <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium">Email</p>
-            <a href="mailto:support@[brand].com" className="text-[16px] mt-1.5 block hover:opacity-60 transition-opacity duration-200">
+            <a href="mailto:support@[brand].com" className="text-[16px] mt-1.5 block underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
               support@[brand].com
             </a>
           </div>
