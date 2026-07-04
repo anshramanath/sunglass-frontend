@@ -59,9 +59,6 @@ export default async function HomePage() {
             className="w-full max-h-[60vh] object-contain mix-blend-multiply transition-transform duration-[600ms] ease-standard group-hover:scale-[1.04]"
             priority
           />
-          <span className="absolute bottom-6 right-6 text-[13px] uppercase tracking-wider text-grey-500">
-            ES123K23
-          </span>
         </div>
       </section>
 

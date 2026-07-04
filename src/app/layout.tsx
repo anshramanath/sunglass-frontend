@@ -13,7 +13,7 @@ const hanken = Hanken_Grotesk({
 
 export function generateMetadata(): Metadata {
   const brand = getBrand();
-  return { title: brand.name, description: brand.description };
+  return { title: brand.name, description: brand.description, icons: { icon: brand.favicon } };
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
