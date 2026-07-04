@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useCartItems, useCartCount, useCartTotal, useRemoveFromCart, useIncrementQty, useDecrementQty } from "@/components/providers/CartProvider";
 import { useBookmarkItems, useBookmarkCount, useToggleBookmark } from "@/components/providers/BookmarkProvider";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
-import type { ProductListItem } from "@/lib/types";
+import type { CategoryNode, ProductListItem } from "@/lib/types";
 import { searchProducts } from "@/lib/api";
 import {
   Sheet,
@@ -16,7 +16,7 @@ import {
 } from "@/components/shared/Sheet";
 import { formatPrice } from "@/lib/utils";
 
-type Panel = "search" | "saved" | "bag";
+type Panel = "search" | "saved" | "bag" | "nav";
 
 function CloseIcon() {
   return (
@@ -241,7 +241,83 @@ function SearchPanelContent({ featured }: { featured: ProductListItem[] }) {
   );
 }
 
-export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: boolean; featured: ProductListItem[] }) {
+function NavLinks({ nodes, ancestors, depth }: { nodes: CategoryNode[]; ancestors: CategoryNode[]; depth: number }) {
+  return (
+    <>
+      {nodes.map((node) => {
+        const path = [...ancestors, node].map((n) => n.slug).join("/");
+        return node.children ? (
+          <div key={node.id}>
+            <p className="py-2 text-[15px]" style={{ paddingLeft: depth * 16 }}>{node.name}</p>
+            <NavLinks nodes={node.children} ancestors={[...ancestors, node]} depth={depth + 1} />
+          </div>
+        ) : (
+          <SheetClose key={node.id} asChild>
+            <Link href={`/category/${path}`} className="block py-2 text-[15px] text-grey-600 hover:text-grey-400 transition-colors duration-200" style={{ paddingLeft: depth * 16 }}>
+              {node.name}
+            </Link>
+          </SheetClose>
+        );
+      })}
+    </>
+  );
+}
+
+function NavPanelContent({ tree, isSignedIn }: { tree: CategoryNode[]; isSignedIn: boolean }) {
+  return (
+    <>
+      <SheetTitle className="sr-only">Navigation</SheetTitle>
+      <div className="flex items-center justify-between px-6 pt-8 pb-6 border-b border-grey-200">
+        <SheetClose asChild>
+          {isSignedIn ? (
+            <Link href="/account" className="grid place-items-center hover:opacity-60 transition-opacity duration-200">
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+            </Link>
+          ) : (
+            <Link href="/sign-in" className="text-[22px] font-normal hover:opacity-60 transition-opacity duration-200">
+              Sign In
+            </Link>
+          )}
+        </SheetClose>
+        <SheetClose className="grid place-items-center w-10 h-10 -mr-2 hover:opacity-60 transition-opacity duration-200">
+          <CloseIcon />
+        </SheetClose>
+      </div>
+      <div className="flex-1 overflow-y-auto px-6 py-4 pb-6">
+        {tree.map((node, i) => {
+          const isLast = i === tree.length - 1;
+          return (
+            <div key={node.id} className={!isLast ? "pb-4 mb-4 border-b border-grey-200" : ""}>
+              {node.children ? (
+                <>
+                  <p className="py-2 text-[15px]">{node.name}</p>
+                  <NavLinks nodes={node.children} ancestors={[node]} depth={1} />
+                </>
+              ) : (
+                <SheetClose asChild>
+                  <Link href={`/category/${node.slug}`} className="block py-2 text-[15px] text-grey-600 hover:text-grey-400 transition-colors duration-200">
+                    {node.name}
+                  </Link>
+                </SheetClose>
+              )}
+            </div>
+          );
+        })}
+        <div className="pt-4 mt-2 border-t border-grey-200">
+          <SheetClose asChild>
+            <Link href="/sale" className="inline-block mt-2 py-0.5 text-[13px] font-medium text-white px-2 rounded-sm" style={{ backgroundColor: "var(--color-brand)" }}>
+              Sale
+            </Link>
+          </SheetClose>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default function HeaderIcons({ isSignedIn, featured, tree }: { isSignedIn: boolean; featured: ProductListItem[]; tree: CategoryNode[] }) {
   const [openPanel, setOpenPanel] = useState<Panel | null>(null);
   const loggedIn = useLoggedIn();
   const cartCount = useCartCount();
@@ -277,14 +353,20 @@ export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: bool
         </button>
 
         {isActuallySignedIn ? (
-          <Link href="/account" className="grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Account">
+          <Link href="/account" className="hidden lg:grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Account">
             <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
             </svg>
           </Link>
         ) : (
-          <Link href="/signin" className="whitespace-nowrap text-[15px] hover:opacity-60 transition-opacity duration-200">Sign In</Link>
+          <Link href="/sign-in" className="hidden lg:block whitespace-nowrap text-[15px] hover:opacity-60 transition-opacity duration-200">Sign In</Link>
         )}
+
+        <button onClick={() => setOpenPanel("nav")} className="lg:hidden grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Menu">
+          <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
 
       <Sheet open={openPanel === "search"} onOpenChange={(o) => !o && setOpenPanel(null)}>
@@ -295,6 +377,9 @@ export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: bool
       </Sheet>
       <Sheet open={openPanel === "bag"} onOpenChange={(o) => !o && setOpenPanel(null)}>
         <SheetContent aria-describedby={undefined}><BagPanelContent /></SheetContent>
+      </Sheet>
+      <Sheet open={openPanel === "nav"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent aria-describedby={undefined}><NavPanelContent tree={tree} isSignedIn={isActuallySignedIn} /></SheetContent>
       </Sheet>
     </>
   );

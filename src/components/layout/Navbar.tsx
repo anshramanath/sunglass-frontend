@@ -85,7 +85,7 @@ export default async function Navbar() {
             </li>
           </ul>
 
-          <HeaderIcons isSignedIn={isSignedIn} featured={featured} />
+          <HeaderIcons isSignedIn={isSignedIn} featured={featured} tree={tree} />
         </div>
       </div>
     </header>
