@@ -277,20 +277,14 @@ export default function HeaderIcons({ isSignedIn, featured }: { isSignedIn: bool
         </button>
 
         {isActuallySignedIn ? (
-          <Link href="/account" className="hidden sm:grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Account">
+          <Link href="/account" className="grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Account">
             <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
             </svg>
           </Link>
         ) : (
-          <Link href="/signin" className="hidden sm:inline whitespace-nowrap text-[15px] hover:opacity-60 transition-opacity duration-200">Sign In</Link>
+          <Link href="/signin" className="whitespace-nowrap text-[15px] hover:opacity-60 transition-opacity duration-200">Sign In</Link>
         )}
-
-        <button className="lg:hidden grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Menu">
-          <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
       </div>
 
       <Sheet open={openPanel === "search"} onOpenChange={(o) => !o && setOpenPanel(null)}>
