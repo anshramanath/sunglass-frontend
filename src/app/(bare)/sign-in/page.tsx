@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { getBrand } from "@/lib/brand";
+import { getUser } from "@/lib/auth";
 import AuthForms from "./AuthForms";
 
 const BENEFITS = [
@@ -23,7 +25,10 @@ const BENEFITS = [
   },
 ];
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const user = await getUser();
+  if (user) redirect("/");
+
   const brand = getBrand();
 
   return (
