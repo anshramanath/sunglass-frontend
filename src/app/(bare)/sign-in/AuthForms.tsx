@@ -43,7 +43,7 @@ export default function AuthForms() {
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-4 h-12 text-[15px] outline-none placeholder-grey-400"
+            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-4 h-12 text-base outline-none placeholder-grey-400"
           />
         )}
         <input
@@ -53,7 +53,7 @@ export default function AuthForms() {
           placeholder="Email Address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-4 h-12 text-[15px] outline-none placeholder-grey-400"
+          className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-4 h-12 text-base outline-none placeholder-grey-400"
         />
         <div className="relative">
           <input
@@ -63,7 +63,7 @@ export default function AuthForms() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-4 pr-16 h-12 text-[15px] outline-none placeholder-grey-400"
+            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-4 pr-16 h-12 text-base outline-none placeholder-grey-400"
           />
           <button
             type="button"

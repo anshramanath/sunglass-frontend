@@ -115,7 +115,7 @@ export default function CheckoutPage() {
         <div className="grid lg:grid-cols-[1.5fr_1fr] gap-10 lg:gap-16 items-start">
 
           {/* Left — heading + items */}
-          <div>
+          <div className="min-w-0">
             <h1 className="text-[26px] lg:text-[34px] font-normal tracking-[-0.01em]">Review your order</h1>
             <p className="text-[15px] text-grey-600 mt-2.5 leading-relaxed">
               Confirm your items below. You&apos;ll enter your email, shipping address and payment on the next step — a secure page hosted by Stripe.
