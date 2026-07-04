@@ -12,13 +12,13 @@ export default function Footer() {
           <Image src={brand.logo} alt={brand.name} width={100} height={24} className="h-6" style={{ width: "auto" }} />
         </Link>
         <nav className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-[13px] text-grey-600">
-          <Link href="#" className="hover:text-ink transition-colors duration-200">Contact</Link>
-          <Link href="#" className="hover:text-ink transition-colors duration-200">FAQ</Link>
-          <Link href="#" className="hover:text-ink transition-colors duration-200">About Us</Link>
-          <Link href="#" className="hover:text-ink transition-colors duration-200">Privacy Policy</Link>
-          <Link href="#" className="hover:text-ink transition-colors duration-200">Terms of Use</Link>
-          <Link href="#" className="hover:text-ink transition-colors duration-200">Shipping Policy</Link>
-          <Link href="#" className="hover:text-ink transition-colors duration-200">Returns &amp; Refunds</Link>
+          <Link href="/contact" className="hover:text-ink transition-colors duration-200">Contact</Link>
+          <Link href="/faq" className="hover:text-ink transition-colors duration-200">FAQ</Link>
+          <Link href="/about" className="hover:text-ink transition-colors duration-200">About Us</Link>
+          <Link href="/privacy" className="hover:text-ink transition-colors duration-200">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-ink transition-colors duration-200">Terms of Use</Link>
+          <Link href="/shipping" className="hover:text-ink transition-colors duration-200">Shipping Policy</Link>
+          <Link href="/returns" className="hover:text-ink transition-colors duration-200">Returns &amp; Refunds</Link>
         </nav>
         <p className="text-[11px] text-grey-400 whitespace-nowrap">
           &copy; {new Date().getFullYear()} {brand.name}. All rights reserved.
