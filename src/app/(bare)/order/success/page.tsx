@@ -10,11 +10,8 @@ export default function OrderSuccessPage() {
   const [seconds, setSeconds] = useState(5);
 
   useEffect(() => {
-    clear();
-  }, []);
-
-  useEffect(() => {
     if (seconds <= 0) {
+      clear();
       router.push("/");
       return;
     }
