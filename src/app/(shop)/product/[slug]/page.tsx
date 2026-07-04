@@ -34,7 +34,7 @@ async function Related() {
   return (
     <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-16 lg:mt-24">
       <h2 className="text-[22px] font-normal mb-8">You may also like</h2>
-      <ProductGrid products={products} />
+      <ProductGrid products={products} hideLast={products.length % 2 !== 0} />
     </section>
   );
 }
