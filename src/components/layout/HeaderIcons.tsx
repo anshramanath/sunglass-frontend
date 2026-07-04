@@ -372,12 +372,15 @@ export default function HeaderIcons({ isSignedIn, featured, tree }: { isSignedIn
       <Sheet open={openPanel === "search"} onOpenChange={(o) => !o && setOpenPanel(null)}>
         <SheetContent aria-describedby={undefined}><SearchPanelContent featured={featured} /></SheetContent>
       </Sheet>
+
       <Sheet open={openPanel === "saved"} onOpenChange={(o) => !o && setOpenPanel(null)}>
         <SheetContent aria-describedby={undefined}><SavedPanelContent /></SheetContent>
       </Sheet>
+
       <Sheet open={openPanel === "bag"} onOpenChange={(o) => !o && setOpenPanel(null)}>
         <SheetContent aria-describedby={undefined}><BagPanelContent /></SheetContent>
       </Sheet>
+      
       <Sheet open={openPanel === "nav"} onOpenChange={(o) => !o && setOpenPanel(null)}>
         <SheetContent aria-describedby={undefined}><NavPanelContent tree={tree} isSignedIn={isActuallySignedIn} /></SheetContent>
       </Sheet>
