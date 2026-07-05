@@ -492,6 +492,7 @@ Returns the user's order history for a brand, newest first.
     "id": "uuid",
     "status": "processing",
     "totalCents": 7774,
+    "refundedCents": null,
     "shippingAddress": {
       "name": "John Smith",
       "line1": "123 Main St",
