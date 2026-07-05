@@ -291,6 +291,30 @@ Returns `n` randomly shuffled products for a brand. Fetches `2n` from the DB and
 
 ---
 
+### POST /api/public/views
+
+Atomically increments the view count for a category or product. Pass exactly one of `categoryId` or `productSlug` alongside `brandSlug`.
+
+**Errors:** `400` missing or invalid params · `500` DB failure
+
+**Body**
+```json
+{ "brandSlug": "sunglass-monster", "categoryId": "uuid" }
+```
+```json
+{ "brandSlug": "sunglass-monster", "productSlug": "sport-sunglasses" }
+```
+
+**Response `200`**
+```json
+{ "categoryId": "uuid" }
+```
+```json
+{ "productSlug": "sport-sunglasses" }
+```
+
+---
+
 ### POST /api/public/validate-cart
 
 Checks whether each cart item exists and whether the price matches the current DB price. Call on cart page entry and before checkout.

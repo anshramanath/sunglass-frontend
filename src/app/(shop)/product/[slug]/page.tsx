@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getItem, getCategories, getFiller } from "@/lib/api";
+import { getItem, getCategories, getFiller, trackView } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { collectLeaves } from "@/lib/utils";
 import ProductDetail from "./ProductDetail";
@@ -44,6 +44,8 @@ export default async function ProductPage({ params, searchParams }: Props) {
   const initialSelections = Object.fromEntries(
     Object.entries(attrParams).filter((entry): entry is [string, string] => typeof entry[1] === "string")
   );
+
+  trackView({ productSlug: slug });
 
   const tree = await getCategories();
   const leaf = path ? collectLeaves(tree)[path] : null;

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCategories, getProducts } from "@/lib/api";
+import { getCategories, getProducts, trackView } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { collectLeaves } from "@/lib/utils";
 import LoadMore from "./LoadMore";
@@ -50,6 +50,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const leaf = collectLeaves(tree)[categoryPath];
   
   if (!leaf) notFound();
+
+  trackView({ categoryId: leaf.id });
 
   return (
     <div className="pb-20 lg:pb-28">

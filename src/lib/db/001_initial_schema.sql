@@ -16,7 +16,8 @@ create table categories (
   parent_id uuid references categories(id) on delete cascade,
   name text not null,
   slug text not null,
-  sort_order int not null
+  sort_order int not null,
+  view_count int default null
 );
 
 create table products (
@@ -30,6 +31,7 @@ create table products (
   attributes jsonb not null,
   featured boolean not null,
   total_sales int,
+  view_count int not null default 0,
   sale boolean not null,
   min_price_cents int not null,
   max_price_cents int not null,
@@ -210,3 +212,18 @@ $$;
 create trigger order_items_update_total_sales
   after insert on order_items
   for each row execute function update_total_sales();
+
+
+create or replace function increment_category_view(p_id uuid, p_brand_slug text)
+returns void language sql as $$
+  update categories
+  set view_count = coalesce(view_count, 0) + 1
+  where id = p_id and brand_slug = p_brand_slug;
+$$;
+
+create or replace function increment_product_view(p_slug text, p_brand_slug text)
+returns void language sql as $$
+  update products
+  set view_count = view_count + 1
+  where slug = p_slug and brand_slug = p_brand_slug;
+$$;

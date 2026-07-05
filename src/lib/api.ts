@@ -192,6 +192,10 @@ async function publicPostFetch(path: string, body: unknown): Promise<Response> {
   }
 }
 
+export function trackView(params: { categoryId?: string; productSlug?: string }) {
+  publicPostFetch("/api/public/views", { brandSlug: BRAND_SLUG, ...params });
+}
+
 export async function validateCart(items: { productSlug: string; sku: string; priceCents: number }[]): Promise<CartValidationResult> {
   const res = await publicPostFetch("/api/public/validate-cart", { brandSlug: BRAND_SLUG, items });
 
