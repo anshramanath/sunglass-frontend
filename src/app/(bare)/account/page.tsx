@@ -28,7 +28,7 @@ export default async function AccountPage() {
   const orders = await getOrders();
   const brand = getBrand();
   const email = user.email ?? "";
-  const displayName = user.user_metadata?.display_name ?? "";
+  const displayName = user.user_metadata?.name ?? "";
   const latestAddress = orders.find((o) => o.shippingAddress)?.shippingAddress ?? null;
 
   return (
