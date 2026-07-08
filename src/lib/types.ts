@@ -109,9 +109,11 @@ export type ShippingAddress = {
 
 export type Order = {
   id: string;
-  status: string;
+  status: "processing" | "shipped" | "refunded";
   totalCents: number;
   refundedCents: number | null;
+  carrier: string | null;
+  trackingNumber: string | null;
   shippingAddress: ShippingAddress | null;
   createdAt: string;
   items: OrderItem[];

@@ -6,22 +6,12 @@ import { getBrand } from "@/lib/brand";
 import { formatPrice } from "@/lib/utils";
 import SignOutButton from "./SignOutButton";
 
-const STATUS: Record<string, { label: string; colored: boolean }> = {
-  processing:          { label: "Processing",          colored: false },
-  shipped:             { label: "Shipped",             colored: true  },
-  delivered:           { label: "Delivered",           colored: false },
-  partially_refunded:  { label: "Partially Refunded",  colored: true  },
-  refunded:            { label: "Refunded",            colored: true  },
+const STATUS: Record<string, { label: string; color: string }> = {
+  processing: { label: "Processing", color: "#737373"            },
+  shipped:    { label: "Shipped",    color: "var(--color-brand)" },
+  refunded:   { label: "Refunded",   color: "#000000"            },
 };
 
-function StatusBadge({ status }: { status: string }) {
-  const { label, colored } = STATUS[status];
-  return (
-    <span className={`text-[11px] uppercase tracking-wider font-medium px-2.5 py-1 border ${colored ? "text-brand border-brand" : "text-ink border-grey-300"}`}>
-      {label}
-    </span>
-  );
-}
 
 export default async function AccountPage() {
   const user = await requireUser();
@@ -106,7 +96,7 @@ export default async function AccountPage() {
                       <span><span className="text-grey-500">Order</span> <span className="text-ink">#{order.id.slice(-8).toUpperCase()}</span></span>
                       <span className="text-grey-500">Placed {new Date(order.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
                     </div>
-                    <StatusBadge status={order.status} />
+                    <span className="text-[11px] uppercase tracking-wider font-medium px-2.5 py-1 border" style={{ color: STATUS[order.status].color, borderColor: STATUS[order.status].color }}>{STATUS[order.status].label}</span>
                   </div>
 
                   <div className="px-5 sm:px-6 py-5">
@@ -128,15 +118,23 @@ export default async function AccountPage() {
                     </div>
                   </div>
 
-                  <div className="px-5 sm:px-6 py-4 border-t border-grey-200">
-                    <p className="text-[15px]"><span className="text-grey-500">Total</span> {formatPrice(order.totalCents)}</p>
-                    {order.refundedCents && (
-                      <p className="text-[15px] mt-0.5" style={{ color: "var(--color-brand)" }}><span className="text-grey-500">Refunded</span> {formatPrice(order.refundedCents)}</p>
-                    )}
-                    {order.shippingAddress && (
-                      <p className="text-[13px] text-grey-500 mt-1">
-                        {order.shippingAddress.name} · {order.shippingAddress.line1}{order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}, {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
-                      </p>
+                  <div className="px-5 sm:px-6 py-4 border-t border-grey-200 flex items-start justify-between gap-6 flex-wrap">
+                    <div>
+                      <p className="text-[15px]"><span className="text-grey-500">Total</span> {formatPrice(order.totalCents)}</p>
+                      {order.refundedCents && (
+                        <p className="text-[15px] mt-0.5" style={{ color: "var(--color-brand)" }}>
+                          <span className="text-grey-500">{order.status === "refunded" ? "Refunded" : "Partially Refunded"}</span>{" "}
+                          {formatPrice(order.refundedCents)}
+                        </p>
+                      )}
+                      {order.shippingAddress && (
+                        <p className="text-[13px] text-grey-500 mt-1">
+                          {order.shippingAddress.name} · {order.shippingAddress.line1}{order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}, {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
+                        </p>
+                      )}
+                    </div>
+                    {order.carrier && order.trackingNumber && (
+                      <p className="text-[13px] shrink-0"><span className="text-grey-500">{order.carrier}</span> · {order.trackingNumber}</p>
                     )}
                   </div>
                 </div>
