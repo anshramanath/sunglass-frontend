@@ -122,8 +122,8 @@ export default async function AccountPage() {
                     <div>
                       <p className="text-[15px]"><span className="text-grey-500">Total</span> {formatPrice(order.totalCents)}</p>
                       {order.refundedCents && (
-                        <p className="text-[15px] mt-0.5" style={{ color: "var(--color-brand)" }}>
-                          <span className="text-grey-500">{order.status === "refunded" ? "Refunded" : "Partially Refunded"}</span>{" "}
+                        <p className="text-[15px] mt-0.5 text-brand">
+                          {order.status === "refunded" ? "Refunded" : "Partially Refunded"}{" "}
                           {formatPrice(order.refundedCents)}
                         </p>
                       )}
