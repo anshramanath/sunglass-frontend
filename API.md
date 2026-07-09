@@ -493,6 +493,8 @@ Returns the user's order history for a brand, newest first.
     "status": "processing",
     "totalCents": 7774,
     "refundedCents": null,
+    "carrier": null,
+    "trackingNumber": null,
     "shippingAddress": {
       "name": "John Smith",
       "line1": "123 Main St",
@@ -518,7 +520,9 @@ Returns the user's order history for a brand, newest first.
 ]
 ```
 
-`attribute` is a display string (e.g. `"Gloss Black / Standard"`) for variation products, or `null` for simple products. Order status values: `processing`, `shipped`, `delivered`, `refunded`, `partially_refunded`.
+`attribute` is a display string (e.g. `"Gloss Black / Standard"`) for variation products, or `null` for simple products.
+
+Order status values: `processing`, `shipped`, `refunded`. Partial refunds do not change the status — detect them via `refundedCents > 0 && status !== "refunded"`. `refundedCents` is `null` if no refund has occurred, or a positive integer (cumulative cents refunded).
 
 ---
 
@@ -577,4 +581,4 @@ Stripe webhook handler. Verified via `stripe-signature` header. Handles the foll
 
 **`checkout.session.completed`** — inserts an `orders` row with status `processing` and `order_items` rows derived from the expanded Stripe line items. Idempotent via `stripe_session_id` unique constraint.
 
-**`charge.refunded`** — updates the order matched by `stripe_payment_intent`. Sets `refunded_cents` to the cumulative refunded amount and status to `refunded` (full) or `partially_refunded` (partial). All other events return `200` and are ignored.
+**`charge.refunded`** — updates the order matched by `stripe_payment_intent`. Only fires if `charge.amount_refunded > 0`. Sets `refunded_cents` to the cumulative refunded amount (not just the latest refund). Sets `status` to `refunded` only on a full refund (`amount_refunded === amount`) — partial refunds update `refunded_cents` only and leave status unchanged. All other events return `200` and are ignored.
