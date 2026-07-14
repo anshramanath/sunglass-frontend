@@ -1,7 +1,7 @@
 import { getBrand, getBrands } from "@/lib/brand";
 
 function Separator() {
-  return <span className="mx-7 w-1 h-1 rounded-full shrink-0 inline-block" style={{ backgroundColor: "var(--color-brand)" }} />;
+  return <span className="mx-7 w-1 h-1 rounded-full bg-grey-300 shrink-0 inline-block" />;
 }
 
 function Sequence({ messages }: { messages: readonly string[] }) {
