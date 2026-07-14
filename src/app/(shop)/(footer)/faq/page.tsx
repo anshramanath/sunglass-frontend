@@ -12,16 +12,16 @@ export default function FaqPage() {
           <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mb-2">Orders</p>
           <div className="border-t border-grey-200">
             <FaqItem question="Where can I see my orders?">
-              <p className="text-[15px] text-grey-600 leading-relaxed">Sign in and go to your account page — all past orders are listed there with status and items.</p>
+              <p className="text-[15px] text-grey-600 leading-relaxed">Sign in and go to your account page — all orders are listed there with status and items.</p>
             </FaqItem>
             <FaqItem question="What do order statuses mean?">
               <dl className="text-[15px] space-y-3">
                 <div className="flex gap-4">
-                  <dt className="w-40 shrink-0 text-ink">Processing</dt>
+                  <dt className="w-40 shrink-0" style={{ color: "#737373" }}>Processing</dt>
                   <dd className="text-grey-600 leading-relaxed">We&apos;ve received your order and it&apos;s being prepared.</dd>
                 </div>
                 <div className="flex gap-4">
-                  <dt className="w-40 shrink-0 text-ink">Shipped</dt>
+                  <dt className="w-40 shrink-0 text-brand">Shipped</dt>
                   <dd className="text-grey-600 leading-relaxed">It&apos;s on its way.</dd>
                 </div>
                 <div className="flex gap-4">
@@ -44,10 +44,10 @@ export default function FaqPage() {
               <p className="text-[15px] text-grey-600 leading-relaxed">Your cart and saved items sync to your account, so they&apos;ll be there when you sign in anywhere.</p>
             </FaqItem>
             <FaqItem question="What if a price changes before I check out?">
-              <p className="text-[15px] text-grey-600 leading-relaxed">Prices and availability are confirmed during checkout. If an item&apos;s price has changed, you&apos;ll see the updated price before completing your purchase.</p>
+              <p className="text-[15px] text-grey-600 leading-relaxed">Prices are confirmed when you reach checkout. If an item&apos;s price has changed, your cart will be updated and you&apos;ll be notified before completing your purchase.</p>
             </FaqItem>
             <FaqItem question="Who handles payment?">
-              <p className="text-[15px] text-grey-600 leading-relaxed">Stripe. We never see or store your card details.</p>
+              <p className="text-[15px] text-grey-600 leading-relaxed">Stripe — a trusted payment platform used by millions of businesses worldwide, including Amazon and Google. We never see or store your card details.</p>
             </FaqItem>
           </div>
         </div>
@@ -57,7 +57,7 @@ export default function FaqPage() {
           <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mb-2">Account</p>
           <div className="border-t border-grey-200">
             <FaqItem question="Can I delete my account?">
-              <p className="text-[15px] text-grey-600 leading-relaxed">Yes — you can delete your account from your account page. Your account is permanently deleted. Your past orders are retained for our business records, but they are no longer linked to your account.</p>
+              <p className="text-[15px] text-grey-600 leading-relaxed">Yes — you can delete your account from your account page. Your account is permanently deleted. Your orders are retained for our business records, but they are no longer linked to your account.</p>
             </FaqItem>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function FaqPage() {
           <div className="border-t border-grey-200">
             <FaqItem question="How do I request a refund?">
               <p className="text-[15px] text-grey-600 leading-relaxed">
-                Email us at <a href="mailto:help@sunglassmonster.com" className="underline underline-offset-4 hover:text-ink transition-colors duration-200">help@sunglassmonster.com</a>{" "}with your order number. We&apos;ll walk you through the process.
+                Email us at <a href="mailto:help@sunglassmonster.com" className="text-brand underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">help@sunglassmonster.com</a>{" "}with your order number. We&apos;ll walk you through the process.
               </p>
             </FaqItem>
             <FaqItem question="How long does a refund take?">
@@ -85,7 +85,7 @@ export default function FaqPage() {
           <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mb-2">Shipping</p>
           <div className="border-t border-b border-grey-200 py-5">
             <p className="text-[15px] text-grey-600 leading-relaxed">
-              See our <Link href="/shipping" className="text-ink underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Shipping Policy</Link> page for details.
+              See our <Link href="/shipping" className="text-brand underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Shipping Policy</Link> page for details.
             </p>
           </div>
         </div>

@@ -7,7 +7,7 @@ const BRANDS = {
     favicon: "/prosport-sunglasses/favicon.png",
     description: "Athletic sunglasses built for speed, clarity, and all-day performance.",
     announcements: [
-      "Free Standard Shipping on All Orders Over $75",
+      "Shipping Included in the Price",
       "Summer Clearance — Up to 50% Off",
       "New HD Polarized Lenses Just Dropped",
       "Lifetime Lens Warranty on Every Frame",
@@ -41,7 +41,7 @@ const BRANDS = {
     favicon: "/bikershades/favicon.png",
     description: "Rider-first eyewear made for wind, glare, and the road ahead.",
     announcements: [
-      "Free Standard Shipping on All Orders Over $75",
+      "Shipping Included in the Price",
       "Summer Clearance — Up to 50% Off",
       "New HD Polarized Lenses Just Dropped",
       "Lifetime Lens Warranty on Every Frame",
@@ -75,7 +75,7 @@ const BRANDS = {
     favicon: "/sunglass-monster/favicon.png",
     description: "Bold, fashion-forward sunglasses with standout style and easy all-day wear.",
     announcements: [
-      "Free Standard Shipping on All Orders Over $75",
+      "Shipping Included in the Price",
       "Summer Clearance — Up to 50% Off",
       "New HD Polarized Lenses Just Dropped",
       "Lifetime Lens Warranty on Every Frame",

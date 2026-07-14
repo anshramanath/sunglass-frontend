@@ -9,7 +9,7 @@ export default function ReturnsPage() {
 
           <section>
             <h2 className="text-[21px] font-normal">Requesting a return</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">To request a return or refund, email us at <a href="mailto:help@sunglassmonster.com" className="text-ink underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">help@sunglassmonster.com</a> with your order number.</p>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">To request a return or refund, email us at <a href="mailto:help@sunglassmonster.com" className="text-brand underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">help@sunglassmonster.com</a> with your order number.</p>
           </section>
 
           <section className="border-t border-grey-200 pt-9">
@@ -18,13 +18,13 @@ export default function ReturnsPage() {
           </section>
 
           <section className="border-t border-grey-200 pt-9">
-            <h2 className="text-[21px] font-normal">Refund timing</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">Once we receive and inspect the return, refunds are issued to your original payment method within 5–7 business days. Shipping charges are non-refundable unless the return is due to our error or required by applicable law.</p>
+            <h2 className="text-[21px] font-normal">Refund amount</h2>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">If we made a mistake on your order, you&apos;ll get a full refund. If you&apos;re returning for any other reason, we&apos;ll refund your order price minus the shipping cost.</p>
           </section>
 
           <section className="border-t border-grey-200 pt-9">
-            <h2 className="text-[21px] font-normal">Damaged or incomplete returns</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">Partial refunds may be issued at our discretion for damaged or incomplete returns.</p>
+            <h2 className="text-[21px] font-normal">Refund timing</h2>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">Once we receive and inspect the return, refunds are issued to your original payment method within 5–7 business days.</p>
           </section>
 
         </div>

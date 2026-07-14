@@ -171,7 +171,7 @@ export default function CheckoutPage() {
 
             <dl className="mt-6 space-y-2.5 text-[15px]">
               <div className="flex justify-between"><dt className="text-grey-600">Subtotal</dt><dd>{formatPrice(totalCents)}</dd></div>
-              <div className="flex justify-between"><dt className="text-grey-600">Shipping</dt><dd>Free</dd></div>
+              <div className="flex justify-between"><dt className="text-grey-600">Shipping</dt><dd>Included in price</dd></div>
               <div className="flex justify-between"><dt className="text-grey-600">Tax</dt><dd className="text-grey-500">Calculated at payment</dd></div>
             </dl>
 

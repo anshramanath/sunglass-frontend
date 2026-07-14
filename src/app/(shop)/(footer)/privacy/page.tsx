@@ -19,7 +19,7 @@ export default function PrivacyPage() {
 
           <section className="border-t border-grey-200 pt-9">
             <h2 className="text-[21px] font-normal">Third parties</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">Stripe securely processes payments on our behalf. Payment card information is collected directly by Stripe and is never stored on our servers. Supabase powers our authentication and database.</p>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">Payments are processed by Stripe, one of the world&apos;s leading payment platforms. Your card details go directly to Stripe and are never stored on our servers. Authentication and data storage are handled by Supabase, a secure infrastructure platform trusted by thousands of companies worldwide.</p>
           </section>
 
           <section className="border-t border-grey-200 pt-9">
@@ -29,12 +29,13 @@ export default function PrivacyPage() {
 
           <section className="border-t border-grey-200 pt-9">
             <h2 className="text-[21px] font-normal">Your data</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">You can delete your account at any time from your account page. Deleting your account removes your sign-in credentials and permanently disconnects your account from your past orders. We retain order records, including shipping information, where necessary for legal, accounting, fraud prevention, customer support, dispute resolution, and other legitimate business purposes. To request additional information about your data, contact us at <a href="mailto:help@sunglassmonster.com" className="text-ink underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">help@sunglassmonster.com</a>.</p>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">You can delete your account at any time from your account page. Deleting your account removes your sign-in credentials and permanently disconnects your account from your orders. We retain order records, including shipping information, where necessary for legal, accounting, fraud prevention, customer support, dispute resolution, and other legitimate business purposes. To request additional information about your data, contact us at <a href="mailto:help@sunglassmonster.com" className="text-brand underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">help@sunglassmonster.com</a>.</p>
           </section>
 
           <section className="border-t border-grey-200 pt-9">
             <h2 className="text-[21px] font-normal">Updates</h2>
             <p className="text-[15px] text-grey-600 leading-relaxed mt-3">We may update this policy. The latest version is always at this page.</p>
+            <p className="text-[13px] text-grey-400 mt-2">Last updated July 14, 2026</p>
           </section>
 
         </div>

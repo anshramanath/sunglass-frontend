@@ -7,14 +7,14 @@ export default function ContactPage() {
         <div className="mt-9 space-y-7">
           <div>
             <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium">Email</p>
-            <a href="mailto:help@sunglassmonster.com" className="text-[16px] mt-1.5 block underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
+            <a href="mailto:help@sunglassmonster.com" className="text-[16px] mt-1.5 block underline underline-offset-4 hover:opacity-60 transition-opacity duration-200 text-brand">
               help@sunglassmonster.com
             </a>
           </div>
 
           <div>
             <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium">Phone</p>
-            <a href="tel:8772453721" className="text-[16px] mt-1.5 block underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
+            <a href="tel:8772453721" className="text-[16px] mt-1.5 block underline underline-offset-4 hover:opacity-60 transition-opacity duration-200 text-brand">
               877-245-3721
             </a>
           </div>

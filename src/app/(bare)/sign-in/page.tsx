@@ -12,7 +12,7 @@ const BENEFITS = [
     extra: <circle cx="7" cy="7" r="1.2" fill="currentColor" stroke="none" />,
   },
   {
-    label: "Free\nShipping",
+    label: "Shipping\nin Price",
     path: "M1 4h14v11H1zM15 8h4l4 4v3h-8zM6 18.5a2 2 0 1 0 4 0 2 2 0 0 0-4 0zM16.5 18.5a2 2 0 1 0 4 0 2 2 0 0 0-4 0z",
   },
   {
