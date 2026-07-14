@@ -28,10 +28,6 @@ export default function FaqPage() {
                   <dt className="w-40 shrink-0 text-ink">Refunded</dt>
                   <dd className="text-grey-600 leading-relaxed">Your order has been fully refunded.</dd>
                 </div>
-                <div className="flex gap-4">
-                  <dt className="w-40 shrink-0 text-ink">Partially Refunded</dt>
-                  <dd className="text-grey-600 leading-relaxed">A partial refund has been issued on your order.</dd>
-                </div>
               </dl>
             </FaqItem>
           </div>
