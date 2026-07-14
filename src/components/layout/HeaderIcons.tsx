@@ -150,7 +150,7 @@ function SavedPanelContent() {
   );
 }
 
-function SearchPanelContent({ featured }: { featured: ProductListItem[] }) {
+function SearchPanelContent({ filler }: { filler: ProductListItem[] }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ProductListItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -174,7 +174,7 @@ function SearchPanelContent({ featured }: { featured: ProductListItem[] }) {
     return () => clearTimeout(timeout);
   }, [query]);
 
-  const displayed = query.trim() ? results : featured;
+  const displayed = query.trim() ? results : filler;
 
   return (
     <>
@@ -220,7 +220,7 @@ function SearchPanelContent({ featured }: { featured: ProductListItem[] }) {
                   </div>
                   <p className="mt-2 text-[15px]">{p.name}</p>
                   <p className="text-[15px] text-grey-600">
-                    {p.sale && !p.variations.length ? (
+                    {p.sale && !!p.sku ? (
                       <>
                         <span className="line-through mr-1.5">{formatPrice(p.minPriceCents)}</span>
                         <span style={{ color: "var(--color-brand)" }}>{formatPrice(p.salePriceCents!)}</span>
@@ -317,7 +317,7 @@ function NavPanelContent({ tree, isSignedIn }: { tree: CategoryNode[]; isSignedI
   );
 }
 
-export default function HeaderIcons({ isSignedIn, featured, tree }: { isSignedIn: boolean; featured: ProductListItem[]; tree: CategoryNode[] }) {
+export default function HeaderIcons({ isSignedIn, filler, tree }: { isSignedIn: boolean; filler: ProductListItem[]; tree: CategoryNode[] }) {
   const [openPanel, setOpenPanel] = useState<Panel | null>(null);
   const loggedIn = useLoggedIn();
   const cartCount = useCartCount();
@@ -370,7 +370,7 @@ export default function HeaderIcons({ isSignedIn, featured, tree }: { isSignedIn
       </div>
 
       <Sheet open={openPanel === "search"} onOpenChange={(o) => !o && setOpenPanel(null)}>
-        <SheetContent aria-describedby={undefined}><SearchPanelContent featured={featured} /></SheetContent>
+        <SheetContent aria-describedby={undefined}><SearchPanelContent filler={filler} /></SheetContent>
       </Sheet>
 
       <Sheet open={openPanel === "saved"} onOpenChange={(o) => !o && setOpenPanel(null)}>

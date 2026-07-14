@@ -19,6 +19,7 @@ export type ProductListItem = {
   id: string;
   name: string;
   slug: string;
+  sku: string | null;
   minPriceCents: number;
   maxPriceCents: number;
   salePriceCents: number | null;

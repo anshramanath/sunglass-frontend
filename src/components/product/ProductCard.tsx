@@ -77,7 +77,7 @@ export default function ProductCard({ product }: { product: ProductListItem }) {
         </div>
 
         <Link href={href} className="block text-[15px] mt-1 hover:opacity-60 transition-opacity duration-200">
-          {product.sale && !product.variations.length ? (
+          {product.sale && !!product.sku ? (
             <>
               <span className="text-grey-500 line-through mr-1.5">{formatPrice(product.minPriceCents)}</span>
               <span style={{ color: "var(--color-brand)" }}>{formatPrice(product.salePriceCents!)}</span>

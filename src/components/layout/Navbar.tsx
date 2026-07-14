@@ -1,9 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCategories, getProducts } from "@/lib/api";
+import { getCategories, getFiller } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { CategoryNode, ProductListItem } from "@/lib/types";
-import { collectLeaves } from "@/lib/utils";
 import { getUser } from "@/lib/auth";
 import HeaderIcons from "./HeaderIcons";
 
@@ -38,14 +37,7 @@ export default async function Navbar() {
   const [user, tree] = await Promise.all([getUser(), getCategories()]);
   const isSignedIn = !!user;
 
-  let featured: ProductListItem[] = [];
-  for (const leaf of Object.values(collectLeaves(tree))) {
-    const res = await getProducts({ categoryId: leaf.id, size: 6 }).catch(() => null);
-    if (res && res.totalProducts >= 6) {
-      featured = res.products.slice(0, 6);
-      break;
-    }
-  }
+  const filler: ProductListItem[] = await getFiller(6).catch(() => []);
 
   return (
     <header className="sticky top-0 z-40 bg-paper border-b border-grey-200">
@@ -85,7 +77,7 @@ export default async function Navbar() {
             </li>
           </ul>
 
-          <HeaderIcons isSignedIn={isSignedIn} featured={featured} tree={tree} />
+          <HeaderIcons isSignedIn={isSignedIn} filler={filler} tree={tree} />
         </div>
       </div>
     </header>
