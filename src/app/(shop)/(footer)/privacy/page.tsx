@@ -29,7 +29,7 @@ export default function PrivacyPage() {
 
           <section className="border-t border-grey-200 pt-9">
             <h2 className="text-[21px] font-normal">Your data</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">You can delete your account at any time from your account page. Deleting your account removes your sign-in credentials and permanently disconnects your account from your past orders. We retain order records, including shipping information, where necessary for legal, accounting, fraud prevention, customer support, dispute resolution, and other legitimate business purposes. To request additional information about your data, contact us at <a href="mailto:support@[brand].com" className="text-ink underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">support@[brand].com</a>.</p>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">You can delete your account at any time from your account page. Deleting your account removes your sign-in credentials and permanently disconnects your account from your past orders. We retain order records, including shipping information, where necessary for legal, accounting, fraud prevention, customer support, dispute resolution, and other legitimate business purposes. To request additional information about your data, contact us at <a href="mailto:help@sunglassmonster.com" className="text-ink underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">help@sunglassmonster.com</a>.</p>
           </section>
 
           <section className="border-t border-grey-200 pt-9">

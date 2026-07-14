@@ -9,7 +9,7 @@ export default function ReturnsPage() {
 
           <section>
             <h2 className="text-[21px] font-normal">Requesting a return</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">To request a return or refund, email us at <a href="mailto:support@[brand].com" className="text-ink underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">support@[brand].com</a> with your order number.</p>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">To request a return or refund, email us at <a href="mailto:help@sunglassmonster.com" className="text-ink underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">help@sunglassmonster.com</a> with your order number.</p>
           </section>
 
           <section className="border-t border-grey-200 pt-9">

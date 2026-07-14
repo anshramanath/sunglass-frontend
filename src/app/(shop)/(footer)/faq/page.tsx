@@ -25,10 +25,6 @@ export default function FaqPage() {
                   <dd className="text-grey-600 leading-relaxed">It&apos;s on its way.</dd>
                 </div>
                 <div className="flex gap-4">
-                  <dt className="w-40 shrink-0 text-ink">Delivered</dt>
-                  <dd className="text-grey-600 leading-relaxed">It&apos;s arrived.</dd>
-                </div>
-                <div className="flex gap-4">
                   <dt className="w-40 shrink-0 text-ink">Refunded</dt>
                   <dd className="text-grey-600 leading-relaxed">Your order has been fully refunded.</dd>
                 </div>
@@ -76,7 +72,7 @@ export default function FaqPage() {
           <div className="border-t border-grey-200">
             <FaqItem question="How do I request a refund?">
               <p className="text-[15px] text-grey-600 leading-relaxed">
-                Email us at <a href="mailto:support@[brand].com" className="underline underline-offset-4 hover:text-ink transition-colors duration-200">support@[brand].com</a>{" "}with your order number. We&apos;ll walk you through the process.
+                Email us at <a href="mailto:help@sunglassmonster.com" className="underline underline-offset-4 hover:text-ink transition-colors duration-200">help@sunglassmonster.com</a>{" "}with your order number. We&apos;ll walk you through the process.
               </p>
             </FaqItem>
             <FaqItem question="How long does a refund take?">
