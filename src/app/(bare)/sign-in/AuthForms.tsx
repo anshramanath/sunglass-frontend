@@ -5,15 +5,16 @@ import { useRouter } from "next/navigation";
 import { signIn, signUp } from "@/lib/auth";
 import { useSetLoggedIn } from "@/components/providers/AuthProvider";
 
-export default function AuthForms() {
+export default function AuthForms({ confirmedEmail }: { confirmedEmail?: string }) {
   const router = useRouter();
   const setLoggedIn = useSetLoggedIn();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(confirmedEmail ?? "");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(confirmedEmail ? "Email confirmed — sign in below." : null);
   const [isPending, setIsPending] = useState(false);
 
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
@@ -24,6 +25,12 @@ export default function AuthForms() {
       ? await signIn(email, password)
       : await signUp(name, email, password);
     if (err) { setError(err); setIsPending(false); return; }
+    if (mode === "signup") {
+      setMode("signin");
+      setNotice(`Check your email at ${email} to confirm your account, then sign in below.`);
+      setIsPending(false);
+      return;
+    }
     setLoggedIn(true);
     router.push("/");
   }
@@ -31,6 +38,7 @@ export default function AuthForms() {
   function switchMode(next: "signin" | "signup") {
     setMode(next);
     setError(null);
+    setNotice(null);
   }
 
   return (
@@ -106,6 +114,7 @@ export default function AuthForms() {
           </>
         )}
       </div>
+      {notice && <p className="text-[13px] text-grey-600 leading-snug mt-4">{notice}</p>}
     </>
   );
 }

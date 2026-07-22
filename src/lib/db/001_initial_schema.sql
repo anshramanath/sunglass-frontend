@@ -135,7 +135,7 @@ create policy "order_items: users read own rows"
 
 
 create table admins (
-  user_id uuid primary key references auth.users(id)
+  user_id uuid primary key references auth.users(id) on delete cascade
 );
 
 create table cart_items (

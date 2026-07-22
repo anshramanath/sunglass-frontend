@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getBrand } from "@/lib/brand";
 
 import type { User } from "@supabase/supabase-js";
 
@@ -41,13 +42,17 @@ export async function signIn(email: string, password: string): Promise<string | 
 export async function signUp(name: string, email: string, password: string): Promise<string | null> {
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { name } },
+    options: {
+      data: { name },
+      emailRedirectTo: `${getBrand().url}/sign-in?email=${encodeURIComponent(email)}`,
+    },
   });
 
-  if (error) return error.message;
+  if (error) return error.message || JSON.stringify(error);
+  if (data.user?.identities?.length === 0) return "An account with this email already exists.";
 
   return null;
 }

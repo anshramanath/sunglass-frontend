@@ -25,10 +25,15 @@ const BENEFITS = [
   },
 ];
 
-export default async function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ email?: string }>;
+}) {
   const user = await getUser();
   if (user) redirect("/");
 
+  const { email: confirmedEmail } = await searchParams;
   const brand = getBrand();
 
   return (
@@ -87,7 +92,7 @@ export default async function SignInPage() {
             ))}
           </div>
 
-          <AuthForms />
+          <AuthForms confirmedEmail={confirmedEmail} />
         </div>
       </div>
     </div>
