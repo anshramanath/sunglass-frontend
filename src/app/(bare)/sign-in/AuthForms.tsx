@@ -14,7 +14,7 @@ export default function AuthForms({ confirmedEmail }: { confirmedEmail?: string 
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(confirmedEmail ? "Email confirmed — sign in below." : null);
+  const [notice, setNotice] = useState<string | null>(confirmedEmail ? "Email confirmed — sign in." : null);
   const [isPending, setIsPending] = useState(false);
 
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
@@ -27,7 +27,7 @@ export default function AuthForms({ confirmedEmail }: { confirmedEmail?: string 
     if (err) { setError(err); setIsPending(false); return; }
     if (mode === "signup") {
       setMode("signin");
-      setNotice(`Check your email at ${email} to confirm your account, then sign in below.`);
+      setNotice(`Check your email at ${email} to confirm your account, then sign in.`);
       setIsPending(false);
       return;
     }
