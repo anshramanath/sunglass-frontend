@@ -17,6 +17,8 @@ export default function ResetForm({ code }: { code?: string }) {
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!code) { setError("Invalid or expired reset link."); return; }
+    if (!password) { setError("Password is required."); return; }
+    if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
     if (password !== confirm) { setError("Passwords do not match."); return; }
     setError(null);
     setIsPending(true);
@@ -46,7 +48,7 @@ export default function ResetForm({ code }: { code?: string }) {
         </button>
       </div>
       <input
-        type={showPw ? "text" : "password"}
+        type="password"
         autoComplete="new-password"
         placeholder="Confirm Password"
         value={confirm}

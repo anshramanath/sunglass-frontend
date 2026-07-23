@@ -95,6 +95,9 @@ export async function requestPasswordReset(email: string): Promise<string | null
 }
 
 export async function resetWithCode(code: string, password: string): Promise<string | null> {
+  const passwordErr = validatePassword(password);
+  if (passwordErr) return passwordErr;
+
   const supabase = await createClient();
 
   const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
