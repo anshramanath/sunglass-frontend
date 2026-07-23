@@ -41,6 +41,9 @@ export default async function ResetPasswordPage({
             </svg>
             Back
           </Link>
+          <a href="/contact" className="whitespace-nowrap text-[13px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
+            Need Help?
+          </a>
         </div>
 
         <div className="flex-1 flex flex-col justify-center w-full max-w-[380px] mx-auto py-10">

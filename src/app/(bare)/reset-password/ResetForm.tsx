@@ -9,6 +9,7 @@ export default function ResetForm({ code }: { code?: string }) {
   const router = useRouter();
   const setLoggedIn = useSetLoggedIn();
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -16,6 +17,7 @@ export default function ResetForm({ code }: { code?: string }) {
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!code) { setError("Invalid or expired reset link."); return; }
+    if (password !== confirm) { setError("Passwords do not match."); return; }
     setError(null);
     setIsPending(true);
     const err = await resetWithCode(code, password);
@@ -43,6 +45,14 @@ export default function ResetForm({ code }: { code?: string }) {
           {showPw ? "Hide" : "Show"}
         </button>
       </div>
+      <input
+        type={showPw ? "text" : "password"}
+        autoComplete="new-password"
+        placeholder="Confirm Password"
+        value={confirm}
+        onChange={(e) => setConfirm(e.target.value)}
+        className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-4 h-12 text-base outline-none placeholder-grey-400"
+      />
       {error && <p className="text-[13px] text-brand">{error}</p>}
       <button
         type="submit"
