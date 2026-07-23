@@ -77,7 +77,7 @@ export default function AuthForms({ confirmedEmail }: { confirmedEmail?: string 
           />
         )}
         <input
-          type="email"
+          type="text"
           name="email"
           autoComplete="email"
           placeholder="Email Address"
