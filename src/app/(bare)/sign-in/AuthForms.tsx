@@ -19,8 +19,19 @@ export default function AuthForms({ confirmedEmail }: { confirmedEmail?: string 
   const [notice, setNotice] = useState<string | null>(confirmedEmail ? "Email confirmed — sign in." : null);
   const [isPending, setIsPending] = useState(false);
 
+  function validate(): string | null {
+    if (!email.trim()) return "Email is required.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Enter a valid email address.";
+    if (mode === "signup" && !name.trim()) return "Name is required.";
+    if (mode !== "forgot" && !password) return "Password is required.";
+    if (mode !== "forgot" && password.length < 8) return "Password must be at least 8 characters.";
+    return null;
+  }
+
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
+    const validationError = validate();
+    if (validationError) { setError(validationError); return; }
     setError(null);
     setIsPending(true);
 

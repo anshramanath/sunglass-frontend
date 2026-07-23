@@ -6,6 +6,20 @@ import { getBrand } from "@/lib/brand";
 
 import type { User } from "@supabase/supabase-js";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateEmail(email: string): string | null {
+  if (!email.trim()) return "Email is required.";
+  if (!EMAIL_RE.test(email)) return "Enter a valid email address.";
+  return null;
+}
+
+function validatePassword(password: string): string | null {
+  if (!password) return "Password is required.";
+  if (password.length < 8) return "Password must be at least 8 characters.";
+  return null;
+}
+
 export async function getToken(): Promise<string | null> {
   const supabase = await createClient();
 
@@ -30,6 +44,11 @@ export async function requireUser(): Promise<User> {
 }
 
 export async function signIn(email: string, password: string): Promise<string | null> {
+  const emailErr = validateEmail(email);
+  if (emailErr) return emailErr;
+  const passwordErr = validatePassword(password);
+  if (passwordErr) return passwordErr;
+
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -40,6 +59,12 @@ export async function signIn(email: string, password: string): Promise<string | 
 }
 
 export async function signUp(name: string, email: string, password: string): Promise<string | null> {
+  if (!name.trim()) return "Name is required.";
+  const emailErr = validateEmail(email);
+  if (emailErr) return emailErr;
+  const passwordErr = validatePassword(password);
+  if (passwordErr) return passwordErr;
+
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signUp({
