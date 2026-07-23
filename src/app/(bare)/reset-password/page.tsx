@@ -6,9 +6,9 @@ import ResetForm from "./ResetForm";
 export default async function ResetPasswordPage({
   searchParams,
 }: {
-  searchParams: Promise<{ code?: string }>;
+  searchParams: Promise<{ code?: string; error?: string }>;
 }) {
-  const { code } = await searchParams;
+  const { code, error } = await searchParams;
   const brand = getBrand();
 
   return (
@@ -45,7 +45,10 @@ export default async function ResetPasswordPage({
 
         <div className="flex-1 flex flex-col justify-center w-full max-w-[380px] mx-auto py-10">
           <h1 className="text-[28px] font-normal tracking-[-0.01em] mb-6">Set a new password</h1>
-          <ResetForm code={code} />
+          {error
+            ? <p className="text-[13px] text-brand">This reset link is invalid or has expired. Please request a new one.</p>
+            : <ResetForm code={code} />
+          }
         </div>
       </div>
     </div>
