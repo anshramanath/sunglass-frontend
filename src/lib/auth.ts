@@ -57,6 +57,33 @@ export async function signUp(name: string, email: string, password: string): Pro
   return null;
 }
 
+export async function requestPasswordReset(email: string): Promise<string | null> {
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${getBrand().url}/reset-password`,
+  });
+
+  if (error) return error.message;
+
+  return null;
+}
+
+export async function resetWithCode(code: string, password: string): Promise<string | null> {
+  const supabase = await createClient();
+
+  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+  if (exchangeError) return exchangeError.message;
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    await supabase.auth.signOut();
+    return error.message;
+  }
+
+  return null;
+}
+
 export async function signOut() {
   const supabase = await createClient();
 
