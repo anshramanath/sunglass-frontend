@@ -116,15 +116,6 @@ export default function AuthForms({ confirmedEmail }: { confirmedEmail?: string 
               Create An Account
             </button>
           </>
-        ) : mode === "signup" ? (
-          <>
-            <a href="#" className="whitespace-nowrap text-[13px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
-              Need Help?
-            </a>
-            <button type="button" onClick={() => switchMode("signin")} className="whitespace-nowrap text-[13px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
-              Sign In
-            </button>
-          </>
         ) : (
           <button type="button" onClick={() => switchMode("signin")} className="whitespace-nowrap text-[13px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
             Back to Sign In

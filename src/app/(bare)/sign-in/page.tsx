@@ -67,7 +67,7 @@ export default async function SignInPage({
             </svg>
             Back
           </Link>
-          <a href="#" className="whitespace-nowrap text-[13px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
+          <a href="/contact" className="whitespace-nowrap text-[13px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">
             Need Help?
           </a>
         </div>
