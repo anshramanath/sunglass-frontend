@@ -1,6 +1,10 @@
 "use server";
 
-import type { ApiResponse, BookmarkedItem, CartItem, CartValidationResult, CategoryNode, CheckoutUrl, Order, ProductDetail, ProductListItem, ProductsResponse, SyncedResponse, ValidateCartItem } from "@/lib/types";
+import type {
+  ApiResponse, BookmarkedItem, CartItem, CartValidationResult, CategoryNode,
+  CheckoutUrl, Order, ProductDetail, ProductListItem, ProductsResponse,
+  SyncedResponse, TBYBPackage, TBYBSubmission, ValidateCartItem,
+} from "@/lib/types";
 import { redirect, notFound } from "next/navigation";
 import { getToken, getUser } from "@/lib/auth";
 
@@ -170,6 +174,28 @@ export async function searchProducts(search: string): Promise<ProductListItem[]>
       case 503:
         throw new Error("Service unavailable");
 
+      default:
+        redirect("/try-again");
+    }
+  }
+
+  return json.data;
+}
+
+// TBYB
+export async function getPackages(): Promise<TBYBPackage[]> {
+  const res = await apiFetch("/api/public/packages", { brandSlug: BRAND_SLUG });
+
+  const json: ApiResponse<TBYBPackage[]> = await res.json();
+
+  if (!json.success) {
+    switch(res.status) {
+      case 500:
+        throw new Error("Server error");
+
+      case 503:
+        throw new Error("Service unavailable");
+        
       default:
         redirect("/try-again");
     }
@@ -381,6 +407,72 @@ export async function createCheckoutSession(
 
       default:
         return { data: json.data ?? [], status: res.status };
+    }
+  }
+
+  return json.data;
+}
+
+// TBYB
+export async function submitTBYB(data: TBYBSubmission): Promise<{ id: string }> {
+  const res = await authedFetch("/api/user/tbyb", "POST", { brandSlug: BRAND_SLUG, ...data });
+
+  const json: ApiResponse<{ id: string }> = await res.json();
+
+  if (!json.success) {
+    switch (res.status) {
+      case 401:
+        redirect("/sign-in");
+
+      case 404:
+        throw new Error("Package not found");
+
+      case 500:
+        throw new Error("Server error");
+
+      case 503:
+        throw new Error("Service unavailable");
+
+      default:
+        redirect("/try-again");
+    }
+  }
+
+  return json.data;
+}
+
+// TBYB — raw fetch so the browser sets Content-Type with the multipart boundary.
+export async function uploadFile(formData: FormData): Promise<{ url: string }> {
+  const user = await getUser();
+  if (!user) redirect("/sign-in");
+
+  const token = await getToken();
+
+  formData.append("brandSlug", BRAND_SLUG);
+
+  let res: Response;
+  try {
+    res = await fetch(`${SERVER_BASE_URL}/api/user/upload`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+  } catch {
+    throw new Error("Network error");
+  }
+
+  const json: ApiResponse<{ url: string }> = await res.json();
+
+  if (!json.success) {
+    switch (res.status) {
+      case 401:
+        redirect("/sign-in");
+
+      case 500:
+        throw new Error("Server error");
+
+      default:
+        redirect("/try-again");
     }
   }
 

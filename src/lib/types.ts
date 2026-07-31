@@ -129,3 +129,24 @@ export type CartValidationResult = { data: ValidateCartItem[]; status: number };
 export type CheckoutUrl = { url: string };
 
 export type SyncedResponse = { synced: number };
+
+export type TBYBPackage = {
+  id: string;
+  name: string;
+  slug: string;
+  priceCents: number;
+  pairsMin: number;
+  pairsMax: number;
+  imageSrc: string;
+  brands: string[];
+};
+
+export type TBYBSubmission = {
+  packageId: string;
+  odSphere: string | null; odCylinder: string | null; odAxis: string | null;
+  osSphere: string | null; osCylinder: string | null; osAxis: string | null;
+  lensType: string | null; helmetSize: string | null; hatSize: string | null;
+  noseBridge: string | null; sunglassFit: string | null; frameType: string | null;
+  comments: string; email: string; phone: string;
+  prescriptionUrl: string | null; headshotUrl: string | null;
+};
