@@ -7,51 +7,43 @@ import { submitTBYB, uploadFile } from "@/lib/api";
 
 // ── Option generators ─────────────────────────────────────────────────────────
 
-type Opt = { value: string; label: string };
-
-const SPHERE_OPTS: Opt[] = (() => {
-  const opts: Opt[] = [];
-  for (let i = -80; i <= -1; i++) { const l = (i * 0.25).toFixed(2); opts.push({ value: l, label: l }); }
-  opts.push({ value: "plano", label: "None" });
-  for (let i = 1; i <= 80; i++) { const l = "+" + (i * 0.25).toFixed(2); opts.push({ value: l, label: l }); }
+const SPHERE_OPTS: string[] = (() => {
+  const opts: string[] = [];
+  for (let i = -80; i <= -1; i++) { opts.push((i * 0.25).toFixed(2)); }
+  opts.push("None");
+  for (let i = 1; i <= 80; i++) { opts.push("+" + (i * 0.25).toFixed(2)); }
   return opts;
 })();
 
-const CYLINDER_OPTS: Opt[] = (() => {
-  const opts: Opt[] = [];
-  for (let i = -24; i <= -1; i++) { const l = (i * 0.25).toFixed(2); opts.push({ value: l, label: l }); }
-  opts.push({ value: "plano", label: "None" });
-  for (let i = 1; i <= 24; i++) { const l = "+" + (i * 0.25).toFixed(2); opts.push({ value: l, label: l }); }
+const CYLINDER_OPTS: string[] = (() => {
+  const opts: string[] = [];
+  for (let i = -24; i <= -1; i++) { opts.push((i * 0.25).toFixed(2)); }
+  opts.push("None");
+  for (let i = 1; i <= 24; i++) { opts.push("+" + (i * 0.25).toFixed(2)); }
   return opts;
 })();
 
-const AXIS_OPTS: Opt[] = Array.from({ length: 180 }, (_, i) => ({ value: String(i + 1), label: `${i + 1}°` }));
+const AXIS_OPTS: string[] = Array.from({ length: 180 }, (_, i) => `${i + 1}°`);
 
-const HAT_OPTS: Opt[] = [
-  ...["5","5¼","5½","5¾","6","6⅛","6¼","6⅜","6½","6⅝","6¾","6⅞","7","7⅛","7¼","7⅜","7½","7⅝","7¾","7⅞","8","8¼","8½","8¾","9"].map(s => ({ value: s, label: s })),
-  { value: "unknown", label: "I don't know" },
-];
-
-const lo = (arr: string[]): Opt[] => arr.map(s => ({ value: s, label: s }));
+const HAT_OPTS: string[] = ["5","5¼","5½","5¾","6","6⅛","6¼","6⅜","6½","6⅝","6¾","6⅞","7","7⅛","7¼","7⅜","7½","7⅝","7¾","7⅞","8","8¼","8½","8¾","9","Not sure"];
 
 // ── Dropdown ──────────────────────────────────────────────────────────────────
 
 function Dropdown({ id, opts, value, onChange, disabled, openId, setOpenId }: {
-  id: string; opts: Opt[]; value: string | null; onChange: (v: string) => void;
+  id: string; opts: string[]; value: string | null; onChange: (v: string) => void;
   disabled?: boolean; openId: string | null; setOpenId: (id: string | null) => void;
 }) {
   const isOpen = openId === id && !disabled;
-  const label = disabled ? "—" : (opts.find(o => o.value === value)?.label ?? "Select");
 
   return (
-    <div data-dd className="relative">
+    <div className="relative">
       <button
         type="button"
         disabled={disabled}
         onClick={() => setOpenId(isOpen ? null : id)}
         className="w-full flex items-center justify-between gap-2 border border-grey-300 hover:border-ink disabled:hover:border-grey-300 disabled:text-grey-400 disabled:bg-grey-50 transition-colors duration-200 px-3.5 h-11 text-[15px] text-left bg-paper"
       >
-        <span className="truncate">{label}</span>
+        <span className="truncate">{disabled ? "—" : (value ?? "Select")}</span>
         <svg className="w-4 h-4 text-grey-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
           <path d="m6 9 6 6 6-6" />
         </svg>
@@ -59,9 +51,9 @@ function Dropdown({ id, opts, value, onChange, disabled, openId, setOpenId }: {
       {isOpen && (
         <div className="absolute left-0 right-0 top-full z-30 mt-1 bg-paper border border-grey-300 shadow-pop max-h-64 overflow-y-auto">
           {opts.map(o => (
-            <button key={o.value} type="button" onClick={() => { onChange(o.value); setOpenId(null); }}
+            <button key={o} type="button" onClick={() => { onChange(o); setOpenId(null); }}
               className="w-full text-left px-3.5 py-2.5 text-[15px] hover:bg-grey-50 transition-colors duration-200">
-              {o.label}
+              {o}
             </button>
           ))}
         </div>
@@ -72,7 +64,7 @@ function Dropdown({ id, opts, value, onChange, disabled, openId, setOpenId }: {
 
 // ── File upload ───────────────────────────────────────────────────────────────
 
-function FileUpload({ id, file, onChange }: { id: string; file: File | null; onChange: (f: File | null) => void }) {
+function FileUpload({ id, file, uploading, onChange }: { id: string; file: File | null; uploading: boolean; onChange: (f: File | null) => void }) {
   return (
     <div>
       <input id={id} type="file" className="hidden" onChange={e => onChange(e.target.files?.[0] ?? null)} />
@@ -80,17 +72,23 @@ function FileUpload({ id, file, onChange }: { id: string; file: File | null; onC
         <svg className="w-5 h-5 text-grey-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M12 16V4M12 4 7 9M12 4l5 5" /><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
         </svg>
-        {file
-          ? <span className="text-[15px] text-ink truncate">{file.name}</span>
-          : <span className="text-[15px] text-grey-500">Browse a file</span>
-        }
+        {file ? (
+          <span className="flex items-center gap-2 min-w-0">
+            <span className="text-[15px] text-ink truncate">{file.name}</span>
+            {uploading ? (
+              <span className="shrink-0 text-[13px] text-grey-400">Uploading…</span>
+            ) : (
+              <button type="button"
+                onClick={e => { e.preventDefault(); e.stopPropagation(); onChange(null); }}
+                className="shrink-0 text-[13px] text-grey-400 hover:text-ink underline underline-offset-4 transition-colors duration-200">
+                Remove
+              </button>
+            )}
+          </span>
+        ) : (
+          <span className="text-[15px] text-grey-500">Browse a file</span>
+        )}
       </label>
-      {file && (
-        <button type="button" onClick={() => onChange(null)}
-          className="mt-1 text-[13px] text-grey-400 hover:text-ink underline underline-offset-4 transition-colors duration-200">
-          Remove
-        </button>
-      )}
     </div>
   );
 }
@@ -131,7 +129,7 @@ function Step1({ vals, update, openId, setOpenId }: { vals: FormVals; update: Up
   function eyeRow(label: string, prefix: "od" | "os") {
     const cylKey = `${prefix}Cylinder` as keyof FormVals;
     const cylVal = vals[cylKey] as string | null;
-    const axisDisabled = !cylVal || cylVal === "plano";
+    const axisDisabled = !cylVal || cylVal === "None";
     return (
       <div className="border-t border-grey-200 pt-6 first:border-t-0 first:pt-0">
         <p className="text-[15px] mb-3">{label}</p>
@@ -167,7 +165,7 @@ function Step1({ vals, update, openId, setOpenId }: { vals: FormVals; update: Up
 // ── Step 2: Fitting questions ─────────────────────────────────────────────────
 
 function Step2({ vals, update, openId, setOpenId }: { vals: FormVals; update: UpdateFn; openId: string | null; setOpenId: (id: string | null) => void }) {
-  function field(key: keyof FormVals, label: string, opts: Opt[]) {
+  function field(key: keyof FormVals, label: string, opts: string[]) {
     return (
       <div>
         <label className="text-[13px] text-grey-500 mb-1.5 block">{label}</label>
@@ -180,12 +178,12 @@ function Step2({ vals, update, openId, setOpenId }: { vals: FormVals; update: Up
     <div>
       <h2 className="text-[21px] font-normal mb-6">Fitting Questions</h2>
       <div className="space-y-5">
-        {field("lensType",    "Lens Type Desired",      lo(["Single Vision", "Bifocals", "Progressive (no line bifocals)"]))}
-        {field("helmetSize",  "Helmet Size",             lo(["XSmall", "Small", "Medium", "Large", "XLarge", "XXLarge", "XXXLarge"]))}
+        {field("lensType",    "Lens Type Desired",      ["Single Vision", "Bifocals", "Progressive"])}
+        {field("helmetSize",  "Helmet Size",             ["X-Small", "Small", "Medium", "Large", "X-Large", "XX-Large", "XXX-Large"])}
         {field("hatSize",     "Hat Size",                HAT_OPTS)}
-        {field("noseBridge",  "Describe Nose Bridge",   lo(["It's small and petite", "It's thin and narrow", "It's higher or taller", "It's wider and larger", "It's lower or flatter", "Nothing unique — it's pretty normal looking"]))}
-        {field("sunglassFit", "When buying sunglasses", lo(["All styles and sizes fit me", "I have to select larger, wider frames", "I have to select smaller frames", "Most lenses touch my eyelashes", "I have to buy sunglasses with floating nose pieces", "I've never bought sunglasses"]))}
-        {field("frameType",   "Type of frame you prefer", lo(["With Foam Cushion", "Without Foam Cushion", "Removable Foam Cushion", "Goggles with Strap", "Cover Overs"]))}
+        {field("noseBridge",  "Describe Your Nose Bridge",   ["Small & Petite", "Thin & Narrow", "High & Tall", "Wide & Large", "Low & Flat", "Normal"])}
+        {field("sunglassFit", "When Buying Sunglasses", ["All Styles & Sizes Fit", "Need Larger & Wider Frames", "Need Smaller Frames", "Lenses Touch Eyelashes", "Need Floating Nose Pieces", "Never Bought Sunglasses"])}
+        {field("frameType",   "Frame Type Preferred", ["With Foam Cushion", "Without Foam Cushion", "Removable Foam Cushion", "Goggles With Strap", "Cover Overs"])}
       </div>
     </div>
   );
@@ -193,24 +191,24 @@ function Step2({ vals, update, openId, setOpenId }: { vals: FormVals; update: Up
 
 // ── Step 3: Additional info ───────────────────────────────────────────────────
 
-function Step3({ vals, update }: { vals: FormVals; update: UpdateFn }) {
+function Step3({ vals, update, rxUploading, photoUploading }: { vals: FormVals; update: UpdateFn; rxUploading: boolean; photoUploading: boolean }) {
   return (
     <div>
       <h2 className="text-[21px] font-normal mb-6">Additional Info</h2>
       <div className="space-y-5">
         <div>
-          <label className="text-[13px] text-grey-500 mb-1.5 block">Comments / special requests</label>
+          <label className="text-[13px] text-grey-500 mb-1.5 block">Comments / Special Requests (Optional)</label>
           <textarea rows={4} value={vals.comments} onChange={e => update("comments", e.target.value)}
             placeholder="Anything else we should know?"
             className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 py-2.5 text-[15px] outline-none placeholder-grey-400 resize-none" />
         </div>
         <div>
-          <label className="text-[13px] text-grey-500 mb-1.5 block">Upload prescription</label>
-          <FileUpload id="rxFile" file={vals.rxFile} onChange={f => update("rxFile", f)} />
+          <label className="text-[13px] text-grey-500 mb-1.5 block">Upload Prescription (Optional)</label>
+          <FileUpload id="rxFile" file={vals.rxFile} uploading={rxUploading} onChange={f => update("rxFile", f)} />
         </div>
         <div>
-          <label className="text-[13px] text-grey-500 mb-1.5 block">Upload head shot photo</label>
-          <FileUpload id="photoFile" file={vals.photoFile} onChange={f => update("photoFile", f)} />
+          <label className="text-[13px] text-grey-500 mb-1.5 block">Upload Head Shot (Optional)</label>
+          <FileUpload id="photoFile" file={vals.photoFile} uploading={photoUploading} onChange={f => update("photoFile", f)} />
         </div>
       </div>
 
@@ -220,10 +218,10 @@ function Step3({ vals, update }: { vals: FormVals; update: UpdateFn }) {
           <label className="text-[13px] text-grey-500 mb-1.5 block">Email</label>
           <input type="text" value={vals.email} onChange={e => update("email", e.target.value)}
             placeholder="you@example.com"
-            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-[15px] outline-none placeholder-grey-400" />
+            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-[15px] text-brand outline-none placeholder-grey-400" />
         </div>
         <div>
-          <label className="text-[13px] text-grey-500 mb-1.5 block">Phone (optional)</label>
+          <label className="text-[13px] text-grey-500 mb-1.5 block">Phone (Optional)</label>
           <input type="tel" value={vals.phone} onChange={e => update("phone", e.target.value)}
             placeholder="(555) 555-5555"
             className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-[15px] outline-none placeholder-grey-400" />
@@ -249,65 +247,110 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
   const [step, setStep] = useState(1);
   const [openId, setOpenId] = useState<string | null>(null);
   const [vals, setVals] = useState<FormVals>({ ...INIT, email: userEmail ?? "" });
+  const [rxUrl, setRxUrl] = useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [rxUploading, setRxUploading] = useState(false);
+  const [photoUploading, setPhotoUploading] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (!(e.target as Element).closest("[data-dd]")) setOpenId(null);
-    }
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
   function update(key: keyof FormVals, value: string | null | File) {
-    setVals(prev => {
-      const next = { ...prev, [key]: value };
-      if (key === "odCylinder" && value === "plano") next.odAxis = null;
-      if (key === "osCylinder" && value === "plano") next.osAxis = null;
-      return next;
-    });
+    setVals(prev => ({ ...prev, [key]: value }));
   }
+
+  useEffect(() => {
+    if (selectedPkg && formRef.current) {
+      formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [selectedPkg]);
+
+  useEffect(() => {
+    if (!vals.rxFile) { setRxUrl(null); return; }
+    setRxUploading(true);
+    async function run() {
+      try {
+        const fd = new FormData(); fd.append("file", vals.rxFile!);
+        const r = await uploadFile(fd);
+        setRxUrl(r.url);
+      } catch {
+        setError("Prescription upload failed!");
+      } finally {
+        setRxUploading(false);
+      }
+    }
+    run();
+  }, [vals.rxFile]);
+
+  useEffect(() => {
+    if (!vals.photoFile) { setPhotoUrl(null); return; }
+    setPhotoUploading(true);
+    async function run() {
+      try {
+        const fd = new FormData(); fd.append("file", vals.photoFile!);
+        const r = await uploadFile(fd);
+        setPhotoUrl(r.url);
+      } catch {
+        setError("Photo upload failed!");
+      } finally {
+        setPhotoUploading(false);
+      }
+    }
+    run();
+  }, [vals.photoFile]);
 
   function selectPkg(pkg: TBYBPackage) {
     if (!userEmail) { router.push("/sign-in"); return; }
     setSelectedPkg(pkg);
     setStep(1);
     setSubmitted(false);
+    setSubmissionId(null);
     setError(null);
-    setTimeout(() => {
-      if (formRef.current) {
-        const top = formRef.current.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top, behavior: "smooth" });
-      }
-    }, 50);
   }
 
   async function handleNext() {
-    if (step < 3) { setStep(s => s + 1); return; }
-    if (!vals.email.trim()) { setError("Email is required."); return; }
     setError(null);
+
+    if (step === 1) {
+      if (!vals.odSphere)   { setError("Please select your right eye (OD) sphere!"); return; }
+      if (!vals.odCylinder) { setError("Please select your right eye (OD) cylinder!"); return; }
+      if (vals.odCylinder !== "None" && !vals.odAxis) { setError("Please select your right eye (OD) axis!"); return; }
+      if (!vals.osSphere)   { setError("Please select your left eye (OS) sphere!"); return; }
+      if (!vals.osCylinder) { setError("Please select your left eye (OS) cylinder!"); return; }
+      if (vals.osCylinder !== "None" && !vals.osAxis) { setError("Please select your left eye (OS) axis!"); return; }
+      setStep(s => s + 1);
+      return;
+    }
+
+    if (step === 2) {
+      if (!vals.lensType)    { setError("Please select a lens type!"); return; }
+      if (!vals.helmetSize)  { setError("Please select your helmet size!"); return; }
+      if (!vals.hatSize)     { setError("Please select your hat size!"); return; }
+      if (!vals.noseBridge)  { setError("Please describe your nose bridge!"); return; }
+      if (!vals.sunglassFit) { setError("Please select your sunglass fit!"); return; }
+      if (!vals.frameType)   { setError("Please select a frame type!"); return; }
+      setStep(s => s + 1);
+      return;
+    }
+
+    if (!vals.email.trim()) { setError("Email is required!"); return; }
+    if (rxUploading || photoUploading) { setError("Files are still uploading — please wait!"); return; }
     setIsPending(true);
     try {
-      const toFd = (file: File) => { const fd = new FormData(); fd.append("file", file); return fd; };
-      const [rxResult, photoResult] = await Promise.all([
-        vals.rxFile    ? uploadFile(toFd(vals.rxFile))    : Promise.resolve(null),
-        vals.photoFile ? uploadFile(toFd(vals.photoFile)) : Promise.resolve(null),
-      ]);
-
-      await submitTBYB({
+      const result = await submitTBYB({
         packageId: selectedPkg!.id,
         odSphere: vals.odSphere, odCylinder: vals.odCylinder, odAxis: vals.odAxis,
         osSphere: vals.osSphere, osCylinder: vals.osCylinder, osAxis: vals.osAxis,
         lensType: vals.lensType, helmetSize: vals.helmetSize, hatSize: vals.hatSize,
         noseBridge: vals.noseBridge, sunglassFit: vals.sunglassFit, frameType: vals.frameType,
         comments: vals.comments, email: vals.email, phone: vals.phone,
-        prescriptionUrl: rxResult?.url ?? null,
-        headshotUrl: photoResult?.url ?? null,
+        prescriptionUrl: rxUrl,
+        headshotUrl: photoUrl,
       });
+      setSubmissionId(result.id);
       setSubmitted(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
@@ -317,8 +360,9 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
 
   return (
     <>
+      {openId && <div className="fixed inset-0 z-20" onClick={() => setOpenId(null)} />}
       {/* Package grid */}
-      <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-9 lg:mt-12">
+      <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-9 lg:mt-12 pb-16 lg:pb-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {packages.map(pkg => {
             const isSelected = selectedPkg?.id === pkg.id;
@@ -333,7 +377,7 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
                 <p className="text-[13px] text-grey-400 mt-1 max-h-0 opacity-0 group-hover/pkg:max-h-8 group-hover/pkg:opacity-100 overflow-hidden transition-all duration-200">
                   Includes: {pkg.brands.join(", ")}
                 </p>
-                <p className="text-[26px] mt-5">${(pkg.priceCents / 100).toFixed(0)}<span className="text-[13px] text-grey-500"> deposit</span></p>
+                <p className="text-[26px] mt-5">${(pkg.priceCents / 100).toFixed(0)}<span className="text-[13px] text-grey-500"> Deposit</span></p>
                 <button type="button" onClick={() => selectPkg(pkg)}
                   className={`mt-6 border text-[15px] py-3 transition-colors duration-200 ${isSelected ? "border-ink bg-ink text-paper" : "border-ink hover:bg-ink hover:text-paper"}`}>
                   {isSelected ? "Selected" : "Select Package"}
@@ -342,12 +386,13 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
             );
           })}
         </div>
+        <div ref={formRef} />
       </section>
 
       {/* Form region */}
       {selectedPkg && (
-        <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-16">
-          <div ref={formRef} className="max-w-[640px] mx-auto border-t border-grey-200 pt-12">
+        <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-16 pb-20 lg:pb-28">
+          <div className="max-w-[640px] mx-auto border-t border-grey-200 pt-12">
             {submitted ? (
               <div className="text-center py-6">
                 <div className="mx-auto w-16 h-16 rounded-full bg-[#22963F] grid place-items-center">
@@ -357,21 +402,26 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
                 </div>
                 <h2 className="text-[21px] font-normal mt-6">Request submitted</h2>
                 <p className="text-[15px] text-grey-600 leading-relaxed mt-3">
-                  Your <span className="text-ink">{selectedPkg.name}</span> try-on request is in. We'll reach out to confirm details before shipping your frames.
+                  Your <span className="text-ink">{selectedPkg.name}</span> try-on request is in. Request <span className="text-ink">#{submissionId?.slice(-8).toUpperCase()}</span>. We'll reach out to confirm details and collect your Deposit before shipping your frames.
                 </p>
               </div>
             ) : (
               <>
                 <StepDots step={step} />
                 <p className="text-[13px] text-grey-500 text-center mb-8">
-                  Selected: <span className="text-ink">{selectedPkg.name} — ${(selectedPkg.priceCents / 100).toFixed(0)} deposit</span>
+                  Selected: <span className="text-ink">{selectedPkg.name} — ${(selectedPkg.priceCents / 100).toFixed(0)} Deposit</span>
                 </p>
                 {step === 1 && <Step1 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
                 {step === 2 && <Step2 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
-                {step === 3 && <Step3 vals={vals} update={update} />}
-                {error && <p className="text-[13px] text-brand mt-4">{error}</p>}
-                <div className="flex items-center justify-between mt-10">
-                  <button type="button" onClick={() => setStep(s => s - 1)}
+                {step === 3 && <Step3 vals={vals} update={update} rxUploading={rxUploading} photoUploading={photoUploading} />}
+                {error && (
+                  <div className="flex items-start gap-2.5 border border-red-200 bg-red-50 text-red-700 text-sm px-4 py-3 mt-6">
+                    <svg className="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+                    <span>{error}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between mt-6">
+                  <button type="button" onClick={() => { setStep(s => s - 1); setError(null); }}
                     className={`text-[15px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200 ${step === 1 ? "invisible" : ""}`}>
                     Back
                   </button>

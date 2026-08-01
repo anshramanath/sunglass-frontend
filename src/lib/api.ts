@@ -415,7 +415,14 @@ export async function createCheckoutSession(
 
 // TBYB
 export async function submitTBYB(data: TBYBSubmission): Promise<{ id: string }> {
-  const res = await authedFetch("/api/user/tbyb", "POST", { brandSlug: BRAND_SLUG, ...data });
+  const res = await authedFetch("/api/user/tbyb", "POST", {
+    brandSlug: BRAND_SLUG,
+    ...data,
+    comments: data.comments || "None",
+    phone: data.phone || "None",
+    prescriptionUrl: data.prescriptionUrl || "None",
+    headshotUrl: data.headshotUrl || "None",
+  });
 
   const json: ApiResponse<{ id: string }> = await res.json();
 
