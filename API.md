@@ -584,24 +584,24 @@ Submits a Try Before You Buy form. Requires authentication — `user_id` is alwa
   "odSphere": "-1.25",
   "odCylinder": "-0.50",
   "odAxis": "90",
-  "osSphere": "plano",
-  "osCylinder": "plano",
-  "osAxis": null,
+  "osSphere": "None",
+  "osCylinder": "None",
+  "osAxis": "None",
   "lensType": "Single Vision",
   "helmetSize": "Large",
   "hatSize": "7¼",
-  "noseBridge": "It's thin and narrow",
-  "sunglassFit": "All styles and sizes fit me",
+  "noseBridge": "Thin & Narrow",
+  "sunglassFit": "All Styles & Sizes Fit",
   "frameType": "With Foam Cushion",
-  "comments": "optional free text",
-  "prescriptionUrl": "https://...",
-  "headshotUrl": "https://...",
+  "comments": "None",
+  "prescriptionUrl": "None",
+  "headshotUrl": "None",
   "email": "customer@example.com",
-  "phone": "5555555555"
+  "phone": "None"
 }
 ```
 
-All fields are nullable except `email`, `brandSlug`, and `packageId`. `prescriptionUrl` and `headshotUrl` are URLs returned from `POST /api/user/upload` — include them if the user uploaded files. `osAxis`/`odAxis` will be `null` when cylinder is `plano`. `packageId` is the UUID from `tbyb_packages.id` — the backend looks up the package details and stores a snapshot on the submission.
+All fields are required strings. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, and any unselected prescription/fitting fields) are sent as `"None"` when not provided — never `null`. `odAxis`/`osAxis` are `"None"` when their corresponding cylinder is `"None"`. `packageId` is the UUID from `tbyb_packages.id` — the backend looks up the package details and stores a snapshot on the submission.
 
 **Response `200`**
 ```json
