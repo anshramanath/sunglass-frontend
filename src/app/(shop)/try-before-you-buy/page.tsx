@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getUser } from "@/lib/auth";
 import { getBrand } from "@/lib/brand";
@@ -9,9 +10,30 @@ export function generateMetadata(): Metadata {
   return { title: `Try Before You Buy | ${getBrand().name}` };
 }
 
-export default async function TBYBPage() {
-  const [user, packages] = await Promise.all([getUser(), getPackages()]);
+function TBYBSkeleton() {
+  return (
+    <div className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-9 lg:mt-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="border border-grey-200 p-6 flex flex-col">
+            <div className="h-16 bg-grey-100 animate-pulse" />
+            <div className="h-[18px] bg-grey-100 animate-pulse mt-4 w-3/4" />
+            <div className="h-[13px] bg-grey-100 animate-pulse mt-2 w-1/3" />
+            <div className="h-[26px] bg-grey-100 animate-pulse mt-5 w-1/2" />
+            <div className="h-[46px] bg-grey-100 animate-pulse mt-6" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
+async function TBYBLoader() {
+  const [user, packages] = await Promise.all([getUser(), getPackages()]);
+  return <TBYBClient packages={packages} email={user?.email ?? ""} />;
+}
+
+export default function TBYBPage() {
   return (
     <div className="pb-20 lg:pb-28">
       <section className="mx-auto max-w-[1680px] px-5 lg:px-10 pt-8 lg:pt-10">
@@ -29,7 +51,9 @@ export default async function TBYBPage() {
           </p>
         </div>
       </section>
-      <TBYBClient packages={packages} userEmail={user?.email ?? undefined} />
+      <Suspense fallback={<TBYBSkeleton />}>
+        <TBYBLoader />
+      </Suspense>
     </div>
   );
 }

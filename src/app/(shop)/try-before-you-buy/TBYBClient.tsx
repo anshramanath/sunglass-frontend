@@ -9,17 +9,17 @@ import { submitTBYB, uploadFile } from "@/lib/api";
 
 const SPHERE_OPTS: string[] = (() => {
   const opts: string[] = [];
-  for (let i = -80; i <= -1; i++) { opts.push((i * 0.25).toFixed(2)); }
+  for (let i = 32; i >= 1; i--) { opts.push("+" + (i * 0.25).toFixed(2)); }
   opts.push("None");
-  for (let i = 1; i <= 80; i++) { opts.push("+" + (i * 0.25).toFixed(2)); }
+  for (let i = -1; i >= -32; i--) { opts.push((i * 0.25).toFixed(2)); }
   return opts;
 })();
 
 const CYLINDER_OPTS: string[] = (() => {
   const opts: string[] = [];
-  for (let i = -24; i <= -1; i++) { opts.push((i * 0.25).toFixed(2)); }
+  for (let i = 32; i >= 1; i--) { opts.push("+" + (i * 0.25).toFixed(2)); }
   opts.push("None");
-  for (let i = 1; i <= 24; i++) { opts.push("+" + (i * 0.25).toFixed(2)); }
+  for (let i = -1; i >= -32; i--) { opts.push((i * 0.25).toFixed(2)); }
   return opts;
 })();
 
@@ -49,14 +49,17 @@ function Dropdown({ id, opts, value, onChange, disabled, openId, setOpenId }: {
         </svg>
       </button>
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full z-30 mt-1 bg-paper border border-grey-300 shadow-pop max-h-64 overflow-y-auto">
-          {opts.map(o => (
-            <button key={o} type="button" onClick={() => { onChange(o); setOpenId(null); }}
-              className="w-full text-left px-3.5 py-2.5 text-[15px] hover:bg-grey-50 transition-colors duration-200">
-              {o}
-            </button>
-          ))}
-        </div>
+        <>
+          <div className="fixed inset-0 z-20" onClick={() => setOpenId(null)} />
+          <div className="absolute left-0 right-0 top-full z-30 mt-1 bg-paper border border-grey-300 shadow-pop max-h-64 overflow-y-auto">
+            {opts.map(o => (
+              <button key={o} type="button" onClick={() => { onChange(o); setOpenId(null); }}
+                className="w-full text-left px-3.5 py-2.5 text-[15px] hover:bg-grey-50 transition-colors duration-200">
+                {o}
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
@@ -97,13 +100,13 @@ function FileUpload({ id, file, uploading, onChange }: { id: string; file: File 
 
 function StepDots({ step }: { step: number }) {
   return (
-    <div className="flex items-center justify-center gap-3 mb-10">
-      {[1, 2, 3].map((n, i) => (
+    <div className={`flex items-center justify-center gap-3 mb-10 ${step === 4 ? "opacity-30" : ""}`}>
+      {[1, 2, 3].map(n => (
         <Fragment key={n}>
           <span className={`text-[13px] w-7 h-7 rounded-full grid place-items-center border ${n <= step ? "border-brand bg-brand text-paper" : "border-grey-300 text-grey-500"}`}>
             {n}
           </span>
-          {i < 2 && <span className={`w-8 h-px ${n < step ? "bg-brand" : "bg-grey-300"}`} />}
+          {n < 3 && <span className={`w-8 h-px ${n < step ? "bg-brand" : "bg-grey-300"}`} />}
         </Fragment>
       ))}
     </div>
@@ -144,7 +147,7 @@ function Step1({ vals, update, openId, setOpenId }: { vals: FormVals; update: Up
           </div>
           <div>
             <label className="text-[13px] text-grey-500 mb-1.5 block">Axis</label>
-            <Dropdown id={`${prefix}Axis`} opts={AXIS_OPTS} value={axisDisabled ? null : vals[`${prefix}Axis` as keyof FormVals] as string | null} onChange={v => update(`${prefix}Axis` as keyof FormVals, v)} disabled={axisDisabled} openId={openId} setOpenId={setOpenId} />
+            <Dropdown id={`${prefix}Axis`} opts={AXIS_OPTS} value={vals[`${prefix}Axis` as keyof FormVals] as string | null} onChange={v => update(`${prefix}Axis` as keyof FormVals, v)} disabled={axisDisabled} openId={openId} setOpenId={setOpenId} />
           </div>
         </div>
       </div>
@@ -169,7 +172,7 @@ function Step2({ vals, update, openId, setOpenId }: { vals: FormVals; update: Up
     return (
       <div>
         <label className="text-[13px] text-grey-500 mb-1.5 block">{label}</label>
-        <Dropdown id={String(key)} opts={opts} value={vals[key] as string | null} onChange={v => update(key, v)} openId={openId} setOpenId={setOpenId} />
+        <Dropdown id={key} opts={opts} value={vals[key] as string | null} onChange={v => update(key, v)} openId={openId} setOpenId={setOpenId} />
       </div>
     );
   }
@@ -231,6 +234,24 @@ function Step3({ vals, update, rxUploading, photoUploading }: { vals: FormVals; 
   );
 }
 
+// ── Step 4: Success ───────────────────────────────────────────────────────────
+
+function Step4({ pkgName, submissionId }: { pkgName: string; submissionId: string | null }) {
+  return (
+    <div className="text-center py-6">
+      <div className="mx-auto w-16 h-16 rounded-full bg-[#22963F] grid place-items-center">
+        <svg className="w-8 h-8 text-paper" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <path d="m5 13 4 4L19 7" />
+        </svg>
+      </div>
+      <h2 className="text-[21px] font-normal mt-6">Request submitted</h2>
+      <p className="text-[15px] text-grey-600 leading-relaxed mt-3">
+        Your <span className="text-ink">{pkgName}</span> try-on request is in. Request <span className="text-ink">#{submissionId?.slice(-8).toUpperCase()}</span>. We'll reach out to confirm details and collect your Deposit before shipping your frames.
+      </p>
+    </div>
+  );
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 const INIT: FormVals = {
@@ -242,24 +263,28 @@ const INIT: FormVals = {
   rxFile: null, photoFile: null,
 };
 
-export default function TBYBClient({ packages, userEmail }: { packages: TBYBPackage[]; userEmail?: string }) {
+export default function TBYBClient({ packages, email }: { packages: TBYBPackage[]; email: string }) {
   const [selectedPkg, setSelectedPkg] = useState<TBYBPackage | null>(null);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(1);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [vals, setVals] = useState<FormVals>({ ...INIT, email: userEmail ?? "" });
+  const [vals, setVals] = useState<FormVals>({ ...INIT, email });
   const [rxUrl, setRxUrl] = useState<string | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [rxUploading, setRxUploading] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
-  const [isPending, setIsPending] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
 
   function update(key: keyof FormVals, value: string | null | File) {
-    setVals(prev => ({ ...prev, [key]: value }));
+    setVals(prev => {
+      const next = { ...prev, [key]: value };
+      if (key === "odCylinder" && value === "None") next.odAxis = null;
+      if (key === "osCylinder" && value === "None") next.osAxis = null;
+      return next;
+    });
   }
 
   useEffect(() => {
@@ -303,10 +328,10 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
   }, [vals.photoFile]);
 
   function selectPkg(pkg: TBYBPackage) {
-    if (!userEmail) { router.push("/sign-in"); return; }
+    if (!email) { router.push("/sign-in"); return; }
+    if (selectedPkg?.id === pkg.id) { setSelectedPkg(null); return; }
     setSelectedPkg(pkg);
     setStep(1);
-    setSubmitted(false);
     setSubmissionId(null);
     setError(null);
   }
@@ -337,8 +362,7 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
     }
 
     if (!vals.email.trim()) { setError("Email is required!"); return; }
-    if (rxUploading || photoUploading) { setError("Files are still uploading — please wait!"); return; }
-    setIsPending(true);
+    setSubmitting(true);
     try {
       const result = await submitTBYB({
         packageId: selectedPkg!.id,
@@ -351,18 +375,18 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
         headshotUrl: photoUrl,
       });
       setSubmissionId(result.id);
-      setSubmitted(true);
+      setError(null);
+      setStep(4);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
     }
-    setIsPending(false);
+    setSubmitting(false);
   }
 
   return (
     <>
-      {openId && <div className="fixed inset-0 z-20" onClick={() => setOpenId(null)} />}
       {/* Package grid */}
-      <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-9 lg:mt-12 pb-16 lg:pb-20">
+      <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-9 lg:mt-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {packages.map(pkg => {
             const isSelected = selectedPkg?.id === pkg.id;
@@ -374,12 +398,13 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
                 </div>
                 <p className="text-[18px] mt-4">{pkg.name}</p>
                 <p className="text-[13px] text-grey-500 mt-1">{pairsLabel}</p>
-                <p className="text-[13px] text-grey-400 mt-1 max-h-0 opacity-0 group-hover/pkg:max-h-8 group-hover/pkg:opacity-100 overflow-hidden transition-all duration-200">
+                <p className="text-[13px] text-grey-400 mt-1 overflow-hidden transition-all duration-200 max-h-8 opacity-100 lg:max-h-0 lg:opacity-0 lg:group-hover/pkg:max-h-8 lg:group-hover/pkg:opacity-100">
                   Includes: {pkg.brands.join(", ")}
                 </p>
                 <p className="text-[26px] mt-5">${(pkg.priceCents / 100).toFixed(0)}<span className="text-[13px] text-grey-500"> Deposit</span></p>
                 <button type="button" onClick={() => selectPkg(pkg)}
-                  className={`mt-6 border text-[15px] py-3 transition-colors duration-200 ${isSelected ? "border-ink bg-ink text-paper" : "border-ink hover:bg-ink hover:text-paper"}`}>
+                  disabled={submitting || rxUploading || photoUploading}
+                  className={`mt-6 border text-[15px] py-3 transition-colors duration-200 disabled:opacity-50 ${isSelected ? "border-ink bg-ink text-paper" : "border-ink hover:bg-ink hover:text-paper"}`}>
                   {isSelected ? "Selected" : "Select Package"}
                 </button>
               </div>
@@ -391,46 +416,34 @@ export default function TBYBClient({ packages, userEmail }: { packages: TBYBPack
 
       {/* Form region */}
       {selectedPkg && (
-        <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-16 pb-20 lg:pb-28">
+        <section className="mx-auto max-w-[1680px] px-5 lg:px-10 mt-16">
           <div className="max-w-[640px] mx-auto border-t border-grey-200 pt-12">
-            {submitted ? (
-              <div className="text-center py-6">
-                <div className="mx-auto w-16 h-16 rounded-full bg-[#22963F] grid place-items-center">
-                  <svg className="w-8 h-8 text-paper" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                    <path d="m5 13 4 4L19 7" />
-                  </svg>
-                </div>
-                <h2 className="text-[21px] font-normal mt-6">Request submitted</h2>
-                <p className="text-[15px] text-grey-600 leading-relaxed mt-3">
-                  Your <span className="text-ink">{selectedPkg.name}</span> try-on request is in. Request <span className="text-ink">#{submissionId?.slice(-8).toUpperCase()}</span>. We'll reach out to confirm details and collect your Deposit before shipping your frames.
-                </p>
+            <StepDots step={step} />
+            <p className="text-[13px] text-grey-500 text-center mb-8">
+              Selected: <span className="text-ink">{selectedPkg.name} — ${(selectedPkg.priceCents / 100).toFixed(0)} Deposit</span>
+            </p>
+            {step === 1 && <Step1 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
+            {step === 2 && <Step2 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
+            {step === 3 && <Step3 vals={vals} update={update} rxUploading={rxUploading} photoUploading={photoUploading} />}
+            {step === 4 && <Step4 pkgName={selectedPkg.name} submissionId={submissionId} />}
+            {error && (
+              <div className="flex items-start gap-2.5 border border-red-200 bg-red-50 text-red-700 text-sm px-4 py-3 mt-6">
+                <svg className="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+                <span>{error}</span>
               </div>
-            ) : (
-              <>
-                <StepDots step={step} />
-                <p className="text-[13px] text-grey-500 text-center mb-8">
-                  Selected: <span className="text-ink">{selectedPkg.name} — ${(selectedPkg.priceCents / 100).toFixed(0)} Deposit</span>
-                </p>
-                {step === 1 && <Step1 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
-                {step === 2 && <Step2 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
-                {step === 3 && <Step3 vals={vals} update={update} rxUploading={rxUploading} photoUploading={photoUploading} />}
-                {error && (
-                  <div className="flex items-start gap-2.5 border border-red-200 bg-red-50 text-red-700 text-sm px-4 py-3 mt-6">
-                    <svg className="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
-                    <span>{error}</span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between mt-6">
-                  <button type="button" onClick={() => { setStep(s => s - 1); setError(null); }}
-                    className={`text-[15px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200 ${step === 1 ? "invisible" : ""}`}>
-                    Back
-                  </button>
-                  <button type="button" onClick={handleNext} disabled={isPending}
-                    className="bg-ink text-paper text-[15px] px-9 py-3.5 hover:bg-grey-800 transition-colors duration-200 disabled:opacity-50">
-                    {isPending ? "Submitting…" : step === 3 ? "Submit" : "Continue"}
-                  </button>
-                </div>
-              </>
+            )}
+            {step !== 4 && (
+              <div className="flex items-center justify-between mt-6">
+                <button type="button" onClick={() => { setStep(s => s - 1); setError(null); }}
+                  disabled={submitting || rxUploading || photoUploading}
+                  className={`text-[15px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200 disabled:opacity-30 ${step === 1 ? "invisible" : ""}`}>
+                  Back
+                </button>
+                <button type="button" onClick={handleNext} disabled={submitting || rxUploading || photoUploading}
+                  className="bg-ink text-paper text-[15px] px-9 py-3.5 hover:bg-grey-800 transition-colors duration-200 disabled:opacity-50">
+                  {submitting ? "Submitting…" : step === 3 ? "Submit" : "Continue"}
+                </button>
+              </div>
             )}
           </div>
         </section>

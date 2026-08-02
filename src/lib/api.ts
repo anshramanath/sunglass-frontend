@@ -418,6 +418,8 @@ export async function submitTBYB(data: TBYBSubmission): Promise<{ id: string }> 
   const res = await authedFetch("/api/user/tbyb", "POST", {
     brandSlug: BRAND_SLUG,
     ...data,
+    odAxis: data.odAxis || "None",
+    osAxis: data.osAxis || "None",
     comments: data.comments || "None",
     phone: data.phone || "None",
     prescriptionUrl: data.prescriptionUrl || "None",
