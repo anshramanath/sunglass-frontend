@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getUser } from "@/lib/auth";
 import { getBrand } from "@/lib/brand";
 import { getPackages } from "@/lib/api";
@@ -34,6 +35,8 @@ async function TBYBLoader() {
 }
 
 export default function TBYBPage() {
+  if (getBrand().slug !== "bikershades") notFound();
+
   return (
     <div className="pb-20 lg:pb-28">
       <section className="mx-auto max-w-[1680px] px-5 lg:px-10 pt-8 lg:pt-10">
