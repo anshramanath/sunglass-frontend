@@ -397,7 +397,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {packages.map(pkg => {
             const isSelected = selectedPkg?.id === pkg.id;
-            const pairsLabel = pkg.pairsMin === pkg.pairsMax ? `${pkg.pairsMin} pairs` : `${pkg.pairsMin}–${pkg.pairsMax} pairs`;
+            const pairsLabel = pkg.pairsMin === pkg.pairsMax ? `${pkg.pairsMin} Pairs` : `${pkg.pairsMin}–${pkg.pairsMax} Pairs`;
             return (
               <div key={pkg.id} className={`group/pkg relative border p-6 flex flex-col transition-colors duration-200 ${isSelected ? "border-ink" : "border-grey-200 hover:border-grey-300"}`}>
                 <div className="h-16 flex items-center">
