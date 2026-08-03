@@ -56,7 +56,7 @@ export default function ProductCard({ product }: { product: ProductListItem }) {
         )}
         {product.featured && (
           <span className="absolute top-3 left-3 whitespace-nowrap bg-paper/90 text-ink border border-grey-200 text-[11px] uppercase tracking-wider font-medium px-2.5 py-1">
-            Best Seller
+            Featured
           </span>
         )}
       </Link>
