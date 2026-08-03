@@ -147,6 +147,6 @@ export type TBYBSubmission = {
   osSphere: string | null; osCylinder: string | null; osAxis: string | null;
   lensType: string | null; helmetSize: string | null; hatSize: string | null;
   noseBridge: string | null; sunglassFit: string | null; frameType: string | null;
-  comments: string; email: string; phone: string;
+  comments: string; name: string; email: string; phone: string;
   prescriptionUrl: string | null; headshotUrl: string | null;
 };

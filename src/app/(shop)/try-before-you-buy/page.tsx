@@ -31,7 +31,7 @@ function TBYBSkeleton() {
 
 async function TBYBLoader() {
   const [user, packages] = await Promise.all([getUser(), getPackages()]);
-  return <TBYBClient packages={packages} email={user?.email ?? ""} />;
+  return <TBYBClient packages={packages} email={user?.email ?? ""} name={user?.user_metadata?.name ?? ""} />;
 }
 
 export default function TBYBPage() {

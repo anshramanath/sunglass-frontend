@@ -120,7 +120,7 @@ type FormVals = {
   osSphere: string | null; osCylinder: string | null; osAxis: string | null;
   lensType: string | null; helmetSize: string | null; hatSize: string | null;
   noseBridge: string | null; sunglassFit: string | null; frameType: string | null;
-  comments: string; email: string; phone: string;
+  comments: string; name: string; email: string; phone: string;
   rxFile: File | null; photoFile: File | null;
 };
 
@@ -218,6 +218,12 @@ function Step3({ vals, update, rxUploading, photoUploading }: { vals: FormVals; 
       <h2 className="text-[21px] font-normal mb-6 mt-10">Contact Info</h2>
       <div className="space-y-5">
         <div>
+          <label className="text-[13px] text-grey-500 mb-1.5 block">Name</label>
+          <input type="text" value={vals.name} onChange={e => update("name", e.target.value)}
+            placeholder="Your name"
+            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-[15px] text-brand outline-none placeholder-grey-400" />
+        </div>
+        <div>
           <label className="text-[13px] text-grey-500 mb-1.5 block">Email</label>
           <input type="text" value={vals.email} onChange={e => update("email", e.target.value)}
             placeholder="you@example.com"
@@ -259,15 +265,15 @@ const INIT: FormVals = {
   osSphere: null, osCylinder: null, osAxis: null,
   lensType: null, helmetSize: null, hatSize: null,
   noseBridge: null, sunglassFit: null, frameType: null,
-  comments: "", email: "", phone: "",
+  comments: "", name: "", email: "", phone: "",
   rxFile: null, photoFile: null,
 };
 
-export default function TBYBClient({ packages, email }: { packages: TBYBPackage[]; email: string }) {
+export default function TBYBClient({ packages, email, name }: { packages: TBYBPackage[]; email: string; name: string }) {
   const [selectedPkg, setSelectedPkg] = useState<TBYBPackage | null>(null);
   const [step, setStep] = useState<number>(1);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [vals, setVals] = useState<FormVals>({ ...INIT, email });
+  const [vals, setVals] = useState<FormVals>({ ...INIT, email, name });
   const [rxUrl, setRxUrl] = useState<string | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [rxUploading, setRxUploading] = useState(false);
@@ -328,7 +334,7 @@ export default function TBYBClient({ packages, email }: { packages: TBYBPackage[
   }, [vals.photoFile]);
 
   function selectPkg(pkg: TBYBPackage) {
-    if (!email) { router.push("/sign-in"); return; }
+    if (!email || !name) { router.push("/sign-in"); return; }
     if (selectedPkg?.id === pkg.id) { setSelectedPkg(null); return; }
     setSelectedPkg(pkg);
     setStep(1);
@@ -361,6 +367,7 @@ export default function TBYBClient({ packages, email }: { packages: TBYBPackage[
       return;
     }
 
+    if (!vals.name.trim()) { setError("Name is required!"); return; }
     if (!vals.email.trim()) { setError("Email is required!"); return; }
     setSubmitting(true);
     try {
@@ -370,7 +377,7 @@ export default function TBYBClient({ packages, email }: { packages: TBYBPackage[
         osSphere: vals.osSphere, osCylinder: vals.osCylinder, osAxis: vals.osAxis,
         lensType: vals.lensType, helmetSize: vals.helmetSize, hatSize: vals.hatSize,
         noseBridge: vals.noseBridge, sunglassFit: vals.sunglassFit, frameType: vals.frameType,
-        comments: vals.comments, email: vals.email, phone: vals.phone,
+        comments: vals.comments, name: vals.name, email: vals.email, phone: vals.phone,
         prescriptionUrl: rxUrl,
         headshotUrl: photoUrl,
       });
