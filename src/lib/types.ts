@@ -141,6 +141,18 @@ export type TBYBPackage = {
   brands: string[];
 };
 
+export type TBYBSubmissionRecord = {
+  id: string;
+  packageName: string; packageSlug: string; packagePriceCents: number; packageImageSrc: string; packagePairsMin: number; packagePairsMax: number; packageBrands: string[];
+  odSphere: string; odCylinder: string; odAxis: string;
+  osSphere: string; osCylinder: string; osAxis: string;
+  lensType: string; helmetSize: string; hatSize: string;
+  noseBridge: string; buyingPreference: string; frameType: string;
+  specialRequests: string; prescriptionUrl: string; headshotUrl: string;
+  contactName: string; contactEmail: string; contactPhone: string;
+  status: string; createdAt: string; updatedAt: string;
+};
+
 export type TBYBSubmission = {
   packageId: string;
   odSphere: string | null; odCylinder: string | null; odAxis: string | null;

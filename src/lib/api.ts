@@ -3,7 +3,7 @@
 import type {
   ApiResponse, BookmarkedItem, CartItem, CartValidationResult, CategoryNode,
   CheckoutUrl, Order, ProductDetail, ProductListItem, ProductsResponse,
-  SyncedResponse, TBYBPackage, TBYBSubmission, ValidateCartItem,
+  SyncedResponse, TBYBPackage, TBYBSubmission, TBYBSubmissionRecord, ValidateCartItem,
 } from "@/lib/types";
 import { redirect, notFound } from "next/navigation";
 import { getToken, getUser } from "@/lib/auth";
@@ -407,6 +407,31 @@ export async function createCheckoutSession(
 
       default:
         return { data: json.data ?? [], status: res.status };
+    }
+  }
+
+  return json.data;
+}
+
+// TBYB
+export async function getSubmissions(): Promise<TBYBSubmissionRecord[]> {
+  const res = await authedFetch("/api/user/submissions", "POST", { brandSlug: BRAND_SLUG });
+
+  const json: ApiResponse<TBYBSubmissionRecord[]> = await res.json();
+
+  if (!json.success) {
+    switch (res.status) {
+      case 401:
+        redirect("/sign-in");
+
+      case 500:
+        throw new Error("Server error");
+
+      case 503:
+        throw new Error("Service unavailable");
+
+      default:
+        redirect("/try-again");
     }
   }
 
