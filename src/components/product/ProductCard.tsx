@@ -55,7 +55,7 @@ export default function ProductCard({ product }: { product: ProductListItem }) {
           </span>
         )}
         {product.featured && (
-          <span className="absolute top-3 left-3 whitespace-nowrap bg-paper/90 border border-grey-200 text-[11px] uppercase tracking-wider font-medium px-2.5 py-1" style={{ color: "var(--color-brand)" }}>
+          <span className="absolute top-3 left-3 whitespace-nowrap bg-paper/90 border text-[11px] uppercase tracking-wider font-medium px-2.5 py-1" style={{ color: "var(--color-brand)", borderColor: "var(--color-brand)" }}>
             Featured
           </span>
         )}
