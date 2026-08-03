@@ -50,7 +50,7 @@ export default function TBYBPage() {
         <div className="mt-6 max-w-2xl">
           <h1 className="text-[34px] lg:text-[44px] font-normal tracking-[-0.01em]">Try Before You Buy</h1>
           <p className="text-[15px] text-grey-600 leading-relaxed mt-4">
-            Pick a package, pay a fully-refundable deposit, and we'll send prescription frames to try at home. Return them and place your order — or get your deposit back, minus a service fee.
+            Pick a package and pay a deposit — we'll handpick frames based on your preferences and send them to your door. Try them at home, then return within 5 days and apply your deposit toward your order, or get it back minus a service fee.
           </p>
         </div>
       </section>
