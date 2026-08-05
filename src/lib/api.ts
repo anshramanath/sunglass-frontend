@@ -439,19 +439,15 @@ export async function getSubmissions(): Promise<TBYBSubmissionRecord[]> {
 }
 
 // TBYB
-export async function submitTBYB(data: TBYBSubmission): Promise<{ id: string }> {
+export async function submitTBYB(submission: TBYBSubmission, successUrl: string, cancelUrl: string): Promise<CheckoutUrl> {
   const res = await authedFetch("/api/user/tbyb", "POST", {
     brandSlug: BRAND_SLUG,
-    ...data,
-    odAxis: data.odAxis || "None",
-    osAxis: data.osAxis || "None",
-    comments: data.comments || "None",
-    phone: data.phone || "None",
-    prescriptionUrl: data.prescriptionUrl || "None",
-    headshotUrl: data.headshotUrl || "None",
+    submission,
+    successUrl,
+    cancelUrl,
   });
 
-  const json: ApiResponse<{ id: string }> = await res.json();
+  const json: ApiResponse<CheckoutUrl> = await res.json();
 
   if (!json.success) {
     switch (res.status) {

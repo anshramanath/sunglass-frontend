@@ -240,20 +240,53 @@ function Step3({ vals, update, rxUploading, photoUploading }: { vals: FormVals; 
   );
 }
 
-// ── Step 4: Success ───────────────────────────────────────────────────────────
+// ── Step 4: Review ────────────────────────────────────────────────────────────
 
-function Step4({ pkgName, submissionId }: { pkgName: string; submissionId: string | null }) {
-  return (
-    <div className="text-center py-6">
-      <div className="mx-auto w-16 h-16 rounded-full bg-[#22963F] grid place-items-center">
-        <svg className="w-8 h-8 text-paper" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="m5 13 4 4L19 7" />
-        </svg>
+function Step4({ vals, pkg }: { vals: FormVals; pkg: TBYBPackage }) {
+  function row(label: string, value: string | null | undefined) {
+    return (
+      <div className="flex justify-between gap-6 py-2.5 border-b border-grey-100 last:border-0">
+        <dt className="text-grey-500">{label}</dt>
+        <dd className="text-ink text-right">{value || "None"}</dd>
       </div>
-      <h2 className="text-[21px] font-normal mt-6">Request submitted</h2>
-      <p className="text-[15px] text-grey-600 leading-relaxed mt-3">
-        Your <span className="text-ink">{pkgName}</span> try-on request is in. Request <span className="text-ink">#{submissionId?.slice(-8).toUpperCase()}</span>. We'll reach out to confirm details and collect your Deposit before shipping your frames.
-      </p>
+    );
+  }
+
+  function section(title: string, children: React.ReactNode) {
+    return (
+      <div className="border-t border-grey-200 pt-6 first:border-t-0 first:pt-0">
+        <p className="text-[15px] mb-1">{title}</p>
+        <dl className="text-[13px]">{children}</dl>
+      </div>
+    );
+  }
+
+  const pairsLabel = pkg.pairsMin === pkg.pairsMax ? `${pkg.pairsMin} Pairs` : `${pkg.pairsMin}–${pkg.pairsMax} Pairs`;
+
+  return (
+    <div>
+      <h2 className="text-[21px] font-normal mb-6">Confirm Your Details</h2>
+      <div className="space-y-6">
+        {section("Package",
+          <>{row("Selected", `${pkg.name} — $${(pkg.priceCents / 100).toFixed(0)} Deposit`)}{row("Pairs", pairsLabel)}</>
+        )}
+        {section("Prescription — OD (Right Eye)",
+          <>{row("Sphere", vals.odSphere)}{row("Cylinder", vals.odCylinder)}{row("Axis", vals.odAxis)}</>
+        )}
+        {section("Prescription — OS (Left Eye)",
+          <>{row("Sphere", vals.osSphere)}{row("Cylinder", vals.osCylinder)}{row("Axis", vals.osAxis)}</>
+        )}
+        {section("Fitting Questions",
+          <>{row("Lens Type", vals.lensType)}{row("Helmet Size", vals.helmetSize)}{row("Hat Size", vals.hatSize)}{row("Nose Bridge", vals.noseBridge)}{row("Sunglass Fit", vals.sunglassFit)}{row("Frame Type", vals.frameType)}</>
+        )}
+        {section("Additional Info",
+          <>{row("Comments", vals.comments)}{row("Prescription", vals.rxFile?.name)}{row("Head Shot", vals.photoFile?.name)}</>
+        )}
+        {section("Contact Info",
+          <>{row("Name", vals.name)}{row("Email", vals.email)}{row("Phone", vals.phone)}</>
+        )}
+      </div>
+      <p className="text-[13px] text-grey-500 leading-relaxed mt-8">Double-check everything above. You can go back to fix anything first.</p>
     </div>
   );
 }
@@ -279,7 +312,6 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
   const [rxUploading, setRxUploading] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
@@ -338,7 +370,6 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     if (selectedPkg?.id === pkg.id) { setSelectedPkg(null); return; }
     setSelectedPkg(pkg);
     setStep(1);
-    setSubmissionId(null);
     setError(null);
   }
 
@@ -367,27 +398,30 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       return;
     }
 
-    if (!vals.name.trim()) { setError("Name is required!"); return; }
-    if (!vals.email.trim()) { setError("Email is required!"); return; }
+    if (step === 3) {
+      if (!vals.name.trim()) { setError("Name is required!"); return; }
+      if (!vals.email.trim()) { setError("Email is required!"); return; }
+      setStep(s => s + 1);
+      return;
+    }
+
     setSubmitting(true);
     try {
       const result = await submitTBYB({
         packageId: selectedPkg!.id,
-        odSphere: vals.odSphere, odCylinder: vals.odCylinder, odAxis: vals.odAxis,
-        osSphere: vals.osSphere, osCylinder: vals.osCylinder, osAxis: vals.osAxis,
+        odSphere: vals.odSphere, odCylinder: vals.odCylinder, odAxis: vals.odAxis || "None",
+        osSphere: vals.osSphere, osCylinder: vals.osCylinder, osAxis: vals.osAxis || "None",
         lensType: vals.lensType, helmetSize: vals.helmetSize, hatSize: vals.hatSize,
         noseBridge: vals.noseBridge, sunglassFit: vals.sunglassFit, frameType: vals.frameType,
-        comments: vals.comments, name: vals.name, email: vals.email, phone: vals.phone,
-        prescriptionUrl: rxUrl,
-        headshotUrl: photoUrl,
-      });
-      setSubmissionId(result.id);
-      setError(null);
-      setStep(4);
+        comments: vals.comments || "None", name: vals.name, email: vals.email, phone: vals.phone || "None",
+        prescriptionUrl: rxUrl || "None",
+        headshotUrl: photoUrl || "None",
+      }, `${window.location.origin}/`, `${window.location.origin}/`);
+      router.push(result.url);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   return (
@@ -432,26 +466,24 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
             {step === 1 && <Step1 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
             {step === 2 && <Step2 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
             {step === 3 && <Step3 vals={vals} update={update} rxUploading={rxUploading} photoUploading={photoUploading} />}
-            {step === 4 && <Step4 pkgName={selectedPkg.name} submissionId={submissionId} />}
+            {step === 4 && <Step4 vals={vals} pkg={selectedPkg} />}
             {error && (
               <div className="flex items-start gap-2.5 border border-red-200 bg-red-50 text-red-700 text-sm px-4 py-3 mt-6">
                 <svg className="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
                 <span>{error}</span>
               </div>
             )}
-            {step !== 4 && (
-              <div className="flex items-center justify-between mt-6">
-                <button type="button" onClick={() => { setStep(s => s - 1); setError(null); }}
-                  disabled={submitting || rxUploading || photoUploading}
-                  className={`text-[15px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200 disabled:opacity-30 ${step === 1 ? "invisible" : ""}`}>
-                  Back
-                </button>
-                <button type="button" onClick={handleNext} disabled={submitting || rxUploading || photoUploading}
-                  className="bg-ink text-paper text-[15px] px-9 py-3.5 hover:bg-grey-800 transition-colors duration-200 disabled:opacity-50">
-                  {submitting ? "Submitting…" : step === 3 ? "Submit" : "Continue"}
-                </button>
-              </div>
-            )}
+            <div className="flex items-center justify-between mt-6">
+              <button type="button" onClick={() => { setStep(s => s - 1); setError(null); }}
+                disabled={submitting || rxUploading || photoUploading}
+                className={`text-[15px] underline underline-offset-4 hover:opacity-60 transition-opacity duration-200 disabled:opacity-30 ${step === 1 ? "invisible" : ""}`}>
+                Back
+              </button>
+              <button type="button" onClick={handleNext} disabled={submitting || rxUploading || photoUploading}
+                className="bg-ink text-paper text-[15px] px-9 py-3.5 hover:bg-grey-800 transition-colors duration-200 disabled:opacity-50">
+                {submitting ? "Submitting…" : step === 4 ? "Submit" : step === 3 ? "Review" : "Continue"}
+              </button>
+            </div>
           </div>
         </section>
       )}

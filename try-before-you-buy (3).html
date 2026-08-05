@@ -456,6 +456,7 @@
       pkgId: null,
       step: 1,
       values: {},       // custom-dropdown selected values, by id
+      labels: {},       // custom-dropdown selected display labels, by id
       ddOptions: {},    // custom-dropdown option lists, by id
       ddOnChange: {},   // optional change callbacks, by id
 
@@ -538,7 +539,7 @@
           line.className = `w-8 h-px ${n < this.step ? 'bg-brand' : 'bg-grey-300'}`;
         });
         document.getElementById('btnBack').classList.toggle('invisible', this.step === 1);
-        document.getElementById('btnNext').textContent = this.step === 3 ? 'Submit' : 'Continue';
+        document.getElementById('btnNext').textContent = this.step === 3 ? 'Review' : 'Continue';
       },
 
       /* ---------- custom dropdown (replaces native <select>) ---------- */
@@ -605,6 +606,7 @@
       chooseDD(id, idx) {
         const opt = this.ddOptions[id][idx];
         this.values[id] = opt.value;
+        this.labels[id] = opt.label;
         document.querySelector(`[data-dd-label="${id}"]`).textContent = opt.label;
         this.closeAllDD();
         if (this.ddOnChange[id]) this.ddOnChange[id](opt.value);
@@ -699,15 +701,68 @@
                 <input id="contactPhone" type="tel" placeholder="(555) 555-5555" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 h-11 text-base outline-none placeholder-grey-400">
               </div>
             </div>`;
+        } else if (this.step === 4) {
+          // Review — not one of the 1/2/3 steps; dots dim to signal we've moved past them.
+          [1,2,3].forEach(n => document.querySelector(`[data-step-dot="${n}"]`).classList.add('opacity-30'));
+          document.querySelectorAll('[data-step-line]').forEach(l => l.classList.add('opacity-30'));
+          mount.innerHTML = this.renderReview();
+          document.getElementById('btnNext').textContent = 'Submit';
         }
       },
 
+      renderReview() {
+        const pkg = PACKAGES.find(p => p.id === this.pkgId);
+        const l = (id) => this.labels[id] || '—';
+        const val = (id) => { const el = document.getElementById(id); return el && el.value ? el.value : '—'; };
+        const fileLabel = (id) => { const el = document.getElementById(id); return el && el.files[0] ? el.files[0].name : 'No file uploaded'; };
+
+        const row = (label, value) => `
+          <div class="flex justify-between gap-6 py-2.5 border-b border-grey-100 last:border-0">
+            <dt class="text-grey-500">${label}</dt>
+            <dd class="text-ink text-right">${value}</dd>
+          </div>`;
+
+        const section = (title, rowsHtml) => `
+          <div class="border-t border-grey-200 pt-6 first:border-t-0 first:pt-0">
+            <p class="text-base mb-1">${title}</p>
+            <dl class="text-sm">${rowsHtml}</dl>
+          </div>`;
+
+        return `
+          <h2 class="text-xl font-normal mb-6">Confirm Your Details</h2>
+          <div class="space-y-6">
+            ${section('Package', row('Selected', `${pkg.name} — $${pkg.deposit} deposit`) + row('Pairs', pkg.pairsMin === pkg.pairsMax ? `${pkg.pairsMin} pairs` : `${pkg.pairsMin}–${pkg.pairsMax} pairs`))}
+            ${section('Prescription — OD (Right Eye)', row('Sphere', l('odSphere')) + row('Cylinder', l('odCylinder')) + row('Axis', l('odAxis')))}
+            ${section('Prescription — OS (Left Eye)', row('Sphere', l('osSphere')) + row('Cylinder', l('osCylinder')) + row('Axis', l('osAxis')))}
+            ${section('Fitting Questions',
+              row('Lens Type Desired', l('lensType')) +
+              row('Helmet Size', l('helmetSize')) +
+              row('Hat Size', l('hatSize')) +
+              row('Nose Bridge', l('noseBridge')) +
+              row('Sunglass Fit', l('sunglassFit')) +
+              row('Frame Type', l('frameType')))}
+            ${section('Additional Info',
+              row('Comments', val('comments')) +
+              row('Prescription File', fileLabel('rxFile')) +
+              row('Head Shot Photo', fileLabel('photoFile')))}
+            ${section('Contact Info', row('Email', val('contactEmail')) + row('Phone', val('contactPhone')))}
+          </div>
+          <p class="text-sm text-grey-500 leading-relaxed mt-8">Double-check everything above, then submit. You can go back to fix anything first.</p>`;
+      },
+
       next() {
-        if (this.step < 3) { this.step++; this.renderStep(); }
+        if (this.step < 4) { this.step++; this.renderStep(); }
         else this.submit();
       },
       back() {
-        if (this.step > 1) { this.step--; this.renderStep(); }
+        if (this.step > 1) {
+          this.step--;
+          if (this.step === 3) {
+            [1,2,3].forEach(n => document.querySelector(`[data-step-dot="${n}"]`).classList.remove('opacity-30'));
+            document.querySelectorAll('[data-step-line]').forEach(l => l.classList.remove('opacity-30'));
+          }
+          this.renderStep();
+        }
       },
 
       submit() {
@@ -759,7 +814,7 @@
           mount.after(banner);
         }
         banner.innerHTML = `
-          <svg class="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+          <svg class="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 16h.01"/></svg>
           <span>We couldn't submit your request — please check your connection and try again. Your answers are still here.</span>`;
       },
 
@@ -782,7 +837,6 @@
             <p class="text-base text-grey-600 leading-relaxed mt-3">Your <span class="text-ink">${pkg.name}</span> try-on request is in. Request <span class="text-ink">#${submissionId}</span>. We'll reach out to confirm details and collect your deposit before shipping your frames.</p>
           </div>`;
         document.getElementById('stepNav').classList.add('hidden');
-        [1,2,3].forEach(n => document.querySelector(`[data-step-dot="${n}"]`).classList.add('opacity-30'));
       },
     };
 
