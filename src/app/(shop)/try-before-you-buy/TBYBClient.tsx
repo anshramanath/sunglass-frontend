@@ -340,7 +340,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       const pkg = packages.find(p => p.id === packageId);
       if (pkg) setSelectedPkg(pkg);
 
-      if (savedStep) setStep(savedStep > 2 ? 4 : savedStep);
+      if (savedStep) setStep(savedStep === 3 ? 4 : savedStep);
 
       if (savedVals) setVals(prev => ({ ...prev, ...savedVals }));
     } catch {}
@@ -402,7 +402,10 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
   }
 
   useEffect(() => {
-    if (selectedPkg && formRef.current) formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (selectedPkg && formRef.current) {
+      saveToLS();
+      formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }, [selectedPkg]);
 
   function selectPkg(pkg: TBYBPackage) {
@@ -447,7 +450,6 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       return;
     }
 
-    saveToLS();
     setSubmitting(true);
     try {
       const result = await submitTBYB({
