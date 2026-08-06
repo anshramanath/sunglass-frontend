@@ -330,6 +330,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
   const [step, setStep] = useState<number>(1);
   const [openId, setOpenId] = useState<string | null>(null);
   const [vals, setVals] = useState<FormVals>({ ...INIT, email, name });
+  
   useEffect(() => {
     try {
       const stored = localStorage.getItem(`${brandSlug}:tbyb`);
@@ -349,7 +350,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
   function saveToLS(toStep: number) {
     try {
       const { name: _name, email: _email, ...serializableVals } = vals;
-      
+
       localStorage.setItem(`${brandSlug}:tbyb`, JSON.stringify({
         packageId: selectedPkg!.id,
         step: toStep,
