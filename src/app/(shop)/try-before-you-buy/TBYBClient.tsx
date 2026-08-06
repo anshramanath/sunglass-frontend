@@ -340,19 +340,19 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       const pkg = packages.find(p => p.id === packageId);
       if (pkg) setSelectedPkg(pkg);
 
-      if (savedStep) setStep(savedStep === 3 ? 4 : savedStep);
+      if (savedStep) setStep(savedStep);
 
       if (savedVals) setVals(prev => ({ ...prev, ...savedVals }));
     } catch {}
   }, []);
 
-  function saveToLS() {
+  function saveToLS(toStep: number) {
     try {
       const { name: _name, email: _email, ...serializableVals } = vals;
       
       localStorage.setItem(`${brandSlug}:tbyb`, JSON.stringify({
         packageId: selectedPkg!.id,
-        step,
+        step: toStep,
         vals: serializableVals,
       }));
     } catch {}
@@ -403,7 +403,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
 
   useEffect(() => {
     if (selectedPkg && formRef.current) {
-      saveToLS();
+      saveToLS(step);
       formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [selectedPkg]);
@@ -425,7 +425,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       if (!vals.osSphere)   { setError("Please select your left eye (OS) sphere!"); return; }
       if (!vals.osCylinder) { setError("Please select your left eye (OS) cylinder!"); return; }
       if (vals.osCylinder !== "None" && !vals.osAxis) { setError("Please select your left eye (OS) axis!"); return; }
-      saveToLS();
+      saveToLS(step + 1);
       setStep(s => s + 1);
       return;
     }
@@ -437,7 +437,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       if (!vals.noseBridge)  { setError("Please describe your nose bridge!"); return; }
       if (!vals.sunglassFit) { setError("Please select your sunglass fit!"); return; }
       if (!vals.frameType)   { setError("Please select a frame type!"); return; }
-      saveToLS();
+      saveToLS(step + 1);
       setStep(s => s + 1);
       return;
     }
@@ -445,7 +445,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     if (step === 3) {
       if (!vals.name.trim()) { setError("Name is required!"); return; }
       if (!vals.email.trim()) { setError("Email is required!"); return; }
-      saveToLS();
+      saveToLS(step + 1);
       setStep(s => s + 1);
       return;
     }
