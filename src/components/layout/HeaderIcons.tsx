@@ -332,7 +332,7 @@ export default function HeaderIcons({ isSignedIn, filler, tree }: { isSignedIn: 
   const loggedIn = useLoggedIn();
   const cartCount = useCartCount();
   const bookmarkCount = useBookmarkCount();
-  const isActuallySignedIn = isSignedIn && loggedIn;
+  const isActuallySignedIn = isSignedIn && (loggedIn ?? true);
 
   return (
     <>

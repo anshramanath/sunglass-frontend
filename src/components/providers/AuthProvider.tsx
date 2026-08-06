@@ -3,12 +3,12 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getUser } from "@/lib/auth";
 
-type AuthContextValue = { loggedIn: boolean; setLoggedIn: (v: boolean) => void };
+type AuthContextValue = { loggedIn: boolean | null; setLoggedIn: (v: boolean) => void };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     async function check() {

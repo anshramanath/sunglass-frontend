@@ -4,6 +4,9 @@ import { useState, useEffect, useRef, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import type { TBYBPackage } from "@/lib/types";
 import { submitTBYB, uploadFile } from "@/lib/api";
+import { getBrand } from "@/lib/brand";
+
+const brandSlug = getBrand().slug;
 
 // ── Option generators ─────────────────────────────────────────────────────────
 
@@ -67,29 +70,36 @@ function Dropdown({ id, opts, value, onChange, disabled, openId, setOpenId }: {
 
 // ── File upload ───────────────────────────────────────────────────────────────
 
-function FileUpload({ id, file, uploading, onChange }: { id: string; file: File | null; uploading: boolean; onChange: (f: File | null) => void }) {
+function FileUpload({ id, url, uploading, label, onChange }: { id: string; url: string | null; uploading: boolean; label: string; onChange: (f: File | null) => void }) {
   return (
     <div>
       <input id={id} type="file" className="hidden" onChange={e => onChange(e.target.files?.[0] ?? null)} />
       <label htmlFor={id} className="flex items-center gap-3 border border-dashed border-grey-300 hover:border-ink transition-colors duration-200 px-4 h-14 cursor-pointer">
-        <svg className="w-5 h-5 text-grey-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M12 16V4M12 4 7 9M12 4l5 5" /><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
-        </svg>
-        {file ? (
+        {url ? (
+          <svg className="w-5 h-5 text-ink shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M5 13l4 4L19 7" />
+          </svg>
+        ) : (
+          <svg className="w-5 h-5 text-grey-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M12 16V4M12 4 7 9M12 4l5 5" /><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+          </svg>
+        )}
+        {uploading ? (
+          <span className="text-[15px] text-grey-400">Uploading…</span>
+        ) : url ? (
           <span className="flex items-center gap-2 min-w-0">
-            <span className="text-[15px] text-ink truncate">{file.name}</span>
-            {uploading ? (
-              <span className="shrink-0 text-[13px] text-grey-400">Uploading…</span>
-            ) : (
-              <button type="button"
-                onClick={e => { e.preventDefault(); e.stopPropagation(); onChange(null); }}
-                className="shrink-0 text-[13px] text-grey-400 hover:text-ink underline underline-offset-4 transition-colors duration-200">
-                Remove
-              </button>
-            )}
+            <a href={url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+              className="text-[15px] text-ink underline underline-offset-4 truncate">
+              {label}
+            </a>
+            <button type="button"
+              onClick={e => { e.preventDefault(); e.stopPropagation(); onChange(null); }}
+              className="shrink-0 text-[13px] text-grey-400 hover:text-ink underline underline-offset-4 transition-colors duration-200">
+              Remove
+            </button>
           </span>
         ) : (
-          <span className="text-[15px] text-grey-500">Browse a file</span>
+          <span className="text-[15px] text-grey-500">Browse A File</span>
         )}
       </label>
     </div>
@@ -121,10 +131,10 @@ type FormVals = {
   lensType: string | null; helmetSize: string | null; hatSize: string | null;
   noseBridge: string | null; sunglassFit: string | null; frameType: string | null;
   comments: string; name: string; email: string; phone: string;
-  rxFile: File | null; photoFile: File | null;
+  rxUrl: string | null; photoUrl: string | null;
 };
 
-type UpdateFn = (key: keyof FormVals, value: string | null | File) => void;
+type UpdateFn = (key: keyof FormVals, value: string | null) => void;
 
 // ── Step 1: Prescription ──────────────────────────────────────────────────────
 
@@ -194,7 +204,7 @@ function Step2({ vals, update, openId, setOpenId }: { vals: FormVals; update: Up
 
 // ── Step 3: Additional info ───────────────────────────────────────────────────
 
-function Step3({ vals, update, rxUploading, photoUploading }: { vals: FormVals; update: UpdateFn; rxUploading: boolean; photoUploading: boolean }) {
+function Step3({ vals, update, rxUploading, photoUploading, onRxFile, onPhotoFile }: { vals: FormVals; update: UpdateFn; rxUploading: boolean; photoUploading: boolean; onRxFile: (f: File | null) => void; onPhotoFile: (f: File | null) => void }) {
   return (
     <div>
       <h2 className="text-[21px] font-normal mb-6">Additional Info</h2>
@@ -207,11 +217,11 @@ function Step3({ vals, update, rxUploading, photoUploading }: { vals: FormVals; 
         </div>
         <div>
           <label className="text-[13px] text-grey-500 mb-1.5 block">Upload Prescription (Optional)</label>
-          <FileUpload id="rxFile" file={vals.rxFile} uploading={rxUploading} onChange={f => update("rxFile", f)} />
+          <FileUpload id="rxFile" url={vals.rxUrl} uploading={rxUploading} label="Prescription Uploaded" onChange={onRxFile} />
         </div>
         <div>
           <label className="text-[13px] text-grey-500 mb-1.5 block">Upload Head Shot (Optional)</label>
-          <FileUpload id="photoFile" file={vals.photoFile} uploading={photoUploading} onChange={f => update("photoFile", f)} />
+          <FileUpload id="photoFile" url={vals.photoUrl} uploading={photoUploading} label="Headshot Uploaded" onChange={onPhotoFile} />
         </div>
       </div>
 
@@ -252,6 +262,19 @@ function Step4({ vals, pkg }: { vals: FormVals; pkg: TBYBPackage }) {
     );
   }
 
+  function rowLink(label: string, url: string | null, linkLabel: string) {
+    return (
+      <div className="flex justify-between gap-6 py-2.5 border-b border-grey-100 last:border-0">
+        <dt className="text-grey-500">{label}</dt>
+        <dd className="text-right">
+          {url
+            ? <a href={url} target="_blank" rel="noopener noreferrer" className="text-ink underline underline-offset-4">{linkLabel}</a>
+            : <span className="text-ink">None</span>}
+        </dd>
+      </div>
+    );
+  }
+
   function section(title: string, children: React.ReactNode) {
     return (
       <div className="border-t border-grey-200 pt-6 first:border-t-0 first:pt-0">
@@ -280,7 +303,7 @@ function Step4({ vals, pkg }: { vals: FormVals; pkg: TBYBPackage }) {
           <>{row("Lens Type", vals.lensType)}{row("Helmet Size", vals.helmetSize)}{row("Hat Size", vals.hatSize)}{row("Nose Bridge", vals.noseBridge)}{row("Sunglass Fit", vals.sunglassFit)}{row("Frame Type", vals.frameType)}</>
         )}
         {section("Additional Info",
-          <>{row("Comments", vals.comments)}{row("Prescription", vals.rxFile?.name)}{row("Head Shot", vals.photoFile?.name)}</>
+          <>{row("Comments", vals.comments)}{rowLink("Prescription", vals.rxUrl, "Prescription Uploaded")}{rowLink("Head Shot", vals.photoUrl, "Headshot Uploaded")}</>
         )}
         {section("Contact Info",
           <>{row("Name", vals.name)}{row("Email", vals.email)}{row("Phone", vals.phone)}</>
@@ -299,7 +322,7 @@ const INIT: FormVals = {
   lensType: null, helmetSize: null, hatSize: null,
   noseBridge: null, sunglassFit: null, frameType: null,
   comments: "", name: "", email: "", phone: "",
-  rxFile: null, photoFile: null,
+  rxUrl: null, photoUrl: null,
 };
 
 export default function TBYBClient({ packages, email, name }: { packages: TBYBPackage[]; email: string; name: string }) {
@@ -307,8 +330,33 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
   const [step, setStep] = useState<number>(1);
   const [openId, setOpenId] = useState<string | null>(null);
   const [vals, setVals] = useState<FormVals>({ ...INIT, email, name });
-  const [rxUrl, setRxUrl] = useState<string | null>(null);
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(`${brandSlug}:tbyb`);
+      if (!stored) return;
+
+      const { packageId, step: savedStep, vals: savedVals } = JSON.parse(stored);
+
+      const pkg = packages.find(p => p.id === packageId);
+      if (pkg) setSelectedPkg(pkg);
+
+      if (savedStep) setStep(savedStep > 2 ? 4 : savedStep);
+
+      if (savedVals) setVals(prev => ({ ...prev, ...savedVals }));
+    } catch {}
+  }, []);
+
+  function saveToLS() {
+    try {
+      const { name: _name, email: _email, ...serializableVals } = vals;
+      
+      localStorage.setItem(`${brandSlug}:tbyb`, JSON.stringify({
+        packageId: selectedPkg!.id,
+        step,
+        vals: serializableVals,
+      }));
+    } catch {}
+  }
   const [rxUploading, setRxUploading] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -316,7 +364,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
   const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
 
-  function update(key: keyof FormVals, value: string | null | File) {
+  function update(key: keyof FormVals, value: string | null) {
     setVals(prev => {
       const next = { ...prev, [key]: value };
       if (key === "odCylinder" && value === "None") next.odAxis = null;
@@ -325,51 +373,42 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     });
   }
 
-  useEffect(() => {
-    if (selectedPkg && formRef.current) {
-      formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, [selectedPkg]);
-
-  useEffect(() => {
-    if (!vals.rxFile) { setRxUrl(null); return; }
+  async function handleRxFile(f: File | null) {
+    if (!f) { update("rxUrl", null); return; }
     setRxUploading(true);
-    async function run() {
-      try {
-        const fd = new FormData(); fd.append("file", vals.rxFile!);
-        const r = await uploadFile(fd);
-        setRxUrl(r.url);
-      } catch {
-        setError("Prescription upload failed!");
-      } finally {
-        setRxUploading(false);
-      }
+    try {
+      const fd = new FormData(); fd.append("file", f);
+      const r = await uploadFile(fd);
+      update("rxUrl", r.url);
+    } catch {
+      setError("Prescription upload failed!");
+    } finally {
+      setRxUploading(false);
     }
-    run();
-  }, [vals.rxFile]);
+  }
+
+  async function handlePhotoFile(f: File | null) {
+    if (!f) { update("photoUrl", null); return; }
+    setPhotoUploading(true);
+    try {
+      const fd = new FormData(); fd.append("file", f);
+      const r = await uploadFile(fd);
+      update("photoUrl", r.url);
+    } catch {
+      setError("Headshot upload failed!");
+    } finally {
+      setPhotoUploading(false);
+    }
+  }
 
   useEffect(() => {
-    if (!vals.photoFile) { setPhotoUrl(null); return; }
-    setPhotoUploading(true);
-    async function run() {
-      try {
-        const fd = new FormData(); fd.append("file", vals.photoFile!);
-        const r = await uploadFile(fd);
-        setPhotoUrl(r.url);
-      } catch {
-        setError("Photo upload failed!");
-      } finally {
-        setPhotoUploading(false);
-      }
-    }
-    run();
-  }, [vals.photoFile]);
+    if (selectedPkg && formRef.current) formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [selectedPkg]);
 
   function selectPkg(pkg: TBYBPackage) {
     if (!email || !name) { router.push("/sign-in"); return; }
     if (selectedPkg?.id === pkg.id) { setSelectedPkg(null); return; }
     setSelectedPkg(pkg);
-    setStep(1);
     setError(null);
   }
 
@@ -383,6 +422,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       if (!vals.osSphere)   { setError("Please select your left eye (OS) sphere!"); return; }
       if (!vals.osCylinder) { setError("Please select your left eye (OS) cylinder!"); return; }
       if (vals.osCylinder !== "None" && !vals.osAxis) { setError("Please select your left eye (OS) axis!"); return; }
+      saveToLS();
       setStep(s => s + 1);
       return;
     }
@@ -394,6 +434,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       if (!vals.noseBridge)  { setError("Please describe your nose bridge!"); return; }
       if (!vals.sunglassFit) { setError("Please select your sunglass fit!"); return; }
       if (!vals.frameType)   { setError("Please select a frame type!"); return; }
+      saveToLS();
       setStep(s => s + 1);
       return;
     }
@@ -401,10 +442,12 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     if (step === 3) {
       if (!vals.name.trim()) { setError("Name is required!"); return; }
       if (!vals.email.trim()) { setError("Email is required!"); return; }
+      saveToLS();
       setStep(s => s + 1);
       return;
     }
 
+    saveToLS();
     setSubmitting(true);
     try {
       const result = await submitTBYB({
@@ -414,9 +457,9 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
         lensType: vals.lensType, helmetSize: vals.helmetSize, hatSize: vals.hatSize,
         noseBridge: vals.noseBridge, sunglassFit: vals.sunglassFit, frameType: vals.frameType,
         comments: vals.comments || "None", name: vals.name, email: vals.email, phone: vals.phone || "None",
-        prescriptionUrl: rxUrl || "None",
-        headshotUrl: photoUrl || "None",
-      }, `${window.location.origin}/`, `${window.location.origin}/`);
+        prescriptionUrl: vals.rxUrl || "None",
+        headshotUrl: vals.photoUrl || "None",
+      }, `${window.location.origin}/`, `${window.location.origin}/try-before-you-buy`);
       router.push(result.url);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
@@ -465,7 +508,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
             </p>
             {step === 1 && <Step1 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
             {step === 2 && <Step2 vals={vals} update={update} openId={openId} setOpenId={setOpenId} />}
-            {step === 3 && <Step3 vals={vals} update={update} rxUploading={rxUploading} photoUploading={photoUploading} />}
+            {step === 3 && <Step3 vals={vals} update={update} rxUploading={rxUploading} photoUploading={photoUploading} onRxFile={handleRxFile} onPhotoFile={handlePhotoFile} />}
             {step === 4 && <Step4 vals={vals} pkg={selectedPkg} />}
             {error && (
               <div className="flex items-start gap-2.5 border border-red-200 bg-red-50 text-red-700 text-sm px-4 py-3 mt-6">

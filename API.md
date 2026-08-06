@@ -571,7 +571,8 @@ Returns the authenticated user's TBYB submission history for a brand, newest fir
 [
   {
     "id": "uuid",
-    "status": "Processing",
+    "status": "Curating",
+    "refundedCents": null,
     "createdAt": "2026-07-01T12:00:00.000Z",
     "packageName": "BikerArmour",
     "packagePriceCents": 22900,
@@ -596,12 +597,23 @@ Returns the authenticated user's TBYB submission history for a brand, newest fir
     "headshotUrl": "None",
     "contactName": "John Smith",
     "contactEmail": "customer@example.com",
-    "contactPhone": "None"
+    "contactPhone": "None",
+    "shippingAddress": {
+      "name": "John Smith",
+      "line1": "123 Main St",
+      "line2": null,
+      "city": "Austin",
+      "state": "TX",
+      "postalCode": "78701",
+      "country": "US"
+    }
   }
 ]
 ```
 
-Status values: `Unpaid`, `Processing`, `Emailed`, `Curating`, `Shipped`, `Received`, `Refunded`. `Unpaid` is set on submission before payment; `Refunded` is set by the Stripe webhook on full refund. Both are system-set and not admin-editable. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
+`shippingAddress` is `null` until payment completes — it is stored by the webhook after checkout. `refundedCents` is `null` if no refund has occurred, or a positive integer (cents refunded). Any refund sets status to `Refunded`.
+
+Status values: `Unpaid`, `Curating`, `Emailed`, `Shipped`, `Received`, `Refunded`. `Unpaid` is set on submission before payment; `Curating` is set by the webhook after successful payment; `Refunded` is set by the webhook on full refund. `Unpaid` and `Refunded` are not admin-editable. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
 
 ---
 
@@ -622,7 +634,7 @@ Uploads a file to the brand's Supabase Storage bucket under the `tbyb/` folder a
 
 ### POST /api/user/tbyb
 
-Submits a Try Before You Buy form. Saves the submission with status `"Unpaid"`, then creates a Stripe checkout session for the package deposit. The submission moves to `"Processing"` after successful payment via the Stripe webhook.
+Submits a Try Before You Buy form. Saves the submission with status `"Unpaid"`, then creates a Stripe checkout session for the package deposit. The submission moves to `"Curating"` after successful payment via the Stripe webhook.
 
 **Errors:** `400` missing required fields · `401` invalid token · `404` package not found · `500` DB or Stripe failure
 
@@ -657,6 +669,8 @@ Submits a Try Before You Buy form. Saves the submission with status `"Unpaid"`, 
 ```
 
 All form fields are required strings. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, and any unselected prescription/fitting fields) are sent as `"None"` when not provided — never `null`. `odAxis`/`osAxis` are `"None"` when their corresponding cylinder is `"None"`. `packageId` is the UUID from `tbyb_packages.id` — the backend looks up the package details and stores a snapshot on the submission.
+
+Stripe collects the shipping address at checkout — no need to collect it on the frontend.
 
 **Response `200`**
 ```json
@@ -720,7 +734,7 @@ Stripe webhook handler. Verified via `stripe-signature` header. Handles the foll
 
 **`checkout.session.completed`** — dispatches on `session.metadata.type`:
 - `"order"` — inserts an `orders` row with status `processing` and `order_items` rows from expanded Stripe line items. Idempotent via `stripe_session_id`.
-- `"tbyb"` — updates the matching `tbyb_submissions` row to status `Processing` and stores `stripe_session_id` / `stripe_payment_intent`.
+- `"tbyb"` — updates the matching `tbyb_submissions` row to status `Curating` and stores `stripe_session_id`, `stripe_payment_intent`, and `shipping_address`.
 - Unknown type — returns `400`.
 
 **`charge.refunded`** — matched by `stripe_payment_intent`. Only fires if `charge.amount_refunded > 0`. Tries orders first; if no order rows are updated, falls back to updating the matching `tbyb_submissions` row to `Refunded`. For orders: sets `refunded_cents` to the cumulative refunded amount; sets `status` to `refunded` only on a full refund (`amount_refunded === amount`) — partial refunds update `refunded_cents` only.
