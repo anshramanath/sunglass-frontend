@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submission Confirmed — proSPORT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Hanken Grotesk"', 'Helvetica Neue', 'Arial', 'sans-serif'] },
+          colors: {
+            ink: '#000000', paper: '#FFFFFF', brand: '#2EA3DC', sale: '#2EA3DC',
+            grey: {
+              950: '#141414', 800: '#333333', 700: '#4A4A4A', 600: '#5E5E5E',
+              500: '#6E6E6E', 400: '#8C8C8C', 300: '#C9C9C9', 250: '#D6D6D6',
+              200: '#E2E2E2', 150: '#E9E9E9', 100: '#ECECEC', 75: '#F2F2F2', 50: '#F6F6F6'
+            }
+          },
+          fontSize: {
+            '2xs': ['11px', '1.4'], 'xs': ['12px', '1.4'], 'sm': ['13px', '1.4'],
+            'base': ['15px', '1.55'], 'md': ['16px', '1.55'], 'lg': ['18px', '1.5'],
+            'xl': ['21px', '1.3'], '2xl': ['26px', '1.2'], '3xl': ['34px', '1.15'],
+            '4xl': ['44px', '1.08'], '5xl': ['56px', '1.05'], '6xl': ['68px', '1.03']
+          },
+          letterSpacing: { tightish: '-0.01em', wide: '0.04em', wider: '0.10em' },
+          maxWidth: { shell: '1680px' }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-sans bg-paper text-ink antialiased min-h-screen flex flex-col">
+
+  <!-- ============ SUBMISSION CONFIRMED ============ -->
+  <main class="flex-1 grid place-items-center px-5 py-20">
+    <div class="w-full max-w-[440px] text-center">
+
+      <div class="mx-auto w-16 h-16 rounded-full bg-[#22963F] grid place-items-center">
+        <svg class="w-8 h-8 text-paper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m5 13 4 4L19 7"/></svg>
+      </div>
+
+      <p class="text-sm uppercase tracking-wider text-grey-400 font-medium mt-7">Submission Confirmed</p>
+      <h1 class="text-3xl lg:text-4xl font-normal tracking-tightish mt-3">Thank you for your submission</h1>
+      <p class="text-md text-grey-600 leading-relaxed mt-4">Your deposit was successful. Keep an eye on your submission in your account for updates.</p>
+
+      <a href="account.html" class="inline-block bg-ink text-paper text-base py-4 px-9 mt-9 hover:bg-grey-800 transition-colors duration-200">View My Account</a>
+    </div>
+  </main>
+
+</body>
+</html>

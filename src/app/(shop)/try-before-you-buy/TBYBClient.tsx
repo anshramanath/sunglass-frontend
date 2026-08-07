@@ -462,7 +462,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
         comments: vals.comments || "None", name: vals.name, email: vals.email, phone: vals.phone || "None",
         prescriptionUrl: vals.rxUrl || "None",
         headshotUrl: vals.photoUrl || "None",
-      }, `${window.location.origin}/`, `${window.location.origin}/try-before-you-buy`);
+      }, `${window.location.origin}/try-before-you-buy/success`, `${window.location.origin}/try-before-you-buy`);
       router.push(result.url);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
