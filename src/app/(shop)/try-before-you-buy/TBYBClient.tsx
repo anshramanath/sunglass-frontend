@@ -347,12 +347,12 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     } catch {}
   }, []);
 
-  function saveToLS(toStep: number) {
+  function saveToLS(toStep: number, pkgId: string | null) {
     try {
       const { name: _name, email: _email, ...serializableVals } = vals;
 
       localStorage.setItem(`${brandSlug}:tbyb`, JSON.stringify({
-        packageId: selectedPkg!.id,
+        packageId: pkgId,
         step: toStep,
         vals: serializableVals,
       }));
@@ -404,15 +404,15 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
 
   useEffect(() => {
     if (selectedPkg && formRef.current) {
-      saveToLS(step);
       formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [selectedPkg]);
 
   function selectPkg(pkg: TBYBPackage) {
     if (!email || !name) { router.push("/sign-in"); return; }
-    if (selectedPkg?.id === pkg.id) { setSelectedPkg(null); return; }
+    if (selectedPkg?.id === pkg.id) { setSelectedPkg(null); saveToLS(step, null); return; }
     setSelectedPkg(pkg);
+    saveToLS(step, pkg.id);
     setError(null);
   }
 
@@ -426,7 +426,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       if (!vals.osSphere)   { setError("Please select your left eye (OS) sphere!"); return; }
       if (!vals.osCylinder) { setError("Please select your left eye (OS) cylinder!"); return; }
       if (vals.osCylinder !== "None" && !vals.osAxis) { setError("Please select your left eye (OS) axis!"); return; }
-      saveToLS(step + 1);
+      saveToLS(step + 1, selectedPkg!.id);
       setStep(s => s + 1);
       return;
     }
@@ -438,7 +438,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
       if (!vals.noseBridge)  { setError("Please describe your nose bridge!"); return; }
       if (!vals.sunglassFit) { setError("Please select your sunglass fit!"); return; }
       if (!vals.frameType)   { setError("Please select a frame type!"); return; }
-      saveToLS(step + 1);
+      saveToLS(step + 1, selectedPkg!.id);
       setStep(s => s + 1);
       return;
     }
@@ -446,7 +446,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     if (step === 3) {
       if (!vals.name.trim()) { setError("Name is required!"); return; }
       if (!vals.email.trim()) { setError("Email is required!"); return; }
-      saveToLS(step + 1);
+      saveToLS(step + 1, selectedPkg!.id);
       setStep(s => s + 1);
       return;
     }
