@@ -150,6 +150,8 @@ export type TBYBSubmissionRecord = {
   noseBridge: string; buyingPreference: string; frameType: string;
   specialRequests: string; prescriptionUrl: string; headshotUrl: string;
   contactName: string; contactEmail: string; contactPhone: string;
+  refundedCents: number | null; shippingAddress: ShippingAddress | null;
+  carrier: string | null; trackingNumber: string | null;
   status: string; createdAt: string; updatedAt: string;
 };
 

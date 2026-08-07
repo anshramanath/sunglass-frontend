@@ -220,7 +220,7 @@ function Step3({ vals, update, rxUploading, photoUploading, onRxFile, onPhotoFil
           <FileUpload id="rxFile" url={vals.rxUrl} uploading={rxUploading} label="Prescription Uploaded" onChange={onRxFile} />
         </div>
         <div>
-          <label className="text-[13px] text-grey-500 mb-1.5 block">Upload Head Shot (Optional)</label>
+          <label className="text-[13px] text-grey-500 mb-1.5 block">Upload Headshot (Optional)</label>
           <FileUpload id="photoFile" url={vals.photoUrl} uploading={photoUploading} label="Headshot Uploaded" onChange={onPhotoFile} />
         </div>
       </div>
@@ -303,7 +303,7 @@ function Step4({ vals, pkg }: { vals: FormVals; pkg: TBYBPackage }) {
           <>{row("Lens Type", vals.lensType)}{row("Helmet Size", vals.helmetSize)}{row("Hat Size", vals.hatSize)}{row("Nose Bridge", vals.noseBridge)}{row("Sunglass Fit", vals.sunglassFit)}{row("Frame Type", vals.frameType)}</>
         )}
         {section("Additional Info",
-          <>{row("Comments", vals.comments)}{rowLink("Prescription", vals.rxUrl, "Prescription Uploaded")}{rowLink("Head Shot", vals.photoUrl, "Headshot Uploaded")}</>
+          <>{row("Comments", vals.comments)}{rowLink("Prescription", vals.rxUrl, "Prescription Uploaded")}{rowLink("Headshot", vals.photoUrl, "Headshot Uploaded")}</>
         )}
         {section("Contact Info",
           <>{row("Name", vals.name)}{row("Email", vals.email)}{row("Phone", vals.phone)}</>

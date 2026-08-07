@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — proSPORT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Hanken Grotesk"', 'Helvetica Neue', 'Arial', 'sans-serif'] },
+          colors: {
+            ink: '#000000', paper: '#FFFFFF', brand: '#2EA3DC',
+            grey: {
+              700: '#4A4A4A', 600: '#5E5E5E', 500: '#6E6E6E', 400: '#8C8C8C',
+              300: '#C9C9C9', 200: '#E2E2E2', 100: '#ECECEC', 50: '#F6F6F6'
+            }
+          },
+          fontSize: {
+            '2xs': ['11px', '1.4'], 'sm': ['13px', '1.4'], 'base': ['15px', '1.55'],
+            'xl': ['21px', '1.3'], '3xl': ['34px', '1.15'], '4xl': ['44px', '1.08']
+          },
+          letterSpacing: { tightish: '-0.01em', wider: '0.10em' },
+          maxWidth: { acct: '1100px' }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-sans bg-paper text-ink antialiased min-h-screen flex flex-col">
+
+  <!-- ============ MINIMAL HEADER ============ -->
+  <header class="border-b border-grey-200">
+    <div class="mx-auto max-w-acct px-5 lg:px-10">
+      <div class="h-16 flex items-center justify-between gap-4">
+        <a href="index.html" class="shrink-0" aria-label="proSPORT home">
+          <img src="assets/prosport-logo.png" alt="proSPORT" class="h-8 w-auto">
+        </a>
+        <a href="index.html" class="flex items-center gap-1.5 whitespace-nowrap text-sm hover:opacity-60 transition-opacity duration-200">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto w-full max-w-acct px-5 lg:px-10 py-10 lg:py-14 flex-1">
+
+    <!-- header row: eyebrow + sign out -->
+    <div class="border-b border-grey-200 pb-7">
+      <div class="flex items-center justify-between">
+        <p class="text-sm uppercase tracking-wider text-grey-400 font-medium">My Account</p>
+        <button type="button" class="text-sm underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Sign Out</button>
+      </div>
+      <h1 class="text-3xl lg:text-4xl font-normal tracking-tightish mt-2">Hi, Alex</h1>
+    </div>
+
+    <!-- account details -->
+    <section class="mt-10">
+      <div class="flex items-baseline justify-between">
+        <h2 class="text-xl font-normal">Account Details</h2>
+      </div>
+      <div class="mt-6 grid sm:grid-cols-2 gap-x-10">
+        <dl class="space-y-6">
+          <div>
+            <dt class="text-sm text-grey-500">Email</dt>
+            <dd class="text-base mt-1">alex.rivera@email.com</dd>
+          </div>
+          <div>
+            <dt class="text-sm text-grey-500">Name</dt>
+            <dd class="text-base mt-1">Alex Rivera</dd>
+          </div>
+          <div>
+            <dt class="text-sm text-grey-500">Member Since</dt>
+            <dd class="text-base mt-1">March 2026</dd>
+          </div>
+        </dl>
+        <dl class="mt-6 sm:mt-0">
+          <dt class="text-sm text-grey-500">Shipping Address</dt>
+          <dd class="text-base mt-1 leading-relaxed">
+            1847 Bayshore Blvd, Apt 12<br>
+            Tampa, FL 33606<br>
+            United States
+          </dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- order history -->
+    <section class="mt-10 border-t border-grey-200 pt-10">
+      <h2 class="text-xl font-normal">Order History</h2>
+
+      <div class="mt-6 space-y-5">
+
+        <!-- order 1 -->
+        <div class="border border-grey-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-grey-200">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+              <span><span class="text-grey-500">Order</span> <span class="text-ink">#ABCD1234</span></span>
+              <span class="text-grey-500">Placed June 18, 2026</span>
+            </div>
+            <span class="text-2xs uppercase tracking-wider font-medium px-2.5 py-1 border" style="color:#737373;border-color:#737373">Processing</span>
+          </div>
+          <div class="px-5 sm:px-6 py-5">
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <div class="block w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
+                  <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_05_Airspeed-Black-Front.jpg" alt="Airspeed" class="w-full h-full object-contain mix-blend-multiply">
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-base">Airspeed</p>
+                  <p class="text-sm text-grey-500 mt-0.5">Gunmetal HD · Qty 1</p>
+                </div>
+                <p class="text-base shrink-0">$17.99</p>
+              </div>
+            </div>
+          </div>
+          <div class="px-5 sm:px-6 py-4 border-t border-grey-200 flex items-start justify-between gap-6 flex-wrap">
+            <div>
+              <p class="text-base"><span class="text-grey-500">Total</span> $19.42</p>
+              <p class="text-sm text-grey-500 mt-1">Alex Rivera · 1847 Bayshore Blvd, Apt 12, Tampa, FL 33606</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- order 2 -->
+        <div class="border border-grey-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-grey-200">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+              <span><span class="text-grey-500">Order</span> <span class="text-ink">#7F3E9A21</span></span>
+              <span class="text-grey-500">Placed May 2, 2026</span>
+            </div>
+            <span class="text-2xs uppercase tracking-wider font-medium px-2.5 py-1 border" style="color:#2EA3DC;border-color:#2EA3DC">Shipped</span>
+          </div>
+          <div class="px-5 sm:px-6 py-5">
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <div class="block w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
+                  <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_09_Convair-Gunmetal-Smoke-Front.jpg" alt="Convair" class="w-full h-full object-contain mix-blend-multiply">
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-base">Convair</p>
+                  <p class="text-sm text-grey-500 mt-0.5">Gunmetal Smoke · Qty 1</p>
+                </div>
+                <p class="text-base shrink-0">$19.99</p>
+              </div>
+            </div>
+          </div>
+          <div class="px-5 sm:px-6 py-4 border-t border-grey-200 flex items-start justify-between gap-6 flex-wrap">
+            <div>
+              <p class="text-base"><span class="text-grey-500">Total</span> $21.59</p>
+              <p class="text-sm text-grey-500 mt-1">Alex Rivera · 1847 Bayshore Blvd, Apt 12, Tampa, FL 33606</p>
+            </div>
+            <p class="text-sm shrink-0"><span class="text-grey-500">UPS</span> · 1Z999AA10123456784</p>
+          </div>
+        </div>
+
+        <!-- order 3 — refunded -->
+        <div class="border border-grey-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-grey-200">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+              <span><span class="text-grey-500">Order</span> <span class="text-ink">#5B10DE44</span></span>
+              <span class="text-grey-500">Placed April 11, 2026</span>
+            </div>
+            <span class="text-2xs uppercase tracking-wider font-medium px-2.5 py-1 border" style="color:#000000;border-color:#000000">Refunded</span>
+          </div>
+          <div class="px-5 sm:px-6 py-5">
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <div class="block w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
+                  <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2024_05_Hollywood-Black-Front.jpg" alt="Hollywood" class="w-full h-full object-contain mix-blend-multiply">
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-base">Hollywood</p>
+                  <p class="text-sm text-grey-500 mt-0.5">Black · Qty 1</p>
+                </div>
+                <p class="text-base shrink-0">$15.99</p>
+              </div>
+            </div>
+          </div>
+          <div class="px-5 sm:px-6 py-4 border-t border-grey-200 flex items-start justify-between gap-6 flex-wrap">
+            <div>
+              <p class="text-base"><span class="text-grey-500">Total</span> $17.27</p>
+              <p class="text-base mt-0.5 text-brand">Refunded $17.27</p>
+              <p class="text-sm text-grey-500 mt-1">Alex Rivera · 1847 Bayshore Blvd, Apt 12, Tampa, FL 33606</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- try before you buy submissions -->
+    <section class="mt-10 border-t border-grey-200 pt-10">
+      <h2 class="text-xl font-normal">Try Before You Buy</h2>
+
+      <div class="mt-6 space-y-5">
+
+        <!-- submission 1 — pending -->
+        <div class="border border-grey-200">
+          <button type="button" onclick="toggleSubmission(this)" class="w-full flex flex-wrap items-center justify-between gap-3 px-5 sm:px-6 py-4 text-left">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+              <span><span class="text-grey-500">Submission</span> <span class="text-ink">#9C4F2E18</span></span>
+              <span class="text-grey-500">Submitted June 30, 2026</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="text-2xs uppercase tracking-wider font-medium px-2.5 py-1 border" style="color:#737373;border-color:#737373">Pending</span>
+              <svg data-chevron class="w-4 h-4 text-grey-500 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </button>
+          <div class="px-5 sm:px-6 py-5 border-t border-grey-200 flex items-start justify-between gap-6 flex-wrap">
+            <div class="flex items-center gap-4">
+              <div class="block w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
+                <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_05_Airspeed-Black-Front.jpg" alt="Triple Play package" class="w-full h-full object-contain mix-blend-multiply">
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-base">Wiley X + 7Eye + BikerArmour</p>
+                <p class="text-sm text-grey-500 mt-0.5">7–10 pairs · $329 deposit</p>
+              </div>
+            </div>
+            <p class="text-sm shrink-0"><span class="text-grey-500">UPS</span> · 1Z999AA10184632201</p>
+          </div>
+          <div data-panel class="hidden px-5 sm:px-6 pb-6 border-t border-grey-200">
+            <div class="grid sm:grid-cols-2 gap-x-10 gap-y-6 pt-6">
+              <dl class="space-y-5">
+                <div>
+                  <dt class="text-sm text-grey-500">Prescription — OD (Right)</dt>
+                  <dd class="text-base mt-1">Sphere -2.25 · Cylinder -0.75 · Axis 90</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Prescription — OS (Left)</dt>
+                  <dd class="text-base mt-1">Sphere -2.00 · Cylinder -0.50 · Axis 85</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Lens Type</dt>
+                  <dd class="text-base mt-1">Single Vision</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Helmet / Hat Size</dt>
+                  <dd class="text-base mt-1">Large · 7¼</dd>
+                </div>
+              </dl>
+              <dl class="space-y-5">
+                <div>
+                  <dt class="text-sm text-grey-500">Nose Bridge</dt>
+                  <dd class="text-base mt-1">It's higher or taller</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Sunglass Fit</dt>
+                  <dd class="text-base mt-1">I have to select larger, wider frames</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Frame Type</dt>
+                  <dd class="text-base mt-1">With Foam Cushion</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Prescription</dt>
+                  <dd class="text-base mt-1"><a href="#" class="underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Prescription Upload</a></dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Headshot</dt>
+                  <dd class="text-base mt-1"><a href="#" class="underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Headshot Upload</a></dd>
+                </div>
+              </dl>
+            </div>
+            <div class="mt-6 pt-6 border-t border-grey-200">
+              <dt class="text-sm text-grey-500">Additional Info</dt>
+              <dd class="text-base mt-1 leading-relaxed">I ride with a full-face helmet most weekends — would love a snugger fit around the temples if possible.</dd>
+            </div>
+            <div class="mt-6 pt-6 border-t border-grey-200">
+              <dt class="text-sm text-grey-500">Contact</dt>
+              <dd class="text-base mt-1">Alex Rivera · alex.rivera@email.com · (813) 555-0148</dd>
+              <dd class="text-sm text-grey-500 mt-1">1847 Bayshore Blvd, Apt 12, Tampa, FL 33606</dd>
+            </div>
+          </div>
+        </div>
+        <div class="border border-grey-200">
+          <button type="button" onclick="toggleSubmission(this)" class="w-full flex flex-wrap items-center justify-between gap-3 px-5 sm:px-6 py-4 text-left">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+              <span><span class="text-grey-500">Submission</span> <span class="text-ink">#2A81FD03</span></span>
+              <span class="text-grey-500">Submitted May 14, 2026</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="text-2xs uppercase tracking-wider font-medium px-2.5 py-1 border" style="color:#000000;border-color:#000000">Refunded</span>
+              <svg data-chevron class="w-4 h-4 text-grey-500 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </button>
+          <div class="px-5 sm:px-6 py-5 border-t border-grey-200 flex items-start justify-between gap-6 flex-wrap">
+            <div class="flex items-center gap-4">
+              <div class="block w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
+                <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_09_Convair-Gunmetal-Smoke-Front.jpg" alt="BikerArmour package" class="w-full h-full object-contain mix-blend-multiply">
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-base">BikerArmour</p>
+                <p class="text-sm text-grey-500 mt-0.5">3–5 pairs · $229 deposit</p>
+                <p class="text-sm mt-1 text-brand">Refunded $229.00</p>
+              </div>
+            </div>
+            <p class="text-sm shrink-0"><span class="text-grey-500">UPS</span> · 1Z999AA10132845519</p>
+          </div>
+          <div data-panel class="hidden px-5 sm:px-6 pb-6 border-t border-grey-200">
+            <div class="grid sm:grid-cols-2 gap-x-10 gap-y-6 pt-6">
+              <dl class="space-y-5">
+                <div>
+                  <dt class="text-sm text-grey-500">Prescription — OD (Right)</dt>
+                  <dd class="text-base mt-1">Sphere -1.00 · Cylinder None · Axis —</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Prescription — OS (Left)</dt>
+                  <dd class="text-base mt-1">Sphere -1.25 · Cylinder None · Axis —</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Lens Type</dt>
+                  <dd class="text-base mt-1">Progressive (no line bifocals)</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Helmet / Hat Size</dt>
+                  <dd class="text-base mt-1">Medium · I don't know</dd>
+                </div>
+              </dl>
+              <dl class="space-y-5">
+                <div>
+                  <dt class="text-sm text-grey-500">Nose Bridge</dt>
+                  <dd class="text-base mt-1">Nothing unique — it's pretty normal looking</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Sunglass Fit</dt>
+                  <dd class="text-base mt-1">All styles and sizes fit me</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Frame Type</dt>
+                  <dd class="text-base mt-1">Removable Foam Cushion</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Prescription</dt>
+                  <dd class="text-base mt-1"><a href="#" class="underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Prescription Upload</a></dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-grey-500">Headshot</dt>
+                  <dd class="text-base mt-1"><a href="#" class="underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Headshot Upload</a></dd>
+                </div>
+              </dl>
+            </div>
+            <div class="mt-6 pt-6 border-t border-grey-200">
+              <dt class="text-sm text-grey-500">Additional Info</dt>
+              <dd class="text-base mt-1 leading-relaxed">—</dd>
+            </div>
+            <div class="mt-6 pt-6 border-t border-grey-200">
+              <dt class="text-sm text-grey-500">Contact</dt>
+              <dd class="text-base mt-1">Alex Rivera · alex.rivera@email.com</dd>
+              <dd class="text-sm text-grey-500 mt-1">1847 Bayshore Blvd, Apt 12, Tampa, FL 33606</dd>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function toggleSubmission(btn) {
+      const card = btn.closest('.border-grey-200');
+      const panel = card.querySelector('[data-panel]');
+      const chevron = btn.querySelector('[data-chevron]');
+      const open = !panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', open);
+      chevron.classList.toggle('rotate-180', !open);
+    }
+  </script>
+
+</body>
+</html>
