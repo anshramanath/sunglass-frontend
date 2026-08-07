@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <div className="min-h-screen grid place-items-center px-5">
-      <div className="text-center mb-[20vh]">
+      <div className="text-center">
         <p className="text-[92px] font-light tracking-[-0.03em] leading-none">404</p>
         <h1 className="text-[26px] lg:text-[34px] font-normal tracking-[-0.01em] mt-4">We can&apos;t find that page</h1>
         <p className="text-[15px] text-grey-600 leading-relaxed mt-3">
