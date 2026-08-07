@@ -146,7 +146,7 @@ export default async function AccountPage() {
 
         <section className="mt-10 border-t border-grey-200 pt-10">
           <h2 className="text-[21px] font-normal">TBYB History</h2>
-          <TBYBSubmissions submissions={submissions} />
+          <TBYBSubmissions submissions={submissions.filter(s => s.status !== "Unpaid")} />
         </section>
 
       </main>
