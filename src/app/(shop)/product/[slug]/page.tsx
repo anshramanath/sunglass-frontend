@@ -19,10 +19,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: product ? `${product.name} | ${name}` : name };
 }
 
-async function ProductName({ slug }: { slug: string }) {
-  const product = await getItem(slug);
-  return <span className="text-ink">{product.name}</span>;
-}
 
 async function Detail({ slug, initialSelections }: { slug: string; initialSelections: Record<string, string> }) {
   const product = await getItem(slug);
@@ -67,12 +63,6 @@ export default async function ProductPage({ params, searchParams }: Props) {
               </span>
             );
           })}
-          <span className="flex items-center gap-2">
-            <span className="text-grey-300">/</span>
-            <Suspense fallback={<span className="h-3 w-24 bg-grey-150 rounded-sm animate-pulse inline-block" />}>
-              <ProductName slug={slug} />
-            </Suspense>
-          </span>
         </nav>
       </section>
 
