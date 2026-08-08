@@ -63,6 +63,12 @@ export default async function ProductPage({ params, searchParams }: Props) {
               </span>
             );
           })}
+          {!leaf && path === "sale" && (
+            <span className="flex items-center gap-2">
+              <span className="text-grey-300">/</span>
+              <Link href="/sale" className="hover:text-ink transition-colors duration-200">Sale</Link>
+            </span>
+          )}
         </nav>
       </section>
 

@@ -15,7 +15,9 @@ export default function ProductCard({ product }: { product: ProductListItem }) {
   const isBookmarked = useIsBookmarked(product);
   const pathname = usePathname();
   const [hoveredVar, setHoveredVar] = useState<ListVariation | null>(null);
-  const categoryPath = pathname.startsWith("/category/") ? pathname.slice("/category/".length) : null;
+  const categoryPath = pathname.startsWith("/category/")
+    ? pathname.slice("/category/".length)
+    : pathname === "/sale" ? "sale" : null;
 
   const saved = isBookmarked;
   const colorVariations = product.variations.filter((v) => v.value);
