@@ -27,13 +27,6 @@ export default function OrderFailurePage() {
             </Link>
           </div>
 
-          <p className="text-[13px] text-grey-500 leading-relaxed mt-8">
-            Still having trouble?{" "}
-            <a href="#" className="underline underline-offset-4 hover:text-ink transition-colors duration-200">
-              Contact support
-            </a>
-          </p>
-
         </div>
       </main>
     </div>
