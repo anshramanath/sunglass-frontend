@@ -216,7 +216,7 @@ function SearchPanelContent({ filler }: { filler: ProductListItem[] }) {
                       <span className="absolute top-2 right-2 text-paper text-[10px] uppercase tracking-wide font-medium px-1.5 py-0.5" style={{ backgroundColor: "var(--color-brand)" }}>Sale</span>
                     )}
                     {p.featured && (
-                      <span className="absolute top-2 left-2 whitespace-nowrap bg-paper/90 text-ink border border-grey-200 text-[10px] uppercase tracking-wider font-medium px-2 py-0.5">Best Seller</span>
+                      <span className="absolute top-2 left-2 whitespace-nowrap bg-paper/90 border text-[10px] uppercase tracking-wider font-medium px-2 py-0.5" style={{ color: "var(--color-brand)", borderColor: "var(--color-brand)" }}>Featured</span>
                     )}
                   </div>
                   <p className="mt-2 text-[15px]">{p.name}</p>
