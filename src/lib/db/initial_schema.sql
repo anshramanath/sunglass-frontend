@@ -99,6 +99,8 @@ create table orders (
   carrier               text,
   tracking_number       text,
   shipping_address      jsonb       not null,
+  veeqo_order_id        bigint      null,
+  veeqo_error           text        null,
   created_at            timestamptz not null default now()
 );
 
@@ -119,7 +121,8 @@ create table order_items (
   image_src     text  not null,
   price_cents   int   not null,
   quantity      int   not null,
-  attribute     text
+  attribute     text,
+  unique (order_id, sku)
 );
 
 alter table order_items enable row level security;
