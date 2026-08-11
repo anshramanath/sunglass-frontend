@@ -44,7 +44,7 @@ export default function TBYBPage() {
           <Link href="/" className="hover:text-ink transition-colors duration-200">Home</Link>
           <span className="flex items-center gap-2">
             <span className="text-grey-300">/</span>
-            <span className="text-ink">Try Before You Buy</span>
+            <span className="text-ink">Rx</span>
           </span>
         </nav>
         <div className="mt-6 max-w-2xl">

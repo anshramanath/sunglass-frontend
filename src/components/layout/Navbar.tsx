@@ -72,8 +72,8 @@ export default async function Navbar() {
             ))}
             {brand.slug === "bikershades" && (
               <li className="h-16 flex items-center">
-                <Link href="/try-before-you-buy" className="block py-0.5 whitespace-nowrap text-[13px] font-medium px-2 rounded-sm" style={{ color: "var(--color-brand)", backgroundColor: "color-mix(in srgb, var(--color-brand) 10%, transparent)", boxShadow: "0 0 0 1px var(--color-brand)" }}>
-                  TBYB
+                <Link href="/rx" className="block py-0.5 whitespace-nowrap text-[13px] font-medium px-2 rounded-sm" style={{ color: "var(--color-brand)", backgroundColor: "color-mix(in srgb, var(--color-brand) 10%, transparent)", boxShadow: "0 0 0 1px var(--color-brand)" }}>
+                  Rx
                 </Link>
               </li>
             )}

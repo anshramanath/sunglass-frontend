@@ -309,8 +309,8 @@ function NavPanelContent({ tree, isSignedIn }: { tree: CategoryNode[]; isSignedI
         {getBrand().slug === "bikershades" && (
           <div className="pt-4 pb-4 mt-2 border-t border-grey-200">
             <SheetClose asChild>
-              <Link href="/try-before-you-buy" className="inline-block mt-2 py-0.5 text-[13px] font-medium px-2 rounded-sm" style={{ color: "var(--color-brand)", backgroundColor: "color-mix(in srgb, var(--color-brand) 10%, transparent)", boxShadow: "0 0 0 1px var(--color-brand)" }}>
-                TBYB
+              <Link href="/rx" className="inline-block mt-2 py-0.5 text-[13px] font-medium px-2 rounded-sm" style={{ color: "var(--color-brand)", backgroundColor: "color-mix(in srgb, var(--color-brand) 10%, transparent)", boxShadow: "0 0 0 1px var(--color-brand)" }}>
+                Rx
               </Link>
             </SheetClose>
           </div>
