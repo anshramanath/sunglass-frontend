@@ -2,7 +2,7 @@
 
 import type {
   ApiResponse, BookmarkedItem, CartItem, CartValidationResult, CategoryNode,
-  CheckoutUrl, Order, ProductDetail, ProductListItem, ProductsResponse,
+  CheckoutUrl, Order, PrescriptionFrame, ProductDetail, ProductListItem, ProductsResponse,
   SyncedResponse, TBYBPackage, TBYBSubmission, TBYBSubmissionRecord, ValidateCartItem,
 } from "@/lib/types";
 import { redirect, notFound } from "next/navigation";
@@ -196,6 +196,27 @@ export async function getPackages(): Promise<TBYBPackage[]> {
       case 503:
         throw new Error("Service unavailable");
         
+      default:
+        redirect("/try-again");
+    }
+  }
+
+  return json.data;
+}
+
+export async function getPrescriptions(): Promise<PrescriptionFrame[]> {
+  const res = await apiFetch("/api/public/prescriptions", { brandSlug: BRAND_SLUG });
+
+  const json: ApiResponse<PrescriptionFrame[]> = await res.json();
+
+  if (!json.success) {
+    switch(res.status) {
+      case 500:
+        throw new Error("Server error");
+
+      case 503:
+        throw new Error("Service unavailable");
+
       default:
         redirect("/try-again");
     }

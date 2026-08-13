@@ -130,6 +130,24 @@ export type CheckoutUrl = { url: string };
 
 export type SyncedResponse = { synced: number };
 
+export type PrescriptionFrameColor = {
+  option: string;
+  slug: string;
+  value: string;
+};
+
+export type PrescriptionFrame = {
+  id: string;
+  name: string;
+  slug: string;
+  imageSrc: string;
+  priceCents: number;
+  size: string;
+  rxLow: number;
+  rxHigh: number;
+  colors: PrescriptionFrameColor[];
+};
+
 export type TBYBPackage = {
   id: string;
   name: string;
