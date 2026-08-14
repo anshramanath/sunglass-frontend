@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Try Before You Buy — proSPORT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    // Tailwind config — derived from the Aritzia token set (exact values),
+    // re-themed for proSPORT. Monochrome + cool-grey ladder, px type scale,
+    // radius-0, hairlines. Brand colour lives in the logo only. No custom CSS.
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Hanken Grotesk"', 'Helvetica Neue', 'Arial', 'sans-serif'] },
+          colors: {
+            ink: '#000000',
+            paper: '#FFFFFF',
+            brand: '#2EA3DC',
+            sale: '#2EA3DC',
+            grey: {
+              950: '#141414', 800: '#333333', 700: '#4A4A4A', 600: '#5E5E5E',
+              500: '#6E6E6E', 400: '#8C8C8C', 300: '#C9C9C9', 250: '#D6D6D6',
+              200: '#E2E2E2', 150: '#E9E9E9', 100: '#ECECEC', 75: '#F2F2F2', 50: '#F6F6F6'
+            }
+          },
+          fontSize: {
+            '2xs': ['11px', '1.4'], 'xs': ['12px', '1.4'], 'sm': ['13px', '1.4'],
+            'base': ['15px', '1.55'], 'md': ['16px', '1.55'], 'lg': ['18px', '1.5'],
+            'xl': ['21px', '1.3'], '2xl': ['26px', '1.2'], '3xl': ['34px', '1.15'],
+            '4xl': ['44px', '1.08'], '5xl': ['56px', '1.05'], '6xl': ['68px', '1.03']
+          },
+          letterSpacing: { tightish: '-0.01em', wide: '0.04em', wider: '0.10em' },
+          maxWidth: { shell: '1680px' },
+          boxShadow: { pop: '0 8px 30px rgba(0,0,0,0.12)' },
+          transitionTimingFunction: { standard: 'cubic-bezier(0.4,0,0.2,1)' }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-sans bg-paper text-ink antialiased">
+
+  <!-- ============ HEADER ============ -->
+  <!-- shared dimmer for the slide-in panels -->
+  <div id="panelBackdrop" onclick="closePanels()" class="fixed inset-0 z-[45] bg-black/30 opacity-0 invisible transition-opacity duration-200"></div>
+
+  <!-- ============ NAVBAR — single compact row: logo · links · search · icons ============ -->
+  <header class="sticky top-0 z-40 bg-paper border-b border-grey-200">
+    <div class="mx-auto max-w-shell px-5 lg:px-10">
+      <div class="h-16 flex items-center gap-6 xl:gap-9">
+        <!-- logo -->
+        <a href="index.html" class="shrink-0" aria-label="proSPORT home">
+          <img src="assets/prosport-logo.png" alt="proSPORT" class="h-7 w-auto">
+        </a>
+        <!-- category links -->
+        <ul class="hidden lg:flex items-center gap-6 xl:gap-7">
+
+        <li class="group relative h-16 flex items-center">
+          <a href="#" class="block py-1 whitespace-nowrap text-base font-medium hover:underline underline-offset-[6px] decoration-1 decoration-ink">Brands</a>
+          <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 absolute left-0 top-full z-50 bg-paper border border-grey-150 shadow-pop">
+            <div class="px-9 py-8 min-w-[200px]">
+              <ul class="space-y-4 text-md text-grey-600">
+                <li>
+                  <p class="text-ink font-medium">BikerArmour</p>
+                  <ul class="mt-4 space-y-4 pl-4">
+                    <li><a href="#" class="hover:text-ink transition-colors duration-200">Foam Goggles</a></li>
+                    <li><a href="#" class="hover:text-ink transition-colors duration-200">Cover Overs</a></li>
+                    <li><a href="#" class="hover:text-ink transition-colors duration-200">Photochromic</a></li>
+                    <li><a href="#" class="hover:text-ink transition-colors duration-200">Combos</a></li>
+                  </ul>
+                </li>
+                <li><a href="#" class="hover:text-ink transition-colors duration-200">Wiley X</a></li>
+                <li><a href="#" class="hover:text-ink transition-colors duration-200">7Eye</a></li>
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        <li class="group relative h-16 flex items-center">
+          <a href="category.html" class="block py-1 whitespace-nowrap text-base font-medium hover:underline underline-offset-[6px] decoration-1 decoration-ink">Sunglasses</a>
+          <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 absolute left-0 top-full z-50 bg-paper border border-grey-150 shadow-pop">
+            <div class="px-9 py-8 min-w-[180px]">
+              <ul class="space-y-4 text-md text-grey-600">
+              <li><a href="category.html" class="hover:text-ink transition-colors duration-200">Sport</a></li>
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">Polarized</a></li>
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">HD Lens</a></li>
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">Night</a></li>
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        <li class="group relative h-16 flex items-center">
+          <a href="#" class="block py-1 whitespace-nowrap text-base font-medium hover:underline underline-offset-[6px] decoration-1 decoration-ink">Bifocals</a>
+          <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 absolute left-0 top-full z-50 bg-paper border border-grey-150 shadow-pop">
+            <div class="px-9 py-8 min-w-[180px]">
+              <ul class="space-y-4 text-md text-grey-600">
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">Standard</a></li>
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">Polarized</a></li>
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">Foam</a></li>
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        <li class="group relative h-16 flex items-center">
+          <a href="#" class="block py-1 whitespace-nowrap text-base font-medium hover:underline underline-offset-[6px] decoration-1 decoration-ink">Readers</a>
+          <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 absolute left-0 top-full z-50 bg-paper border border-grey-150 shadow-pop">
+            <div class="px-9 py-8 min-w-[180px]">
+              <ul class="space-y-4 text-md text-grey-600">
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">Sunglass</a></li>
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">Clear</a></li>
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">Computer</a></li>
+              <li><a href="#" class="hover:text-ink transition-colors duration-200">Multifocal</a></li>
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        <li class="h-16 flex items-center">
+          <a href="#" class="block py-1 whitespace-nowrap text-base font-medium hover:underline underline-offset-[6px] decoration-1 decoration-ink">Cases & Accessories</a>
+        </li>
+
+        <li class="h-16 flex items-center">
+          <a href="#" class="block py-1 whitespace-nowrap text-base font-medium text-sale hover:underline underline-offset-[6px] decoration-1 decoration-sale">Sale</a>
+        </li>
+      </ul>
+
+        <!-- search + utility icons (pushed right) -->
+        <div class="ml-auto flex items-center gap-4 sm:gap-5">
+          <!-- inline search box (xl+) -->
+          <button type="button" onclick="openPanel('searchPanel')" class="hidden xl:flex items-center gap-2.5 border border-grey-300 hover:border-ink transition-colors duration-200 h-9 px-3.5 w-56 text-left" aria-label="Search">
+            <svg class="w-[18px] h-[18px] text-grey-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <span class="text-base text-grey-400">Search</span>
+          </button>
+          <!-- search icon (below xl) -->
+          <button type="button" onclick="openPanel('searchPanel')" class="xl:hidden grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Search">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </button>
+          <!-- Bookmark -->
+          <button type="button" onclick="openPanel('savedPanel')" class="grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Saved">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </button>
+          <!-- Bag -->
+          <button type="button" onclick="openPanel('bagPanel')" class="grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Bag">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </button>
+          <!-- Sign in -->
+          <a href="signin.html" class="hidden sm:inline whitespace-nowrap text-base hover:opacity-60 transition-opacity duration-200">Sign In</a>
+          <!-- Mobile menu -->
+          <button class="lg:hidden grid place-items-center hover:opacity-60 transition-opacity duration-200" aria-label="Menu">
+            <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+    <!-- ============ SEARCH PANEL ============ -->
+    <div id="searchPanel" data-panel class="fixed top-0 z-50 h-full w-[480px] max-w-full bg-paper right-[-480px] transition-[right] duration-[320ms] ease-standard flex flex-col">
+      <div class="flex items-center gap-4 px-8 pt-8">
+        <div class="flex items-center gap-3 flex-1 border-b border-ink pb-3">
+          <svg class="w-5 h-5 text-ink shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Search" class="bg-transparent text-lg tracking-wide uppercase placeholder-grey-400 outline-none w-full">
+        </div>
+        <button type="button" onclick="closePanels()" class="grid place-items-center w-10 h-10 -mr-2 hover:opacity-60 transition-opacity duration-200" aria-label="Close search">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="px-8 py-9 overflow-y-auto">
+        <p class="text-sm uppercase tracking-wider text-grey-400 font-medium mb-6">Picked Just For You</p>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-7">
+          <a href="product.html" class="group/p block">
+            <div class="bg-grey-100 aspect-square overflow-hidden"><img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_05_Airspeed-Black-Front.jpg" alt="Airspeed" class="w-full h-full object-cover mix-blend-multiply group-hover/p:opacity-80 transition-opacity duration-200"></div>
+            <p class="mt-2 text-base">Airspeed</p>
+            <p class="text-base text-grey-600">$17.99</p>
+          </a>
+          <a href="#" class="group/p block">
+            <div class="bg-grey-100 aspect-square overflow-hidden"><img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2024_05_Atlas-Black-Front.jpg" alt="Atlas" class="w-full h-full object-cover mix-blend-multiply group-hover/p:opacity-80 transition-opacity duration-200"></div>
+            <p class="mt-2 text-base">Atlas</p>
+            <p class="text-base text-grey-600">$17.99</p>
+          </a>
+          <a href="#" class="group/p block">
+            <div class="bg-grey-100 aspect-square overflow-hidden"><img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2024_05_Backspin-Glossy-Black-Green-Smoke-Front.jpg" alt="Backspin" class="w-full h-full object-cover mix-blend-multiply group-hover/p:opacity-80 transition-opacity duration-200"></div>
+            <p class="mt-2 text-base">Backspin</p>
+            <p class="text-base text-grey-600">$19.99</p>
+          </a>
+          <a href="#" class="group/p block">
+            <div class="bg-grey-100 aspect-square overflow-hidden"><img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_05_Horizon-Black-Front.jpg" alt="Horizon" class="w-full h-full object-cover mix-blend-multiply group-hover/p:opacity-80 transition-opacity duration-200"></div>
+            <p class="mt-2 text-base">Horizon</p>
+            <p class="text-base text-grey-600">$17.99</p>
+          </a>
+          <a href="#" class="group/p block">
+            <div class="bg-grey-100 aspect-square overflow-hidden"><img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_05_Jupiter-Black-Smoke-Front.jpg" alt="Jupiter" class="w-full h-full object-cover mix-blend-multiply group-hover/p:opacity-80 transition-opacity duration-200"></div>
+            <p class="mt-2 text-base">Jupiter</p>
+            <p class="text-base text-grey-600">$18.99</p>
+          </a>
+          <a href="#" class="group/p block">
+            <div class="bg-grey-100 aspect-square overflow-hidden"><img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2024_05_Hemi-Black-Front.jpg" alt="Hemi" class="w-full h-full object-cover mix-blend-multiply group-hover/p:opacity-80 transition-opacity duration-200"></div>
+            <p class="mt-2 text-base">Hemi</p>
+            <p class="text-base text-grey-600">$17.99</p>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SAVED PANEL ============ -->
+    <div id="savedPanel" data-panel class="fixed top-0 z-50 h-full w-[480px] max-w-full bg-paper right-[-480px] transition-[right] duration-[320ms] ease-standard flex flex-col">
+      <div class="flex items-center justify-between px-8 pt-7 pb-5 border-b border-grey-200">
+        <h2 class="text-xl font-normal whitespace-nowrap">Saved <span class="text-grey-400">(3)</span></h2>
+        <button type="button" onclick="closePanels()" class="grid place-items-center w-10 h-10 -mr-2 hover:opacity-60 transition-opacity duration-200" aria-label="Close saved">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-8 py-8 flex-1 overflow-y-auto">
+        <div class="space-y-7">
+          <div class="flex gap-4">
+            <a href="product.html" class="block w-24 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-2">
+              <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_05_Airspeed-Black-Front.jpg" alt="Airspeed" class="w-full h-full object-contain mix-blend-multiply">
+            </a>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <a href="product.html" class="text-base">Airspeed</a>
+                <button type="button" onclick="removeLineItem(this)" class="shrink-0 text-sm text-grey-400 hover:text-ink transition-colors duration-200" aria-label="Remove Airspeed">
+                  Remove
+                </button>
+              </div>
+              <div class="flex items-center justify-between mt-3">
+                <button type="button" class="text-sm underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Add to Bag</button>
+                <p class="text-base">$17.99</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <a href="product.html" class="block w-24 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-2">
+              <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2024_05_Atlas-Black-Front.jpg" alt="Atlas" class="w-full h-full object-contain mix-blend-multiply">
+            </a>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <a href="product.html" class="text-base">Atlas</a>
+                <button type="button" onclick="removeLineItem(this)" class="shrink-0 text-sm text-grey-400 hover:text-ink transition-colors duration-200" aria-label="Remove Atlas">
+                  Remove
+                </button>
+              </div>
+              <div class="flex items-center justify-between mt-3">
+                <button type="button" class="text-sm underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Add to Bag</button>
+                <p class="text-base">$17.99</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <a href="product.html" class="block w-24 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-2">
+              <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2024_05_Backspin-Glossy-Black-Green-Smoke-Front.jpg" alt="Backspin" class="w-full h-full object-contain mix-blend-multiply">
+            </a>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <a href="product.html" class="text-base">Backspin</a>
+                <button type="button" onclick="removeLineItem(this)" class="shrink-0 text-sm text-grey-400 hover:text-ink transition-colors duration-200" aria-label="Remove Backspin">
+                  Remove
+                </button>
+              </div>
+              <div class="flex items-center justify-between mt-3">
+                <button type="button" class="text-sm underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Add to Bag</button>
+                <p class="text-base">$19.99</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ BAG PANEL ============ -->
+    <div id="bagPanel" data-panel class="fixed top-0 z-50 h-full w-[480px] max-w-full bg-paper right-[-480px] transition-[right] duration-[320ms] ease-standard flex flex-col">
+      <div class="flex items-center justify-between px-8 pt-7 pb-5 border-b border-grey-200">
+        <h2 class="text-xl font-normal whitespace-nowrap">My Bag <span class="text-grey-400">(2)</span></h2>
+        <button type="button" onclick="closePanels()" class="grid place-items-center w-10 h-10 -mr-2 hover:opacity-60 transition-opacity duration-200" aria-label="Close bag">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto px-8 py-7">
+        <div class="space-y-7">
+          <div class="flex gap-4">
+            <a href="product.html" class="block w-24 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-2">
+              <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_05_Airspeed-Black-Front.jpg" alt="Airspeed" class="w-full h-full object-contain mix-blend-multiply">
+            </a>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <a href="product.html" class="text-base">Airspeed</a>
+                <button type="button" onclick="removeLineItem(this)" class="shrink-0 text-sm text-grey-400 hover:text-ink transition-colors duration-200" aria-label="Remove Airspeed">Remove</button>
+              </div>
+              <p class="text-sm text-grey-500 mt-0.5">Gunmetal HD</p>
+              <div class="flex items-center justify-between mt-3">
+                <div class="inline-flex items-center border border-grey-300">
+                  <button type="button" class="w-8 h-8 grid place-items-center hover:bg-grey-100 transition-colors duration-200" aria-label="Decrease quantity">&minus;</button>
+                  <span class="w-8 text-center text-base">1</span>
+                  <button type="button" class="w-8 h-8 grid place-items-center hover:bg-grey-100 transition-colors duration-200" aria-label="Increase quantity">+</button>
+                </div>
+                <p class="text-base">$17.99</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <a href="product.html" class="block w-24 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-2">
+              <img src="https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/2022_09_Convair-Gunmetal-Smoke-Front.jpg" alt="Convair" class="w-full h-full object-contain mix-blend-multiply">
+            </a>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <a href="product.html" class="text-base">Convair</a>
+                <button type="button" onclick="removeLineItem(this)" class="shrink-0 text-sm text-grey-400 hover:text-ink transition-colors duration-200" aria-label="Remove Convair">Remove</button>
+              </div>
+              <p class="text-sm text-grey-500 mt-0.5">Gunmetal Smoke</p>
+              <div class="flex items-center justify-between mt-3">
+                <div class="inline-flex items-center border border-grey-300">
+                  <button type="button" class="w-8 h-8 grid place-items-center hover:bg-grey-100 transition-colors duration-200" aria-label="Decrease quantity">&minus;</button>
+                  <span class="w-8 text-center text-base">1</span>
+                  <button type="button" class="w-8 h-8 grid place-items-center hover:bg-grey-100 transition-colors duration-200" aria-label="Increase quantity">+</button>
+                </div>
+                <p class="text-base">$19.99</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-grey-200 px-8 py-6">
+        <div class="flex items-center justify-between text-base">
+          <span class="text-grey-600">Subtotal</span>
+          <span>$37.98</span>
+        </div>
+        <p class="text-sm text-grey-500 mt-1">Shipping &amp; taxes calculated at checkout.</p>
+        <a href="checkout.html" class="block w-full bg-ink text-paper text-base text-center py-4 mt-5 hover:bg-grey-800 transition-colors duration-200">Checkout</a>
+      </div>
+    </div>
+
+  <!-- ============ CATEGORY ============ -->
+  <main>
+    <!-- breadcrumb + heading -->
+    <section class="mx-auto max-w-shell px-5 lg:px-10 pt-8 lg:pt-10">
+      <nav class="flex items-center gap-2 text-sm text-grey-500">
+        <a href="index.html" class="hover:text-ink transition-colors duration-200">Home</a>
+        <span class="text-grey-300">/</span>
+        <span class="text-ink">Rx</span>
+      </nav>
+      <!-- mode tabs -->
+      <div class="flex items-center gap-8 mt-7 border-b border-grey-200">
+        <button type="button" onclick="TBYB.setMode('tbyb')" data-mode-btn="tbyb" class="pb-3.5 text-lg border-b-2 -mb-px transition-colors duration-200 border-ink text-ink">Try Before You Buy</button>
+        <button type="button" onclick="TBYB.setMode('frame')" data-mode-btn="frame" class="pb-3.5 text-lg border-b-2 -mb-px transition-colors duration-200 border-transparent text-grey-500 hover:text-ink">Prescription Frames</button>
+      </div>
+
+      <p id="rxDescription" class="text-md text-grey-600 leading-relaxed mt-6 max-w-2xl">Pick a package and pay a deposit — we'll handpick frames based on your preferences and send them to your door. Try them at home, then return within 5 days and apply your deposit toward your order, or get it back minus a service fee.</p>
+    </section>
+
+
+    <!-- package grid -->
+    <section id="pkgSection" class="mx-auto max-w-shell px-5 lg:px-10 mt-9 lg:mt-12 pb-16 lg:pb-20">
+      <div id="pkgGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+    </section>
+
+    <!-- frames grid -->
+    <section id="frameSection" class="hidden mx-auto max-w-shell px-5 lg:px-10 mt-9 lg:mt-12 pb-16 lg:pb-20">
+      <div id="frameGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+    </section>
+
+    <!-- ============ FORM REGION (appears on package selection) ============ -->
+    <section id="formRegion" class="hidden mx-auto max-w-shell px-5 lg:px-10 pb-20 lg:pb-28">
+      <div class="max-w-[640px] mx-auto border-t border-grey-200 pt-12">
+
+        <!-- step indicator — TBYB (3 steps + review) -->
+        <div id="stepDots" class="flex items-center justify-center gap-3 mb-10">
+          <span data-step-dot="1" class="text-sm w-7 h-7 rounded-full grid place-items-center border border-brand bg-brand text-paper">1</span>
+          <span data-step-line="1" class="w-8 h-px bg-grey-300"></span>
+          <span data-step-dot="2" class="text-sm w-7 h-7 rounded-full grid place-items-center border border-grey-300 text-grey-500">2</span>
+          <span data-step-line="2" class="w-8 h-px bg-grey-300"></span>
+          <span data-step-dot="3" class="text-sm w-7 h-7 rounded-full grid place-items-center border border-grey-300 text-grey-500">3</span>
+        </div>
+
+        <!-- step indicator — Prescription Frames (4 steps, no separate review) -->
+        <div id="frameStepDots" class="hidden flex items-center justify-center gap-3 mb-10">
+          <span data-fstep-dot="1" class="text-sm w-7 h-7 rounded-full grid place-items-center border border-brand bg-brand text-paper">1</span>
+          <span data-fstep-line="1" class="w-6 h-px bg-grey-300"></span>
+          <span data-fstep-dot="2" class="text-sm w-7 h-7 rounded-full grid place-items-center border border-grey-300 text-grey-500">2</span>
+          <span data-fstep-line="2" class="w-6 h-px bg-grey-300"></span>
+          <span data-fstep-dot="3" class="text-sm w-7 h-7 rounded-full grid place-items-center border border-grey-300 text-grey-500">3</span>
+          <span data-fstep-line="3" class="w-6 h-px bg-grey-300"></span>
+          <span data-fstep-dot="4" class="text-sm w-7 h-7 rounded-full grid place-items-center border border-grey-300 text-grey-500">4</span>
+          <span data-fstep-line="4" class="w-6 h-px bg-grey-300"></span>
+          <span data-fstep-dot="5" class="text-sm w-7 h-7 rounded-full grid place-items-center border border-grey-300 text-grey-500">5</span>
+        </div>
+
+        <p class="text-sm text-grey-500 text-center">Selected: <span id="selectedPkgLabel" class="text-ink">—</span></p>
+        <p id="depositNote" class="hidden text-sm text-center mt-2" style="color:#2EA3DC"></p>
+
+        <!-- step content mounts here — swapped in place, never appended -->
+        <div id="stepMount" class="mt-8"></div>
+
+        <!-- nav -->
+        <div id="stepNav" class="flex items-center justify-between mt-10">
+          <button type="button" id="btnBack" onclick="TBYB.back()" class="text-base underline underline-offset-4 hover:opacity-60 transition-opacity duration-200 invisible">Back</button>
+          <button type="button" id="btnNext" onclick="TBYB.next()" class="bg-ink text-paper text-base px-9 py-3.5 hover:bg-grey-800 transition-colors duration-200">Continue</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="bg-grey-50 border-t border-grey-200">
+    <div class="mx-auto max-w-shell px-5 lg:px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <a href="index.html" aria-label="proSPORT home"><img src="assets/prosport-logo.png" alt="proSPORT" class="h-6 w-auto"></a>
+      <nav class="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm text-grey-600">
+        <a href="contact.html" class="hover:text-ink transition-colors duration-200">Contact</a>
+        <a href="faq.html" class="hover:text-ink transition-colors duration-200">FAQ</a>
+        <a href="about.html" class="hover:text-ink transition-colors duration-200">Our Story</a>
+        <a href="privacy.html" class="hover:text-ink transition-colors duration-200">Privacy Policy</a>
+        <a href="terms.html" class="hover:text-ink transition-colors duration-200">Terms of Use</a>
+      </nav>
+      <p class="text-xs text-grey-400 whitespace-nowrap">&copy; 2026 proSPORT Sunglasses. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="shop.js"></script>
+  <script>
+    function openPanel(id) {
+      document.querySelectorAll('[data-panel]').forEach(p => { p.classList.remove('right-0'); p.classList.add('right-[-480px]'); });
+      const el = document.getElementById(id);
+      el.classList.remove('right-[-480px]');
+      el.classList.add('right-0');
+      const b = document.getElementById('panelBackdrop');
+      b.classList.remove('opacity-0', 'invisible');
+    }
+    function closePanels() {
+      document.querySelectorAll('[data-panel]').forEach(p => { p.classList.remove('right-0'); p.classList.add('right-[-480px]'); });
+      const b = document.getElementById('panelBackdrop');
+      b.classList.add('opacity-0', 'invisible');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanels(); });
+  </script>
+
+  <script>
+    /* ============ Try Before You Buy — packages + 3-step form ============ */
+    const PACKAGES = [
+      { id: 'biker-armour',        name: 'BikerArmour',                  deposit: 229, pairsMin: 3, pairsMax: 5,  logo: 'assets/logos/biker-armour.png',           brands: 'BikerArmour' },
+      { id: 'wiley-x',             name: 'Wiley X',                      deposit: 249, pairsMin: 3, pairsMax: 5,  logo: 'assets/logos/wiley-x.png',                 brands: 'Wiley X' },
+      { id: '7eye',                name: '7Eye',                         deposit: 249, pairsMin: 3, pairsMax: 5,  logo: 'assets/logos/7eye.png',                    brands: '7Eye' },
+      { id: 'biker-armour-wileyx', name: 'BikerArmour + Wiley X',        deposit: 279, pairsMin: 5, pairsMax: 8,  logo: 'assets/logos/biker-armour-wiley-x.png',    brands: 'BikerArmour, Wiley X' },
+      { id: 'biker-armour-7eye',   name: 'BikerArmour + 7Eye',           deposit: 279, pairsMin: 5, pairsMax: 8,  logo: 'assets/logos/biker-armour.png',            brands: 'BikerArmour, 7Eye' },
+      { id: 'triple-play',         name: 'Triple Play',                  deposit: 329, pairsMin: 7, pairsMax: 10, logo: 'assets/logos/wiley-x.png',                 brands: 'Wiley X, 7Eye, BikerArmour', tag: 'Triple Play' },
+      { id: '7eye-ziena',          name: '7Eye Ziena',                   deposit: 349, pairsMin: 3, pairsMax: 3,  logo: 'assets/logos/7eye.png',                    brands: '7Eye Ziena' },
+    ];
+
+    const FRAMES = [
+      { id: 'foam-goggle',   name: 'Foam Goggle',     price: 59,  image: 'uploads/pasted-1786417571686-0.png', size: 'MED',    rxRange: '-6.00 to +4.00', colors: [{name:'Black',hex:'#1a1a1a'}] },
+      { id: 'cover-over',    name: 'Cover Over',      price: 69,  image: 'uploads/pasted-1786417590936-0.png', size: 'MED',    rxRange: '-6.00 to +4.00', colors: [{name:'Black',hex:'#1a1a1a'}] },
+      { id: 'wx-saber',      name: 'WX Saber',        price: 89,  image: 'uploads/pasted-1786417600662-0.png', size: 'MED-LG', rxRange: '-6.00 to +4.00', colors: [{name:'Matte Black',hex:'#1a1a1a'}] },
+      { id: 'wx-siphon',     name: 'WX Siphon',       price: 89,  image: 'uploads/pasted-1786417609223-0.png', size: 'SM-MED', rxRange: '-4.00 to +3.00', colors: [{name:'Matte Black',hex:'#1a1a1a'}] },
+      { id: 'wx-kingpin',    name: 'WX Kingpin',      price: 99,  image: 'uploads/pasted-1786417624216-0.png', size: 'MED-LG', rxRange: '-6.00 to +4.00', colors: [{name:'Amber Tortoise',hex:'#5a3a1e'},{name:'Bronze Mirror',hex:'#8a5a2b'}] },
+      { id: 'wx-affinity',   name: 'WX Affinity',     price: 79,  image: 'uploads/pasted-1786417644069-0.png', size: 'SM-MED', rxRange: '-4.00 to +3.00', colors: [{name:'Gloss Black',hex:'#111111'}] },
+      { id: 'wx-helix',      name: 'WX Helix',        price: 79,  image: 'uploads/pasted-1786417654228-0.png', size: 'MED',    rxRange: '-4.00 to +2.00', colors: [{name:'Matte Black',hex:'#1a1a1a'}] },
+      { id: 'wx-peak',       name: 'WX Peak',         price: 89,  image: 'uploads/pasted-1786417664363-0.png', size: 'MED-LG', rxRange: '-4.00 to +3.00', colors: [{name:'Matte Black',hex:'#1a1a1a'}] },
+    ];
+
+    function renderFrames() {
+      const grid = document.getElementById('frameGrid');
+      grid.innerHTML = FRAMES.map(f => `
+        <div data-frame-card="${f.id}" onmouseenter="TBYB.hoverCard(this,true)" onmouseleave="TBYB.hoverCard(this,false)" class="relative border border-grey-200 p-6 flex flex-col transition-colors duration-200">
+          <div class="h-40 flex items-center justify-center bg-grey-50">
+            <img src="${f.image}" alt="${f.name}" class="max-h-36 max-w-[80%] object-contain mix-blend-multiply">
+          </div>
+          <div class="flex items-baseline justify-between gap-3 mt-4">
+            <p class="text-lg">${f.name}</p>
+            <p class="text-lg">$${f.price}</p>
+          </div>
+          <div class="flex items-center gap-2.5 mt-3">
+            ${f.colors.map(c => `<button type="button" onclick="TBYB.chooseFrameColor('${f.id}','${c.name}')" onmouseenter="TBYB.previewFrameColor('${f.id}','${c.name}')" onmouseleave="TBYB.previewFrameColor('${f.id}', null)" data-frame-swatch="${f.id}:${c.name}" title="${c.name}" style="background:${c.hex}" class="w-5 h-5 rounded-full border border-grey-200 transition-all duration-150 hover:ring-[1.5px] hover:ring-ink hover:ring-offset-1"></button>`).join('')}
+          </div>
+          <p data-frame-color-label="${f.id}" class="text-sm text-grey-400 mt-2">Select a color</p>
+          <p class="text-sm text-grey-500 mt-3">Size: ${f.size}</p>
+          <p class="text-sm text-grey-500 mt-1">Range: ${f.rxRange}</p>
+          <button type="button" disabled data-frame-btn="${f.id}" onclick="TBYB.selectFrame('${f.id}')" class="mt-6 border border-ink text-base py-3 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed hover:enabled:bg-ink hover:enabled:text-paper">Select Frame</button>
+        </div>`).join('');
+    }
+
+    function renderPackages() {
+      const grid = document.getElementById('pkgGrid');
+      grid.innerHTML = PACKAGES.map(p => {
+        const pairsLabel = p.pairsMin === p.pairsMax ? `${p.pairsMin} Pairs` : `${p.pairsMin}–${p.pairsMax} Pairs`;
+        return `
+        <div data-pkg-card="${p.id}" onmouseenter="TBYB.hoverCard(this,true)" onmouseleave="TBYB.hoverCard(this,false)" class="group/pkg relative border border-grey-200 p-6 flex flex-col transition-colors duration-200">
+          <div class="h-16 flex items-center">
+            <img src="${p.logo}" alt="${p.brands}" class="max-h-16 max-w-[70%] object-contain">
+          </div>
+          <p class="text-lg mt-4">${p.name}</p>
+          <p class="text-sm text-grey-500 mt-1">${pairsLabel}</p>
+          <!-- brands-included subtitle: revealed on hover, kept out of the way at selection time -->
+          <p class="text-xs text-grey-400 mt-1 max-h-0 opacity-0 group-hover/pkg:max-h-8 group-hover/pkg:opacity-100 overflow-hidden transition-all duration-200">Includes: ${p.brands}</p>
+          <p class="text-2xl mt-5">$${p.deposit}<span class="text-sm text-grey-500"> Deposit</span></p>
+          <button type="button" onclick="TBYB.selectPackage('${p.id}')" data-pkg-btn="${p.id}" class="mt-6 border border-ink text-base py-3 hover:bg-ink hover:text-paper transition-colors duration-200">Select Package</button>
+        </div>`;
+      }).join('');
+    }
+
+    const TBYB = {
+      mode: 'tbyb',
+      pkgId: null,
+      frameId: null,
+      priorTbyb: null,
+      tbybOrderId: '',
+      appliedDeposit: null,
+      prefillContact: null,
+      dualPd: false,
+      priorityProcessing: false,
+      frameColor: null,
+      step: 1,
+      values: {},       // custom-dropdown selected values, by id
+      labels: {},       // custom-dropdown selected display labels, by id
+      ddOptions: {},    // custom-dropdown option lists, by id
+      ddOnChange: {},   // optional change callbacks, by id
+
+      setMode(mode) {
+        this.mode = mode;
+        this.deselectPackage();
+        this.deselectFrame();
+        document.getElementById('pkgSection').classList.toggle('hidden', mode !== 'tbyb');
+        document.getElementById('frameSection').classList.toggle('hidden', mode !== 'frame');
+        document.querySelector('[data-mode-btn="tbyb"]').className = `pb-3.5 text-lg border-b-2 -mb-px transition-colors duration-200 ${mode === 'tbyb' ? 'border-ink text-ink' : 'border-transparent text-grey-500 hover:text-ink'}`;
+        document.querySelector('[data-mode-btn="frame"]').className = `pb-3.5 text-lg border-b-2 -mb-px transition-colors duration-200 ${mode === 'frame' ? 'border-ink text-ink' : 'border-transparent text-grey-500 hover:text-ink'}`;
+        document.getElementById('rxHeading');
+        document.getElementById('rxDescription').textContent = mode === 'tbyb'
+          ? "Pick a package and pay a deposit — we'll handpick frames based on your preferences and send them to your door. Try them at home, then return within 5 days and apply your deposit toward your order, or get it back minus a service fee."
+          : "Already know what you want? Pick a frame, choose your color, and we'll build your lenses to your exact prescription.";
+        document.getElementById('formRegion').classList.add('hidden');
+        this.pkgId = null; this.frameId = null; this.frameColor = null;
+      },
+
+      chooseFrameColor(frameId, colorName) {
+        // only one frame's colour can be picked at a time — reset any other frame's swatch state
+        document.querySelectorAll('[data-frame-swatch]').forEach(s => { if (s.getAttribute('data-frame-swatch').split(':')[0] !== frameId) s.classList.remove('ring-[1.5px]', 'ring-ink', 'ring-offset-1'); });
+        document.querySelectorAll('[data-frame-color-label]').forEach(l => { if (l.getAttribute('data-frame-color-label') !== frameId) l.textContent = 'Select a color'; });
+        document.querySelectorAll('[data-frame-btn]').forEach(b => { if (b.getAttribute('data-frame-btn') !== frameId) b.disabled = true; });
+        this.pendingFrameId = frameId;
+        this.pendingFrameColor = colorName;
+        document.querySelectorAll(`[data-frame-swatch^="${frameId}:"]`).forEach(s => s.classList.remove('ring-[1.5px]', 'ring-ink', 'ring-offset-1'));
+        document.querySelector(`[data-frame-swatch="${frameId}:${colorName}"]`).classList.add('ring-[1.5px]', 'ring-ink', 'ring-offset-1');
+        document.querySelector(`[data-frame-color-label="${frameId}"]`).textContent = colorName;
+        document.querySelector(`[data-frame-btn="${frameId}"]`).disabled = false;
+      },
+
+      previewFrameColor(frameId, colorName) {
+        const label = document.querySelector(`[data-frame-color-label="${frameId}"]`);
+        if (colorName) { label.textContent = colorName; return; }
+        label.textContent = this.pendingFrameId === frameId && this.pendingFrameColor ? this.pendingFrameColor : 'Select a color';
+      },
+
+      selectFrame(frameId) {
+        if (this.mode === 'frame' && this.frameId === frameId) { this.deselectFrame(); return; }
+        this.mode = 'frame';
+        this.frameId = frameId;
+        this.frameColor = this.pendingFrameId === frameId ? this.pendingFrameColor : null;
+        const frame = FRAMES.find(f => f.id === frameId);
+        const m = frame.rxRange.match(/(-?[\d.]+)\s*to\s*(\+?-?[\d.]+)/);
+        this.frameRxRange = m ? { min: parseFloat(m[1]), max: parseFloat(m[2].replace('+', '')) } : null;
+        document.querySelectorAll('[data-frame-card]').forEach(c => { c.classList.remove('border-ink'); c.dataset.selected = 'false'; });
+        document.querySelector(`[data-frame-card="${frameId}"]`).classList.add('border-ink');
+        document.querySelector(`[data-frame-card="${frameId}"]`).dataset.selected = 'true';
+        document.querySelectorAll('[data-frame-btn]').forEach(b => { b.textContent = 'Select Frame'; b.classList.remove('bg-ink', 'text-paper'); });
+        const btn = document.querySelector(`[data-frame-btn="${frameId}"]`);
+        btn.textContent = 'Selected';
+        btn.classList.add('bg-ink', 'text-paper');
+        document.getElementById('selectedPkgLabel').textContent = `${frame.name} — ${this.frameColor} — $${frame.price}`;
+        document.getElementById('depositNote').classList.add('hidden');
+        this.priorTbyb = null;
+        this.tbybOrderId = '';
+        document.getElementById('formRegion').classList.remove('hidden');
+        this.step = 0;
+        this.renderStep();
+        const formTop = document.getElementById('formRegion').getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top: formTop - 90, behavior: 'smooth' });
+      },
+
+      deselectFrame() {
+        const prevFrameId = this.frameId;
+        this.frameId = null;
+        this.frameColor = null;
+        this.pendingFrameId = null;
+        this.pendingFrameColor = null;
+        if (prevFrameId) {
+          document.querySelectorAll(`[data-frame-swatch^="${prevFrameId}:"]`).forEach(s => s.classList.remove('ring-[1.5px]', 'ring-ink', 'ring-offset-1'));
+          const colorLabel = document.querySelector(`[data-frame-color-label="${prevFrameId}"]`);
+          if (colorLabel) colorLabel.textContent = 'Select a color';
+        }
+        document.querySelectorAll('[data-frame-btn]').forEach(b => { b.textContent = 'Select Frame'; b.classList.remove('bg-ink', 'text-paper'); b.disabled = true; });
+        this.priorTbyb = null;
+        this.appliedDeposit = null;
+        this.prefillContact = null;
+        this.values = {};
+        this.labels = {};
+        const note = document.getElementById('depositNote');
+        if (note) { note.classList.add('hidden'); note.textContent = ''; }
+        document.querySelectorAll('[data-frame-card]').forEach(c => { c.classList.remove('border-ink'); c.dataset.selected = 'false'; });
+        document.querySelectorAll('[data-frame-btn]').forEach(b => { b.textContent = 'Select Frame'; b.classList.remove('bg-ink', 'text-paper'); });
+        document.getElementById('formRegion').classList.add('hidden');
+      },
+
+      setPriorTbyb(val) {
+        this.priorTbyb = val;
+        const yesBtn = document.querySelector('[data-prior-btn="yes"]');
+        const noBtn = document.querySelector('[data-prior-btn="no"]');
+        yesBtn.className = `flex-1 border text-base py-3 transition-colors duration-200 ${val === true ? 'border-ink bg-ink text-paper' : 'border-grey-300 hover:border-ink'}`;
+        noBtn.className = `flex-1 border text-base py-3 transition-colors duration-200 ${val === false ? 'border-ink bg-ink text-paper' : 'border-grey-300 hover:border-ink'}`;
+        document.getElementById('orderIdWrap').classList.toggle('hidden', val !== true);
+      },
+
+      applyTbybPrefill(orderId) {
+        // mock lookup — in production this fetches the real tbyb_submissions record
+        this.appliedDeposit = 229;
+        this.values = {
+          odSphere: '-2.25', odCylinder: '-0.75', odAxis: '90',
+          osSphere: '-2.00', osCylinder: '-0.50', osAxis: '85',
+          lensType: 'Single Vision', helmetSize: 'Large', hatSize: '7¼',
+          noseBridge: 'High & Tall', sunglassFit: 'Need Larger & Wider Frames', frameType: 'With Foam Cushion',
+        };
+        this.labels = {
+          odSphere: '-2.25', odCylinder: '-0.75', odAxis: '90°',
+          osSphere: '-2.00', osCylinder: '-0.50', osAxis: '85°',
+          lensType: 'Single Vision', helmetSize: 'Large', hatSize: '7¼',
+          noseBridge: 'High & Tall', sunglassFit: 'Need Larger & Wider Frames', frameType: 'With Foam Cushion',
+        };
+        this.prefillContact = { name: 'Alex Rivera', email: 'alex.rivera@email.com', phone: '(813) 555-0148' };
+        const note = document.getElementById('depositNote');
+        note.textContent = `✓ $${this.appliedDeposit}.00 deposit applied from order #${orderId.replace(/^#/, '').toUpperCase()} — your details are prefilled below`;
+        note.classList.remove('hidden');
+      },
+
+      selectPackage(id) {
+        if (this.mode === 'tbyb' && this.pkgId === id) { this.deselectPackage(); return; }
+        this.pkgId = id;
+        document.querySelectorAll('[data-pkg-card]').forEach(c => { c.classList.remove('border-ink'); c.classList.add('border-grey-200'); c.dataset.selected = 'false'; });
+        const card = document.querySelector(`[data-pkg-card="${id}"]`);
+        card.classList.remove('border-grey-200', 'border-grey-300');
+        card.classList.add('border-ink');
+        card.dataset.selected = 'true';
+        document.querySelectorAll('[data-pkg-btn]').forEach(b => { b.textContent = 'Select Package'; b.classList.remove('bg-ink', 'text-paper'); });
+        const btn = document.querySelector(`[data-pkg-btn="${id}"]`);
+        btn.textContent = 'Selected';
+        btn.classList.add('bg-ink', 'text-paper');
+        const pkg = PACKAGES.find(p => p.id === id);
+        document.getElementById('selectedPkgLabel').textContent = `${pkg.name} — $${pkg.deposit} Deposit`;
+        document.getElementById('formRegion').classList.remove('hidden');
+        this.step = 1;
+        this.renderStep();
+        const formTop = document.getElementById('formRegion').getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top: formTop - 90, behavior: 'smooth' });
+      },
+
+      deselectPackage() {
+        this.pkgId = null;
+        this.values = {};
+        this.labels = {};
+        document.querySelectorAll('[data-pkg-card]').forEach(c => { c.classList.remove('border-ink'); c.classList.add('border-grey-200'); c.dataset.selected = 'false'; });
+        document.querySelectorAll('[data-pkg-btn]').forEach(b => { b.textContent = 'Select Package'; b.classList.remove('bg-ink', 'text-paper'); });
+        document.getElementById('formRegion').classList.add('hidden');
+      },
+
+      // hover only lightens the border when the card isn't the selected one
+      hoverCard(card, entering) {
+        if (card.dataset.selected === 'true') return;
+        card.classList.toggle('border-grey-300', entering);
+        card.classList.toggle('border-grey-200', !entering);
+      },
+
+      /* custom file upload — dashed drop-zone, click or drag, filename chip once picked */
+      fileUpload(id) {
+        return `
+          <div data-upload-wrap="${id}">
+            <input id="${id}" type="file" class="hidden" onchange="TBYB.onFileChosen('${id}')">
+            <label for="${id}" data-upload-zone="${id}"
+              ondragover="event.preventDefault(); this.classList.add('border-ink')"
+              ondragleave="this.classList.remove('border-ink')"
+              ondrop="event.preventDefault(); this.classList.remove('border-ink'); TBYB.onFileDropped('${id}', event.dataTransfer.files)"
+              class="flex items-center gap-3 border border-dashed border-grey-300 hover:border-ink transition-colors duration-200 px-4 h-14 cursor-pointer">
+              <svg data-upload-icon="${id}" class="w-5 h-5 text-grey-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V4M12 4 7 9M12 4l5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+              <span data-upload-label="${id}" class="text-base text-grey-500">Browse A File</span>
+            </label>
+          </div>`;
+      },
+      onFileChosen(id) {
+        const file = document.getElementById(id).files[0];
+        this.setUploadLabel(id, file);
+      },
+      onFileDropped(id, files) {
+        if (!files || !files[0]) return;
+        const input = document.getElementById(id);
+        input.files = files;
+        this.setUploadLabel(id, files[0]);
+      },
+      setUploadLabel(id, file) {
+        const labelEl = document.querySelector(`[data-upload-label="${id}"]`);
+        const iconEl = document.querySelector(`[data-upload-icon="${id}"]`);
+        if (!file) {
+          labelEl.textContent = 'Browse A File';
+          iconEl.innerHTML = '<path d="M12 16V4M12 4 7 9M12 4l5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>';
+          iconEl.classList.add('text-grey-400');
+          iconEl.classList.remove('text-ink');
+          return;
+        }
+        iconEl.innerHTML = '<path d="M5 13l4 4L19 7"/>';
+        iconEl.classList.remove('text-grey-400');
+        iconEl.classList.add('text-ink');
+        labelEl.innerHTML = `<span class="text-ink underline underline-offset-4">${file.name}</span> <button type="button" onclick="event.preventDefault(); event.stopPropagation(); TBYB.clearFile('${id}')" class="ml-2 text-sm text-grey-400 hover:text-ink underline underline-offset-4">Remove</button>`;
+      },
+      clearFile(id) {
+        const input = document.getElementById(id);
+        input.value = '';
+        this.setUploadLabel(id, null);
+      },
+
+      setStepDots() {
+        const isFrame = this.mode === 'frame';
+        document.getElementById('stepDots').classList.toggle('hidden', isFrame);
+        document.getElementById('frameStepDots').classList.toggle('hidden', !isFrame);
+        if (isFrame) {
+          document.getElementById('frameStepDots').classList.toggle('invisible', this.step === 0);
+          [1, 2, 3, 4, 5].forEach(n => {
+            const dot = document.querySelector(`[data-fstep-dot="${n}"]`);
+            const active = n === this.step, done = n < this.step;
+            dot.className = `text-sm w-7 h-7 rounded-full grid place-items-center border ${active || done ? 'border-brand' : 'border-grey-300'} ${active || done ? 'bg-brand text-paper' : 'text-grey-500'}`;
+          });
+          document.querySelectorAll('[data-fstep-line]').forEach(line => {
+            const n = parseInt(line.dataset.fstepLine, 10);
+            line.className = `w-6 h-px ${n < this.step ? 'bg-brand' : 'bg-grey-300'}`;
+          });
+          document.getElementById('btnBack').classList.toggle('invisible', this.step === 0);
+          document.getElementById('btnNext').textContent = this.step === 6 ? 'Submit' : (this.step === 5 ? 'Review' : 'Continue');
+          return;
+        }
+        document.getElementById('stepDots').classList.toggle('invisible', this.step === 0);
+        [1, 2, 3].forEach(n => {
+          const dot = document.querySelector(`[data-step-dot="${n}"]`);
+          const active = n === this.step, done = n < this.step;
+          dot.className = `text-sm w-7 h-7 rounded-full grid place-items-center border ${active || done ? 'border-brand' : 'border-grey-300'} ${active || done ? 'bg-brand text-paper' : 'text-grey-500'}`;
+        });
+        document.querySelectorAll('[data-step-line]').forEach(line => {
+          const n = parseInt(line.dataset.stepLine, 10);
+          line.className = `w-8 h-px ${n < this.step ? 'bg-brand' : 'bg-grey-300'}`;
+        });
+        const floor = 1;
+        document.getElementById('btnBack').classList.toggle('invisible', this.step <= floor);
+        document.getElementById('btnNext').textContent = this.step === 3 ? 'Review' : 'Continue';
+      },
+
+      /* ---------- custom dropdown (replaces native <select>) ---------- */
+      /* Sphere/Cylinder are ordered as ONE continuous run, lowest → highest
+         (…-1.00, -0.75, -0.50, -0.25, Plano/0.00, +0.25, +0.50, +0.75, +1.00…)
+         rather than grouped by sign — the natural clinical reading order. */
+      sphereOptions(min, max) {
+        const lo = min !== undefined ? min : -20;
+        const hi = max !== undefined ? max : 20;
+        const opts = [];
+        for (let v = hi; v >= 0.25; v -= 0.25) { if (v <= hi) opts.push({ value: '+' + v.toFixed(2), label: '+' + v.toFixed(2) }); }
+        opts.push({ value: 'plano', label: 'None' });
+        for (let v = -0.25; v >= lo; v -= 0.25) opts.push({ value: v.toFixed(2), label: v.toFixed(2) });
+        return opts;
+      },
+      cylinderOptions() {
+        const opts = [];
+        for (let v = 6; v >= 0.25; v -= 0.25) opts.push({ value: '+' + v.toFixed(2), label: '+' + v.toFixed(2) });
+        opts.push({ value: 'plano', label: 'None' });
+        for (let v = -0.25; v >= -6; v -= 0.25) opts.push({ value: v.toFixed(2), label: v.toFixed(2) });
+        return opts;
+      },
+      axisOptions() {
+        const opts = [];
+        for (let v = 1; v <= 180; v++) opts.push({ value: String(v), label: v + '°' });
+        return opts;
+      },
+      hatSizeOptions() {
+        const sizes = ['5','5¼','5½','5¾','6','6⅛','6¼','6⅜','6½','6⅝','6¾','6⅞','7','7⅛','7¼','7⅜','7½','7⅝','7¾','7⅞','8','8¼','8½','8¾','9'];
+        return sizes.map(s => ({ value: s, label: s })).concat([{ value: 'unknown', label: 'Not sure' }]);
+      },
+      listOptions(arr) {
+        return arr.map(s => {
+          const m = s.match(/^(.*?)\s*\[([^\]]+)\]\s*$/);
+          if (!m) return { value: s, label: s };
+          const price = '+' + m[2].replace(/^\+\s*/, '');
+          return { value: s, label: `${m[1]} <span style="color:#2EA3DC">(${price})</span>` };
+        });
+      },
+
+      pdOptions(min, max, includeNone) {
+        const lo = min !== undefined ? min : 50;
+        const hi = max !== undefined ? max : 75;
+        const opts = [];
+        for (let v = lo; v <= hi; v += 0.5) opts.push({ value: String(v), label: String(v) });
+        if (includeNone !== false) opts.push({ value: 'none', label: 'None' });
+        return opts;
+      },
+      togglePdMode() {
+        this.dualPd = !this.dualPd;
+        this.values.pd = null; this.values.pdRight = null; this.values.pdLeft = null;
+        document.getElementById('pdBlock').innerHTML = this.renderPdBlock();
+      },
+      renderPdBlock() {
+        if (this.dualPd) {
+          return `
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">PD — Left</label>
+                ${this.renderDropdown('pdLeft', this.pdOptions(24.5, 35, false))}
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">PD — Right</label>
+                ${this.renderDropdown('pdRight', this.pdOptions(25, 37, false))}
+              </div>
+            </div>`;
+        }
+        return this.renderDropdown('pd', this.pdOptions());
+      },
+
+      setLensColorCategory(cat) {
+        this.values.lensColorCategory = cat;
+        this.renderStep();
+      },
+      lensColorOptions(cat) {
+        if (cat === 'transitions') return this.listOptions(['Gen8 Clear to Grey [$99]','Gen8 Clear to Brown [$99]','Gen8 Clear to Amber [$99]','Gen8 Clear to Graphite Green [$99]','Gen8 Clear to Amethyst Purple [$99]','Gen8 Clear to Emerald Green [$99]','Gen8 Clear to Sapphire Blue [$99]','XtrActive (Darkest) Clear to Dark Gray [$119]','XtrActive Clear to Dark Brown [$119]','XtrActive Polarized Clear to Gray [$169]']);
+        if (cat === 'polarized') return this.listOptions(['Polarized Gray [+ $79]','Polarized Brown [+ $79]']);
+        return this.listOptions(['Dark Gray [+ $15]','Light Gray [+ $15]','Dark Brown [+ $15]','Light Brown [+ $15]','G-15 Gray/Green [+ $15]','HD Copper [+ $15]','Yellow [+ $15]','Rose [+ $15]','Blue [+ $15]','Purple [+ $15]','Clear / No Tint']);
+      },
+
+      rxInfoBanner() {
+        return `
+          <div class="border border-grey-200 bg-grey-50 px-5 py-5 text-sm text-grey-600 leading-relaxed space-y-3">
+            <p><span class="text-ink">Please note:</span> Rx orders take <span class="text-ink">10–15 business days</span> to complete.</p>
+            <p>Have questions? Speak to one of our Rx specialists Monday through Friday, 9am–5pm EST. Call <span class="text-ink">877-245-3721</span> today!</p>
+            <p>Not sure which frame fits? Check out our <a href="#" onclick="TBYB.setMode('tbyb'); return false;" class="text-ink underline underline-offset-4">Try Before You Buy</a> program and we'll send you frames to try on before you order!</p>
+          </div>`;
+      },
+
+      /* Renders a custom dropdown. `id` must be unique. `options` is [{value,label}].
+         `placeholder` shows until a value is chosen (used where nothing should be
+         pre-selected, e.g. Axis before Cylinder is set). */
+      renderDropdown(id, options, placeholder) {
+        this.ddOptions[id] = options;
+        const hasDefault = !placeholder;
+        const preset = this.values[id];
+        if (!(hasDefault && preset)) this.values[id] = hasDefault ? this.values[id] ?? null : null;
+        const label = (preset && this.labels[id]) ? this.labels[id] : 'Select';
+        const optionsHtml = options.map((o, i) => `<button type="button" onclick="TBYB.chooseDD('${id}', ${i})" class="w-full text-left px-3.5 py-2.5 text-base hover:bg-grey-50 transition-colors duration-200">${o.label}</button>`).join('');
+        return `
+          <div class="relative" data-dd-wrap="${id}">
+            <button type="button" onclick="TBYB.toggleDD('${id}')" data-dd-trigger="${id}" class="w-full flex items-center justify-between gap-2 border border-grey-300 hover:border-ink transition-colors duration-200 px-3.5 h-11 text-base text-left bg-paper disabled:bg-grey-50 disabled:text-grey-400 disabled:hover:border-grey-300">
+              <span data-dd-label="${id}" class="truncate">${label}</span>
+              <svg class="w-4 h-4 text-grey-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div data-dd-panel="${id}" class="hidden absolute left-0 right-0 top-full z-30 mt-1 bg-paper border border-grey-300 shadow-pop max-h-64 overflow-y-auto">
+              ${optionsHtml}
+            </div>
+          </div>`;
+      },
+
+      toggleDD(id) {
+        const trigger = document.querySelector(`[data-dd-trigger="${id}"]`);
+        if (trigger.disabled) return;
+        const panel = document.querySelector(`[data-dd-panel="${id}"]`);
+        const isOpen = !panel.classList.contains('hidden');
+        this.closeAllDD();
+        if (!isOpen) panel.classList.remove('hidden');
+      },
+      closeAllDD() {
+        document.querySelectorAll('[data-dd-panel]').forEach(p => p.classList.add('hidden'));
+      },
+      chooseDD(id, idx) {
+        const opt = this.ddOptions[id][idx];
+        this.values[id] = opt.value;
+        this.labels[id] = opt.label;
+        document.querySelector(`[data-dd-label="${id}"]`).innerHTML = opt.label;
+        this.closeAllDD();
+        if (this.ddOnChange[id]) this.ddOnChange[id](opt.value);
+      },
+      setDDDisabled(id, disabled) {
+        const trigger = document.querySelector(`[data-dd-trigger="${id}"]`);
+        trigger.disabled = disabled;
+        if (disabled) {
+          this.values[id] = null;
+          document.querySelector(`[data-dd-label="${id}"]`).textContent = '—';
+        } else if (this.values[id] && this.labels[id]) {
+          document.querySelector(`[data-dd-label="${id}"]`).innerHTML = this.labels[id];
+        }
+      },
+
+      eyeRow(label, prefix) {
+        const range = this.mode === 'frame' ? this.frameRxRange : null;
+        return `
+          <div class="border-t border-grey-200 pt-6 first:border-t-0 first:pt-0">
+            <p class="text-base mb-3">${label}</p>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Sphere</label>
+                ${this.renderDropdown(`${prefix}Sphere`, range ? this.sphereOptions(range.min, range.max) : this.sphereOptions())}
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Cylinder</label>
+                ${this.renderDropdown(`${prefix}Cylinder`, this.cylinderOptions())}
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Axis</label>
+                ${this.renderDropdown(`${prefix}Axis`, this.axisOptions(), '—')}
+              </div>
+            </div>
+          </div>`;
+      },
+
+      renderStep() {
+        this.setStepDots();
+        const mount = document.getElementById('stepMount');
+        if (this.step === 0) {
+          mount.innerHTML = `
+            <h2 class="text-xl font-normal mb-3">Did You Complete Try Before You Buy Before This?</h2>
+            <p class="text-base text-grey-600 leading-relaxed mb-6">If so, enter your order # and we'll apply your deposit to this order. If not, don't worry — just continue.</p>
+            <div>
+              <label class="text-sm text-grey-500 mb-1.5 block">Order #</label>
+              <input id="tbybOrderId" type="text" placeholder="#ABCD1234" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 h-11 text-base outline-none placeholder-grey-400">
+            </div>`;
+          return;
+        }
+        if (this.mode === 'frame') { this.renderFrameStep(mount); return; }
+        if (this.step === 1) {
+          mount.innerHTML = `
+            <h2 class="text-xl font-normal mb-6">Prescription</h2>
+            <div class="space-y-6">
+              ${this.eyeRow('OD — Right Eye', 'od')}
+              ${this.eyeRow('OS — Left Eye', 'os')}
+            </div>`;
+          // wire cylinder → axis enable/disable, now that the dropdowns exist in the DOM
+          this.ddOnChange.odCylinder = (v) => this.setDDDisabled('odAxis', v === 'plano');
+          this.ddOnChange.osCylinder = (v) => this.setDDDisabled('osAxis', v === 'plano');
+          this.setDDDisabled('odAxis', this.values.odCylinder === 'plano' || !this.values.odCylinder);
+          this.setDDDisabled('osAxis', this.values.osCylinder === 'plano' || !this.values.osCylinder);
+        } else if (this.step === 2) {
+          const field = (id, label, options) => `
+            <div>
+              <label class="text-sm text-grey-500 mb-1.5 block">${label}</label>
+              ${this.renderDropdown(id, options)}
+            </div>`;
+          mount.innerHTML = `
+            <h2 class="text-xl font-normal mb-6">Fitting Questions</h2>
+            <div class="space-y-5">
+              ${field('lensType', 'Lens Type Desired', this.listOptions(['Single Vision','Bifocals','Progressive']))}
+              ${field('helmetSize', 'Helmet Size', this.listOptions(['X-Small','Small','Medium','Large','X-Large','XX-Large','XXX-Large']))}
+              ${field('hatSize', 'Hat Size', this.hatSizeOptions())}
+              ${field('noseBridge', 'Describe Nose Bridge', this.listOptions(['Small & Petite','Thin & Narrow','High & Tall','Wide & Large','Low & Flat','Normal']))}
+              ${field('sunglassFit', 'When buying sunglasses', this.listOptions(['All Styles & Sizes Fit','Need Larger & Wider Frames','Need Smaller Frames','Lenses Touch Eyelashes','Need Floating Nose Pieces','Never Bought Sunglasses']))}
+              ${field('frameType', 'Type of frame you prefer', this.listOptions(['With Foam Cushion','Without Foam Cushion','Removable Foam Cushion','Goggles With Strap','Cover Overs']))}
+            </div>`;
+        } else if (this.step === 3) {
+          mount.innerHTML = `
+            <h2 class="text-xl font-normal mb-6">Additional Info</h2>
+            <div class="space-y-5">
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Comments / Special Requests (Optional)</label>
+                <textarea id="comments" rows="4" placeholder="Anything else we should know?" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 py-2.5 text-base outline-none placeholder-grey-400"></textarea>
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Upload Prescription (Optional)</label>
+                ${this.fileUpload('rxFile')}
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Upload Headshot (Optional)</label>
+                ${this.fileUpload('photoFile')}
+              </div>
+            </div>
+
+            <h2 class="text-xl font-normal mb-6 mt-10">Contact Info</h2>
+            <div class="space-y-5">
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Name</label>
+                <input id="contactName" type="text" placeholder="Your name" value="${this.prefillContact ? this.prefillContact.name : ''}" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 h-11 text-base outline-none placeholder-grey-400">
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Email</label>
+                <input id="contactEmail" type="email" placeholder="you@example.com" value="${this.prefillContact ? this.prefillContact.email : ''}" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 h-11 text-base outline-none placeholder-grey-400">
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Phone (Optional)</label>
+                <input id="contactPhone" type="tel" placeholder="(555) 555-5555" value="${this.prefillContact ? this.prefillContact.phone : ''}" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 h-11 text-base outline-none placeholder-grey-400">
+              </div>
+            </div>`;
+        } else if (this.step === 4) {
+          // Review — not one of the 1/2/3 steps; dots dim to signal we've moved past them.
+          [1,2,3].forEach(n => document.querySelector(`[data-step-dot="${n}"]`).classList.add('opacity-30'));
+          document.querySelectorAll('[data-step-line]').forEach(l => l.classList.add('opacity-30'));
+          mount.innerHTML = this.renderReview();
+          document.getElementById('btnNext').textContent = 'Submit';
+        }
+      },
+
+      renderFrameStep(mount) {
+        if (this.step === 1) {
+          mount.innerHTML = `
+            <h2 class="text-xl font-normal mb-6">Prescription</h2>
+            <div>
+              <label class="text-sm text-grey-500 mb-1.5 block">Select Vision Type</label>
+              ${this.renderDropdown('visionType', this.listOptions(['Traditional Single Vision [+ $99]','Digital Single Vision w/ Wider Peripheral [+ $129]','Digital Progressives [+ $249]','Digital Sport Progressives [+ $359]','FT 28 Bifocals [+ $159]']))}
+            </div>
+            <p class="text-sm text-grey-500 mt-8">Sphere power for this frame must fall within ${this.frameRxRange ? `${this.frameRxRange.min.toFixed(2)} to +${this.frameRxRange.max.toFixed(2)}` : 'the frame\u2019s supported range'}.</p>
+            <div class="space-y-6 mt-3">
+              ${this.eyeRow('OD — Right Eye', 'od')}
+              ${this.eyeRow('OS — Left Eye', 'os')}
+            </div>`;
+          this.ddOnChange.odCylinder = (v) => this.setDDDisabled('odAxis', v === 'plano');
+          this.ddOnChange.osCylinder = (v) => this.setDDDisabled('osAxis', v === 'plano');
+          this.setDDDisabled('odAxis', this.values.odCylinder === 'plano' || !this.values.odCylinder);
+          this.setDDDisabled('osAxis', this.values.osCylinder === 'plano' || !this.values.osCylinder);
+        } else if (this.step === 2) {
+          mount.innerHTML = `
+            ${this.rxInfoBanner()}
+            <div class="mt-8">
+              <div class="flex items-center justify-between gap-4 flex-wrap">
+                <label class="text-sm text-grey-500 block">PD (Pupillary Distance)</label>
+                <label class="flex items-center gap-2 text-sm text-grey-600 cursor-pointer select-none">
+                  <input type="checkbox" onclick="TBYB.togglePdMode()" ${this.dualPd ? 'checked' : ''} class="w-4 h-4 accent-ink">
+                  I have 2 numbers for my PD
+                </label>
+              </div>
+              <div id="pdBlock" class="mt-1.5">${this.renderPdBlock()}</div>
+            </div>`;
+        } else if (this.step === 3) {
+          const cat = this.values.lensColorCategory;
+          const radio = (value, label) => `
+            <label class="flex items-center gap-2.5 text-base cursor-pointer">
+              <input type="radio" name="lensColorCategory" ${cat === value ? 'checked' : ''} onclick="TBYB.setLensColorCategory('${value}')" class="w-4 h-4 accent-ink">
+              ${label}
+            </label>`;
+          mount.innerHTML = `
+            <h2 class="text-xl font-normal mb-6">Lens Material &amp; Color</h2>
+            <div>
+              <label class="text-sm text-grey-500 mb-1.5 block">Select Lens Material</label>
+              ${this.renderDropdown('lensMaterial', this.listOptions(['Impact Resistant Polycarbonate','Impact Resistant Trivex [+ $39]']))}
+            </div>
+            <div class="mt-8">
+              <p class="text-base mb-1">Select Lens Color / Type</p>
+              <div class="space-y-3">
+                ${radio('transitions', 'Genuine Transitions')}
+                ${cat === 'transitions' ? `<div class="pl-6">${this.renderDropdown('lensColorTransitions', this.lensColorOptions('transitions'))}</div>` : ''}
+                ${radio('polarized', 'Polarized')}
+                ${cat === 'polarized' ? `<div class="pl-6">${this.renderDropdown('lensColorPolarized', this.lensColorOptions('polarized'))}</div>` : ''}
+                ${radio('tinted', 'Solid Tinted')}
+                ${cat === 'tinted' ? `<div class="pl-6">${this.renderDropdown('lensColorTinted', this.lensColorOptions('tinted'))}</div>` : ''}
+              </div>
+            </div>`;
+        } else if (this.step === 4) {
+          mount.innerHTML = `
+            ${this.rxInfoBanner()}
+            <div class="mt-8 space-y-6">
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Select Anti-Reflective Coating</label>
+                ${this.renderDropdown('arCoating', this.listOptions(['Classic A/R: Basic A/R w/ Standard Oleophobic, Hydrophobic Coat & Scratch Coat [+ $79]','Elite A/R: Superior A/R w/ Best Oleo/Hydrophobic Coat & Scratch Coat [+ $99]','Elite A/R + Anti Fog: Includes Permanent Anti-Fog Coat + 2 yr Scratch Warranty [+ $159]','None']))}
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Select Scratch Coat</label>
+                ${this.renderDropdown('scratchCoat', this.listOptions(['Multi Layer Baked On Ultimate Scratch Coat [+ $39]','None']))}
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Select Mirror Coat</label>
+                ${this.renderDropdown('mirrorCoat', this.listOptions(['Flash Style Mirror Silver [+ $65]','Flash Style Mirror Gold [+ $65]','Flash Style Mirror Blue [+ $65]','Flash Style Mirror Green [+ $65]','Flash Style Mirror Cobalt [+ $65]','Flash Style Mirror Red [+ $65]','Flash Style Mirror Pink [+ $65]','Solid Mirror Silver [+ $65]','Solid Mirror Black [+ $65]','Solid Mirror Gold [+ $65]','Solid Mirror Blue [+ $65]','Solid Mirror Cobalt [+ $65]','Solid Mirror Green [+ $65]','Solid Mirror Orange [+ $65]','Solid Mirror Red [+ $65]','Solid Mirror Pink [+ $65]','None']))}
+              </div>
+            </div>`;
+        } else if (this.step === 5) {
+          mount.innerHTML = `
+            <h2 class="text-xl font-normal mb-6">Additional Info</h2>
+            <div class="space-y-5">
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Comments / Special Requests (Optional)</label>
+                <textarea id="comments" rows="4" placeholder="Anything else we should know?" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 py-2.5 text-base outline-none placeholder-grey-400"></textarea>
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Upload Prescription (Optional)</label>
+                ${this.fileUpload('rxFile')}
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Upload Headshot (Optional)</label>
+                ${this.fileUpload('photoFile')}
+              </div>
+            </div>
+
+            <h2 class="text-xl font-normal mb-6 mt-10">Contact Info</h2>
+            <div class="space-y-5">
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Name</label>
+                <input id="contactName" type="text" placeholder="Your name" value="${this.prefillContact ? this.prefillContact.name : ''}" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 h-11 text-base outline-none placeholder-grey-400">
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Email</label>
+                <input id="contactEmail" type="email" placeholder="you@example.com" value="${this.prefillContact ? this.prefillContact.email : ''}" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 h-11 text-base outline-none placeholder-grey-400">
+              </div>
+              <div>
+                <label class="text-sm text-grey-500 mb-1.5 block">Phone (Optional)</label>
+                <input id="contactPhone" type="tel" placeholder="(555) 555-5555" value="${this.prefillContact ? this.prefillContact.phone : ''}" class="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 h-11 text-base outline-none placeholder-grey-400">
+              </div>
+            </div>`;
+        } else if (this.step === 6) {
+          [1,2,3,4,5].forEach(n => document.querySelector(`[data-fstep-dot="${n}"]`).classList.add('opacity-30'));
+          document.querySelectorAll('[data-fstep-line]').forEach(l => l.classList.add('opacity-30'));
+          mount.innerHTML = this.renderFrameReview();
+        }
+      },
+
+      renderFrameReview() {
+        const frame = FRAMES.find(f => f.id === this.frameId);
+        const l = (id) => this.labels[id] || 'None';
+        const val = (id) => { const el = document.getElementById(id); return el && el.value ? el.value : 'None'; };
+        const fileLabel = (id) => { const el = document.getElementById(id); return el && el.files[0] ? el.files[0].name : 'None'; };
+        const row = (label, value) => `
+          <div class="flex justify-between gap-6 py-2.5 border-b border-grey-100 last:border-0">
+            <dt class="text-grey-500">${label}</dt>
+            <dd class="text-ink text-right">${value}</dd>
+          </div>`;
+        const section = (title, rowsHtml) => `
+          <div class="border-t border-grey-200 pt-6 first:border-t-0 first:pt-0">
+            <p class="text-base mb-1">${title}</p>
+            <dl class="text-sm">${rowsHtml}</dl>
+          </div>`;
+        const pdRows = this.dualPd
+          ? row('PD — Left', l('pdLeft')) + row('PD — Right', l('pdRight'))
+          : row('PD', l('pd'));
+        const cat = this.values.lensColorCategory;
+        const lensColorLabel = cat ? l('lensColor' + cat.charAt(0).toUpperCase() + cat.slice(1)) : 'None';
+
+        return `
+          <h2 class="text-xl font-normal mb-6">Confirm Your Details</h2>
+          <div class="space-y-6">
+            ${section('Frame', row('Selected', `${frame.name} — ${this.frameColor} — $${frame.price}`))}
+            ${section('Prescription', row('Vision Type', l('visionType')) + row('OD Sphere', l('odSphere')) + row('OD Cylinder', l('odCylinder')) + row('OD Axis', l('odAxis')) + row('OS Sphere', l('osSphere')) + row('OS Cylinder', l('osCylinder')) + row('OS Axis', l('osAxis')))}
+            ${section('PD', pdRows)}
+            ${section('Lens', row('Material', l('lensMaterial')) + row('Color / Type', lensColorLabel))}
+            ${section('Coatings', row('Anti-Reflective', l('arCoating')) + row('Scratch Coat', l('scratchCoat')) + row('Mirror Coat', l('mirrorCoat')))}
+            ${section('Additional Info', row('Comments', val('comments')) + row('Prescription File', fileLabel('rxFile')) + row('Head Shot Photo', fileLabel('photoFile')))}
+            ${section('Contact Info', row('Name', val('contactName')) + row('Email', val('contactEmail')) + row('Phone', val('contactPhone')))}
+          </div>
+          <p class="text-sm text-grey-500 leading-relaxed mt-8">Double-check everything above, then submit. You can go back to fix anything first.</p>`;
+      },
+
+      renderReview() {
+        const pkg = PACKAGES.find(p => p.id === this.pkgId);
+        const l = (id) => this.labels[id] || 'None';
+        const val = (id) => { const el = document.getElementById(id); return el && el.value ? el.value : 'None'; };
+        const fileLabel = (id) => { const el = document.getElementById(id); return el && el.files[0] ? el.files[0].name : 'None'; };
+
+        const row = (label, value) => `
+          <div class="flex justify-between gap-6 py-2.5 border-b border-grey-100 last:border-0">
+            <dt class="text-grey-500">${label}</dt>
+            <dd class="text-ink text-right">${value}</dd>
+          </div>`;
+
+        const section = (title, rowsHtml) => `
+          <div class="border-t border-grey-200 pt-6 first:border-t-0 first:pt-0">
+            <p class="text-base mb-1">${title}</p>
+            <dl class="text-sm">${rowsHtml}</dl>
+          </div>`;
+
+        return `
+          <h2 class="text-xl font-normal mb-6">Confirm Your Details</h2>
+          <div class="space-y-6">
+            ${section('Package', row('Selected', `${pkg.name} — $${pkg.deposit} Deposit`) + row('Pairs', pkg.pairsMin === pkg.pairsMax ? `${pkg.pairsMin} Pairs` : `${pkg.pairsMin}–${pkg.pairsMax} Pairs`))}
+            ${section('Prescription — OD (Right Eye)', row('Sphere', l('odSphere')) + row('Cylinder', l('odCylinder')) + row('Axis', l('odAxis')))}
+            ${section('Prescription — OS (Left Eye)', row('Sphere', l('osSphere')) + row('Cylinder', l('osCylinder')) + row('Axis', l('osAxis')))}
+            ${section('Fitting Questions',
+              row('Lens Type Desired', l('lensType')) +
+              row('Helmet Size', l('helmetSize')) +
+              row('Hat Size', l('hatSize')) +
+              row('Nose Bridge', l('noseBridge')) +
+              row('Sunglass Fit', l('sunglassFit')) +
+              row('Frame Type', l('frameType')))}
+            ${section('Additional Info',
+              row('Comments', val('comments')) +
+              row('Prescription File', fileLabel('rxFile')) +
+              row('Head Shot Photo', fileLabel('photoFile')))}
+            ${section('Contact Info', row('Name', val('contactName')) + row('Email', val('contactEmail')) + row('Phone', val('contactPhone')))}
+          </div>
+          <p class="text-sm text-grey-500 leading-relaxed mt-8">Double-check everything above, then submit. You can go back to fix anything first.</p>`;
+      },
+
+      fieldError(msg) {
+        const mount = document.getElementById('stepMount');
+        let banner = document.getElementById('submitError');
+        if (!banner) {
+          banner = document.createElement('div');
+          banner.id = 'submitError';
+          banner.className = 'flex items-start gap-2.5 border border-red-200 bg-red-50 text-red-700 text-sm px-4 py-3 mt-6';
+          mount.after(banner);
+        }
+        banner.innerHTML = `
+          <svg class="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 16h.01"/></svg>
+          <span>${msg}</span>`;
+      },
+
+      validateStep() {
+        const v = (id) => (id in this.values ? this.values[id] : null);
+        if (this.step === 0) {
+          // Order # is optional — nothing to validate here.
+        } else if (this.mode === 'frame') {
+          if (this.step === 1) {
+            if (!v('visionType')) return 'Please select a vision type!';
+            if (!v('odSphere'))   return 'Please select your right eye (OD) sphere!';
+            if (!v('odCylinder')) return 'Please select your right eye (OD) cylinder!';
+            if (v('odCylinder') !== 'plano' && !v('odAxis')) return 'Please select your right eye (OD) axis!';
+            if (!v('osSphere'))   return 'Please select your left eye (OS) sphere!';
+            if (!v('osCylinder')) return 'Please select your left eye (OS) cylinder!';
+            if (v('osCylinder') !== 'plano' && !v('osAxis')) return 'Please select your left eye (OS) axis!';
+          } else if (this.step === 2) {
+            if (this.dualPd) {
+              if (!v('pdRight')) return 'Please select your right PD!';
+              if (!v('pdLeft'))  return 'Please select your left PD!';
+            } else if (!v('pd')) {
+              return 'Please select your PD!';
+            }
+          } else if (this.step === 3) {
+            if (!v('lensMaterial')) return 'Please select a lens material!';
+            const cat = v('lensColorCategory');
+            if (!cat) return 'Please select a lens color/type!';
+            if (!v('lensColor' + cat.charAt(0).toUpperCase() + cat.slice(1))) return 'Please select a lens color/type option!';
+          } else if (this.step === 4) {
+            if (!v('arCoating')) return 'Please select an anti-reflective coating!';
+          } else if (this.step === 5) {
+            const name = document.getElementById('contactName');
+            const email = document.getElementById('contactEmail');
+            if (!name || !name.value.trim())  return 'Name is required!';
+            if (!email || !email.value.trim()) return 'Email is required!';
+          }
+        } else if (this.step === 1) {
+          if (!v('odSphere'))   return 'Please select your right eye (OD) sphere!';
+          if (!v('odCylinder')) return 'Please select your right eye (OD) cylinder!';
+          if (v('odCylinder') !== 'plano' && !v('odAxis')) return 'Please select your right eye (OD) axis!';
+          if (!v('osSphere'))   return 'Please select your left eye (OS) sphere!';
+          if (!v('osCylinder')) return 'Please select your left eye (OS) cylinder!';
+          if (v('osCylinder') !== 'plano' && !v('osAxis')) return 'Please select your left eye (OS) axis!';
+        } else if (this.step === 2) {
+          if (!v('lensType'))    return 'Please select a lens type!';
+          if (!v('helmetSize'))  return 'Please select your helmet size!';
+          if (!v('hatSize'))     return 'Please select your hat size!';
+          if (!v('noseBridge'))  return 'Please describe your nose bridge!';
+          if (!v('sunglassFit')) return 'Please select your sunglass fit!';
+          if (!v('frameType'))   return 'Please select a frame type!';
+        } else if (this.step === 3) {
+          const name = document.getElementById('contactName');
+          const email = document.getElementById('contactEmail');
+          if (!name || !name.value.trim())  return 'Name is required!';
+          if (!email || !email.value.trim()) return 'Email is required!';
+        }
+        return null;
+      },
+
+      next() {
+        if (this.mode === 'frame') {
+          const err = this.validateStep();
+          if (err) { this.fieldError(err); return; }
+          this.clearSubmitError();
+          if (this.step === 0) {
+            const orderId = document.getElementById('tbybOrderId').value.trim();
+            if (orderId) this.applyTbybPrefill(orderId);
+            this.step = 1;
+            this.renderStep();
+            return;
+          }
+          if (this.step < 6) { this.step++; this.renderStep(); }
+          else this.submit();
+          return;
+        }
+        if (this.step < 4) {
+          const err = this.validateStep();
+          if (err) { this.fieldError(err); return; }
+          this.clearSubmitError();
+          this.step++;
+          this.renderStep();
+        } else this.submit();
+      },
+      back() {
+        const floor = this.mode === 'frame' ? 0 : 1;
+        if (this.step > floor) {
+          this.step--;
+          if (this.mode === 'frame' && this.step === 5) {
+            [1,2,3,4,5].forEach(n => document.querySelector(`[data-fstep-dot="${n}"]`).classList.remove('opacity-30'));
+            document.querySelectorAll('[data-fstep-line]').forEach(l => l.classList.remove('opacity-30'));
+          }
+          if (this.mode !== 'frame' && this.step === 3) {
+            [1,2,3].forEach(n => document.querySelector(`[data-step-dot="${n}"]`).classList.remove('opacity-30'));
+            document.querySelectorAll('[data-step-line]').forEach(l => l.classList.remove('opacity-30'));
+          }
+          this.renderStep();
+        }
+      },
+
+      submit() {
+        const v = (id) => (id in this.values ? this.values[id] : null);
+        const fileName = (id) => { const el = document.getElementById(id); return el && el.files[0] ? el.files[0].name : null; };
+        const record = {
+          packageId: this.pkgId,
+          status: 'pending',
+          prescription: {
+            od: { sphere: v('odSphere'), cylinder: v('odCylinder'), axis: v('odAxis') },
+            os: { sphere: v('osSphere'), cylinder: v('osCylinder'), axis: v('osAxis') },
+          },
+          fitting: {
+            lensType: v('lensType'), helmetSize: v('helmetSize'), hatSize: v('hatSize'),
+            noseBridge: v('noseBridge'), sunglassFit: v('sunglassFit'), frameType: v('frameType'),
+          },
+          comments: document.getElementById('comments') ? document.getElementById('comments').value : null,
+          contact: {
+            email: document.getElementById('contactEmail') ? document.getElementById('contactEmail').value : null,
+            phone: document.getElementById('contactPhone') ? document.getElementById('contactPhone').value : null,
+          },
+          files: { prescription: fileName('rxFile'), photo: fileName('photoFile') },
+        };
+        console.log('Try Before You Buy submission', record);
+
+        this.clearSubmitError();
+        const btn = document.getElementById('btnNext');
+        btn.disabled = true;
+        btn.textContent = 'Submitting…';
+
+        // Simulated network/API call — swap for the real request.
+        // On failure, keep the user's entered data intact and show a retryable error.
+        Promise.resolve()
+          .then(() => new Promise((resolve, reject) => setTimeout(() => (window.__tbybFail ? reject(new Error('network')) : resolve()), 500)))
+          .then(() => this.onSubmitSuccess())
+          .catch(() => this.onSubmitError());
+      },
+
+      onSubmitError() {
+        const btn = document.getElementById('btnNext');
+        btn.disabled = false;
+        btn.textContent = 'Submit';
+        const mount = document.getElementById('stepMount');
+        let banner = document.getElementById('submitError');
+        if (!banner) {
+          banner = document.createElement('div');
+          banner.id = 'submitError';
+          banner.className = 'flex items-start gap-2.5 border border-red-200 bg-red-50 text-red-700 text-sm px-4 py-3 mt-6';
+          mount.after(banner);
+        }
+        banner.innerHTML = `
+          <svg class="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 16h.01"/></svg>
+          <span>We couldn't submit your request — please check your connection and try again. Your answers are still here.</span>`;
+      },
+
+      clearSubmitError() {
+        const banner = document.getElementById('submitError');
+        if (banner) banner.remove();
+      },
+
+      onSubmitSuccess() {
+        this.clearSubmitError();
+        const submissionId = Array.from({length:8}, () => '0123456789ABCDEF'[Math.floor(Math.random()*16)]).join('');
+        let heading, message;
+        if (this.mode === 'frame') {
+          const frame = FRAMES.find(f => f.id === this.frameId);
+          heading = 'Order submitted';
+          message = `Your <span class="text-ink">${frame.name} \u2014 ${this.frameColor}</span> prescription order is in. Order <span class="text-ink">#${submissionId}</span>. We'll reach out to confirm details and collect payment before we start on your lenses.`;
+        } else {
+          const pkg = PACKAGES.find(p => p.id === this.pkgId);
+          heading = 'Request submitted';
+          message = `Your <span class="text-ink">${pkg.name}</span> try-on request is in. Request <span class="text-ink">#${submissionId}</span>. We'll reach out to confirm details and collect your deposit before shipping your frames.`;
+        }
+        document.getElementById('stepMount').innerHTML = `
+          <div class="text-center py-6">
+            <div class="mx-auto w-16 h-16 rounded-full bg-[#22963F] grid place-items-center">
+              <svg class="w-8 h-8 text-paper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m5 13 4 4L19 7"/></svg>
+            </div>
+            <h2 class="text-xl font-normal mt-6">${heading}</h2>
+            <p class="text-base text-grey-600 leading-relaxed mt-3">${message}</p>
+          </div>`;
+        document.getElementById('stepNav').classList.add('hidden');
+      },
+    };
+
+    // close any open custom dropdown when clicking outside it
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('[data-dd-wrap]')) TBYB.closeAllDD();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') TBYB.closeAllDD(); });
+
+    renderPackages();
+    renderFrames();
+  </script>
+
+</body>
+</html>
