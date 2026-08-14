@@ -378,7 +378,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     if (!f) { update("rxUrl", null); return; }
     setRxUploading(true);
     try {
-      const fd = new FormData(); fd.append("file", f);
+      const fd = new FormData(); fd.append("file", f); fd.append("folder", "tbyb");
       const r = await uploadFile(fd);
       update("rxUrl", r.url);
     } catch {
@@ -392,7 +392,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     if (!f) { update("photoUrl", null); return; }
     setPhotoUploading(true);
     try {
-      const fd = new FormData(); fd.append("file", f);
+      const fd = new FormData(); fd.append("file", f); fd.append("folder", "tbyb");
       const r = await uploadFile(fd);
       update("photoUrl", r.url);
     } catch {
