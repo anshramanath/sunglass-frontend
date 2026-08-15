@@ -173,12 +173,33 @@ export type TBYBSubmissionRecord = {
   status: string; createdAt: string; updatedAt: string;
 };
 
+export type RxFrameOrderResult = { url: string } | { paid: true };
+
+export type RxFrameSubmission = {
+  frameId: string;
+  frameColorSlug: string;
+  tbybSubmissionId: string | null;
+  depositCents: number | null;
+  visionType: string;
+  odSphere: string; odCylinder: string; odAxis: string;
+  osSphere: string; osCylinder: string; osAxis: string;
+  pdMode: string; pd: string; pdLeft: string; pdRight: string;
+  lensMaterial: string; lensColorCategory: string; lensColor: string;
+  arCoating: string; scratchCoating: string; mirrorCoating: string;
+  comments: string; prescriptionUrl: string; headshotUrl: string;
+  name: string; email: string; phone: string;
+};
+
+export type TBYBDepositInfo = {
+  depositCents: number;
+};
+
 export type TBYBSubmission = {
   packageId: string;
-  odSphere: string | null; odCylinder: string | null; odAxis: string | null;
-  osSphere: string | null; osCylinder: string | null; osAxis: string | null;
-  lensType: string | null; helmetSize: string | null; hatSize: string | null;
-  noseBridge: string | null; sunglassFit: string | null; frameType: string | null;
+  odSphere: string; odCylinder: string; odAxis: string;
+  osSphere: string; osCylinder: string; osAxis: string;
+  lensType: string; helmetSize: string; hatSize: string;
+  noseBridge: string; sunglassFit: string; frameType: string;
   comments: string; name: string; email: string; phone: string;
-  prescriptionUrl: string | null; headshotUrl: string | null;
+  prescriptionUrl: string; headshotUrl: string;
 };

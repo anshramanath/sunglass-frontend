@@ -455,10 +455,10 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     try {
       const result = await submitTBYB({
         packageId: selectedPkg!.id,
-        odSphere: vals.odSphere, odCylinder: vals.odCylinder, odAxis: vals.odAxis || "None",
-        osSphere: vals.osSphere, osCylinder: vals.osCylinder, osAxis: vals.osAxis || "None",
-        lensType: vals.lensType, helmetSize: vals.helmetSize, hatSize: vals.hatSize,
-        noseBridge: vals.noseBridge, sunglassFit: vals.sunglassFit, frameType: vals.frameType,
+        odSphere: vals.odSphere!, odCylinder: vals.odCylinder!, odAxis: vals.odAxis || "None",
+        osSphere: vals.osSphere!, osCylinder: vals.osCylinder!, osAxis: vals.osAxis || "None",
+        lensType: vals.lensType!, helmetSize: vals.helmetSize!, hatSize: vals.hatSize!,
+        noseBridge: vals.noseBridge!, sunglassFit: vals.sunglassFit!, frameType: vals.frameType!,
         comments: vals.comments || "None", name: vals.name, email: vals.email, phone: vals.phone || "None",
         prescriptionUrl: vals.rxUrl || "None",
         headshotUrl: vals.photoUrl || "None",
