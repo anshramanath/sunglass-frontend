@@ -3,7 +3,7 @@
 import type {
   ApiResponse, BookmarkedItem, CartItem, CartValidationResult, CategoryNode,
   CheckoutUrl, Order, PrescriptionFrame, ProductDetail, ProductListItem, ProductsResponse,
-  SyncedResponse, TBYBPackage, TBYBSubmission, TBYBSubmissionRecord, ValidateCartItem,
+  RxFrameOrderResult, RxFrameSubmission, SyncedResponse, TBYBDepositInfo, TBYBPackage, TBYBSubmission, TBYBSubmissionRecord, ValidateCartItem,
 } from "@/lib/types";
 import { redirect, notFound } from "next/navigation";
 import { getToken, getUser } from "@/lib/auth";
@@ -477,6 +477,75 @@ export async function submitTBYB(submission: TBYBSubmission, successUrl: string,
 
       case 404:
         throw new Error("Package not found");
+
+      case 500:
+        throw new Error("Server error");
+
+      case 503:
+        throw new Error("Service unavailable");
+
+      default:
+        redirect("/try-again");
+    }
+  }
+
+  return json.data;
+}
+
+// Rx frames
+export async function getDeposit(submissionId: string): Promise<TBYBDepositInfo> {
+  const res = await authedFetch("/api/user/deposit", "POST", { brandSlug: BRAND_SLUG, submissionId });
+
+  const json: ApiResponse<TBYBDepositInfo> = await res.json();
+
+  if (!json.success) {
+    switch (res.status) {
+      case 401:
+        redirect("/sign-in");
+
+      case 402:
+        throw new Error("TBYB payment not completed");
+
+      case 404:
+        throw new Error("Submission not found");
+
+      case 500:
+        throw new Error("Server error");
+
+      case 503:
+        throw new Error("Service unavailable");
+
+      default:
+        redirect("/try-again");
+    }
+  }
+
+  return json.data;
+}
+
+export async function submitRxOrder(submission: RxFrameSubmission, successUrl: string, cancelUrl: string): Promise<RxFrameOrderResult> {
+  const res = await authedFetch("/api/user/rx-order", "POST", {
+    brandSlug: BRAND_SLUG,
+    submission,
+    successUrl,
+    cancelUrl,
+  });
+
+  const json: ApiResponse<RxFrameOrderResult, { depositCents: number }> = await res.json();
+
+  if (!json.success) {
+    switch (res.status) {
+      case 401:
+        redirect("/sign-in");
+
+      case 404:
+        throw new Error("Frame not found");
+
+      case 409:
+        throw new Error("A checkout conflict occurred — please try again.");
+
+      case 422:
+        return { data: json.data!, status: res.status };
 
       case 500:
         throw new Error("Server error");
