@@ -173,7 +173,7 @@ export type TBYBSubmissionRecord = {
   status: string; createdAt: string; updatedAt: string;
 };
 
-export type RxFrameOrderResult = { url: string } | { paid: true };
+export type RxFrameOrderResult = { url: string } | { data: { depositCents: number }; status: number };
 
 export type RxFrameSubmission = {
   frameId: string;
