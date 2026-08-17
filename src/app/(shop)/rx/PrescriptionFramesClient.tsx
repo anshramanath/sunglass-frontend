@@ -202,7 +202,7 @@ const INIT: FormVals = {
   visionType: null,
   odSphere: null, odCylinder: null, odAxis: null,
   osSphere: null, osCylinder: null, osAxis: null,
-  pdMode: "single", pd: null, pdLeft: null, pdRight: null,
+  pdMode: "Single", pd: null, pdLeft: null, pdRight: null,
   lensMaterial: null,
   lensColorCategory: null,
   lensColor: null,
@@ -284,7 +284,7 @@ function Step1({ vals, update, openId, setOpenId, sphereOpts, frame }: {
 // ── Step 2: PD ────────────────────────────────────────────────────────────────
 
 function Step2({ vals, update, openId, setOpenId }: { vals: FormVals; update: UpdateFn; openId: string | null; setOpenId: (id: string | null) => void }) {
-  const dual = vals.pdMode === "dual";
+  const dual = vals.pdMode === "Dual";
   
   return (
     <div>
@@ -293,7 +293,7 @@ function Step2({ vals, update, openId, setOpenId }: { vals: FormVals; update: Up
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <label className="text-[13px] text-grey-500 block">PD (Pupillary Distance)</label>
           <label className="flex items-center gap-2 text-[13px] text-grey-600 cursor-pointer select-none">
-            <input type="checkbox" checked={dual} onChange={() => update("pdMode", dual ? "single" : "dual")}
+            <input type="checkbox" checked={dual} onChange={() => update("pdMode", dual ? "Single" : "Dual")}
               className="w-4 h-4 accent-ink" />
             I have 2 numbers for my PD
           </label>
@@ -474,7 +474,7 @@ function Step6({ vals, frame, color }: { vals: FormVals; frame: PrescriptionFram
     );
   }
 
-  const pdRows = vals.pdMode === "dual"
+  const pdRows = vals.pdMode === "Dual"
     ? <>{row("PD — Left", vals.pdLeft)}{row("PD — Right", vals.pdRight)}</>
     : <>{row("PD", vals.pd)}</>;
 
@@ -570,8 +570,8 @@ export default function PrescriptionFramesClient({ frames, email, name }: { fram
       if (key === "odCylinder" && value === "None") next.odAxis = null;
       if (key === "osCylinder" && value === "None") next.osAxis = null;
       if (key === "lensColorCategory") next.lensColor = null;
-      if (key === "pdMode" && value === "single") { next.pdLeft = null; next.pdRight = null; }
-      if (key === "pdMode" && value === "dual") next.pd = null;
+      if (key === "pdMode" && value === "Single") { next.pdLeft = null; next.pdRight = null; }
+      if (key === "pdMode" && value === "Dual") next.pd = null;
       return next;
     });
   }
@@ -689,9 +689,9 @@ export default function PrescriptionFramesClient({ frames, email, name }: { fram
     }
 
     if (step === 2) {
-      if (vals.pdMode === "single" && !vals.pd)    { setError("Please select your PD!"); return; }
-      if (vals.pdMode === "dual" && !vals.pdRight) { setError("Please select your right PD!"); return; }
-      if (vals.pdMode === "dual" && !vals.pdLeft)  { setError("Please select your left PD!"); return; }
+      if (vals.pdMode === "Single" && !vals.pd)    { setError("Please select your PD!"); return; }
+      if (vals.pdMode === "Dual" && !vals.pdRight) { setError("Please select your right PD!"); return; }
+      if (vals.pdMode === "Dual" && !vals.pdLeft)  { setError("Please select your left PD!"); return; }
       saveToLS(step + 1, selectedFrame!.id, pendingColor!.colorSlug, vals);
       setStep(s => s + 1);
       return;
