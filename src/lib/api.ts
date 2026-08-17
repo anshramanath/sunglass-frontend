@@ -204,6 +204,7 @@ export async function getPackages(): Promise<TBYBPackage[]> {
   return json.data;
 }
 
+// Rx Frames
 export async function getPrescriptions(): Promise<PrescriptionFrame[]> {
   const res = await apiFetch("/api/public/prescriptions", { brandSlug: BRAND_SLUG });
 
@@ -492,7 +493,7 @@ export async function submitTBYB(submission: TBYBSubmission, successUrl: string,
   return json.data;
 }
 
-// Rx frames
+// TBYB
 export async function getDeposit(submissionId: string): Promise<TBYBDepositInfo> {
   const res = await authedFetch("/api/user/deposit", "POST", { brandSlug: BRAND_SLUG, submissionId });
 
@@ -523,6 +524,7 @@ export async function getDeposit(submissionId: string): Promise<TBYBDepositInfo>
   return json.data;
 }
 
+// Rx Frames
 export async function submitRxOrder(submission: RxFrameSubmission, successUrl: string, cancelUrl: string): Promise<RxFrameOrderResult> {
   const res = await authedFetch("/api/user/rx-order", "POST", {
     brandSlug: BRAND_SLUG,
