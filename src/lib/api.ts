@@ -3,7 +3,7 @@
 import type {
   ApiResponse, BookmarkedItem, CartItem, CartValidationResult, CategoryNode,
   CheckoutUrl, Order, PrescriptionFrame, ProductDetail, ProductListItem, ProductsResponse,
-  RxFrameOrderResult, RxFrameSubmission, SyncedResponse, TBYBDepositInfo, TBYBPackage, TBYBSubmission, TBYBSubmissionRecord, ValidateCartItem,
+  RxFrameOrderResult, RxFrameSubmission, RxOrder, SyncedResponse, TBYBDepositInfo, TBYBPackage, TBYBSubmission, TBYBSubmissionRecord, ValidateCartItem,
 } from "@/lib/types";
 import { redirect, notFound } from "next/navigation";
 import { getToken, getUser } from "@/lib/auth";
@@ -548,6 +548,30 @@ export async function submitRxOrder(submission: RxFrameSubmission, successUrl: s
 
       case 422:
         return { data: json.data!, status: res.status };
+
+      case 500:
+        throw new Error("Server error");
+
+      case 503:
+        throw new Error("Service unavailable");
+
+      default:
+        redirect("/try-again");
+    }
+  }
+
+  return json.data;
+}
+
+export async function getRxOrders(): Promise<RxOrder[]> {
+  const res = await authedFetch("/api/user/rx-orders", "POST", { brandSlug: BRAND_SLUG });
+
+  const json: ApiResponse<RxOrder[]> = await res.json();
+
+  if (!json.success) {
+    switch (res.status) {
+      case 401:
+        redirect("/sign-in");
 
       case 500:
         throw new Error("Server error");

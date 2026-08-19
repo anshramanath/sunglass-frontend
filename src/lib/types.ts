@@ -194,6 +194,24 @@ export type TBYBDepositInfo = {
   depositCents: number;
 };
 
+export type RxOrder = {
+  id: string;
+  status: string;
+  frameName: string; frameImageSrc: string; frameColor: string;
+  totalPriceCents: number; depositUsedCents: number | null; stripeChargeCents: number; refundedCents: number | null;
+  carrier: string | null; trackingNumber: string | null;
+  visionType: string;
+  odSphere: string; odCylinder: string; odAxis: string;
+  osSphere: string; osCylinder: string; osAxis: string;
+  pdMode: string; pd: string; pdLeft: string; pdRight: string;
+  lensMaterial: string; lensColorCategory: string; lensColor: string;
+  arCoating: string; scratchCoating: string; mirrorCoating: string;
+  comments: string; prescriptionUrl: string; headshotUrl: string;
+  contactName: string; contactEmail: string; contactPhone: string;
+  shippingAddress: ShippingAddress | null;
+  createdAt: string;
+};
+
 export type TBYBSubmission = {
   packageId: string;
   odSphere: string; odCylinder: string; odAxis: string;
