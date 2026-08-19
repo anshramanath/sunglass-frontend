@@ -1,11 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { requireUser } from "@/lib/auth";
-import { getOrders, getSubmissions } from "@/lib/api";
+import { getOrders, getSubmissions, getRxOrders } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { formatPrice } from "@/lib/utils";
 import SignOutButton from "./SignOutButton";
 import TBYBSubmissions from "./TBYBSubmissions";
+import RxOrders from "./RxOrders";
 
 const STATUS: Record<string, { label: string; color: string }> = {
   processing: { label: "Processing", color: "#737373"            },
@@ -16,7 +17,7 @@ const STATUS: Record<string, { label: string; color: string }> = {
 
 export default async function AccountPage() {
   const user = await requireUser();
-  const [orders, submissions] = await Promise.all([getOrders(), getSubmissions()]);
+  const [orders, submissions, rxOrders] = await Promise.all([getOrders(), getSubmissions(), getRxOrders()]);
   const brand = getBrand();
   const email = user.email ?? "";
   const displayName = user.user_metadata?.name ?? "";
@@ -147,6 +148,11 @@ export default async function AccountPage() {
         <section className="mt-10 border-t border-grey-200 pt-10">
           <h2 className="text-[21px] font-normal">TBYB History</h2>
           <TBYBSubmissions submissions={submissions.filter(s => s.status !== "Unpaid")} />
+        </section>
+
+        <section className="mt-10 border-t border-grey-200 pt-10">
+          <h2 className="text-[21px] font-normal">Rx Order History</h2>
+          <RxOrders orders={rxOrders.filter(o => o.status !== "Unpaid")} />
         </section>
 
       </main>
