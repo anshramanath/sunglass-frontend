@@ -23,7 +23,6 @@ export default function TBYBSuccessPage() {
         const data = JSON.parse(rxStored);
         data.frameId = null;
         data.frameColor = null;
-        if (data.vals) { data.vals.tbybId = ""; data.vals.depositCents = null; }
         localStorage.setItem(`${brand.slug}:rx`, JSON.stringify(data));
       }
     } catch {}
