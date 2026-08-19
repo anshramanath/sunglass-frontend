@@ -812,7 +812,7 @@ export default function PrescriptionFramesClient({ frames, email, name }: { fram
                         disabled={busy}
                         onClick={() => {
                           setSelectedFrame(null);
-                          if (isChosen) { setPendingColor(null); return; }
+                          if (isChosen) { setPendingColor(null); saveToLS(step, null, null, vals); return; }
                           setPendingColor({ frameId: frame.id, colorSlug: c.slug });
                         }}
                         onMouseEnter={() => setHoveredColor({ frameId: frame.id, colorSlug: c.slug })}
