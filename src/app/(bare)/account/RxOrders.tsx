@@ -48,7 +48,7 @@ function RxOrderCard({ o }: { o: RxOrder }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[15px]">{o.frameName}</p>
-            <p className="text-[13px] text-grey-500 mt-0.5">{o.frameColor} · {formatPrice(o.totalPriceCents)}</p>
+            <p className="text-[13px] text-grey-500 mt-0.5">{o.frameColor} · {formatPrice(o.framePriceCents)}</p>
             {o.refundedCents !== null && <p className="text-[13px] mt-1 text-brand">Refunded {formatPrice(o.refundedCents)}</p>}
           </div>
         </div>

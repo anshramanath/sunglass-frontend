@@ -198,7 +198,7 @@ export type RxOrder = {
   id: string;
   status: string;
   frameName: string; frameImageSrc: string; frameColor: string;
-  totalPriceCents: number; depositUsedCents: number | null; stripeChargeCents: number; refundedCents: number | null;
+  framePriceCents: number; totalPriceCents: number; depositUsedCents: number | null; stripeChargeCents: number; refundedCents: number | null;
   carrier: string | null; trackingNumber: string | null;
   visionType: string;
   odSphere: string; odCylinder: string; odAxis: string;
