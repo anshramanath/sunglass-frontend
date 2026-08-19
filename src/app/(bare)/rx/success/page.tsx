@@ -9,11 +9,23 @@ const brand = getBrand();
 export default function TBYBSuccessPage() {
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(`${brand.slug}:tbyb`);
-      if (!stored) return;
-      const data = JSON.parse(stored);
-      data.packageId = null;
-      localStorage.setItem(`${brand.slug}:tbyb`, JSON.stringify(data));
+      const tbybStored = localStorage.getItem(`${brand.slug}:tbyb`);
+      if (tbybStored) {
+        const data = JSON.parse(tbybStored);
+        data.packageId = null;
+        localStorage.setItem(`${brand.slug}:tbyb`, JSON.stringify(data));
+      }
+    } catch {}
+
+    try {
+      const rxStored = localStorage.getItem(`${brand.slug}:rx`);
+      if (rxStored) {
+        const data = JSON.parse(rxStored);
+        data.frameId = null;
+        data.frameColor = null;
+        if (data.vals) { data.vals.tbybId = ""; data.vals.depositCents = null; }
+        localStorage.setItem(`${brand.slug}:rx`, JSON.stringify(data));
+      }
     } catch {}
   }, []);
 
@@ -28,10 +40,10 @@ export default function TBYBSuccessPage() {
             </svg>
           </div>
 
-          <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mt-7">Submission Confirmed</p>
-          <h1 className="text-[34px] lg:text-[44px] font-normal tracking-[-0.01em] mt-3">Thank you for your submission</h1>
+          <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mt-7">Order Confirmed</p>
+          <h1 className="text-[34px] lg:text-[44px] font-normal tracking-[-0.01em] mt-3">Thank you for your order</h1>
           <p className="text-[15px] text-grey-600 leading-relaxed mt-4">
-            Your deposit was successful. Keep an eye on your submission in your account for updates.
+            Your payment was successful. Keep an eye on your account for updates.
           </p>
 
           <Link href="/account" className="inline-block bg-ink text-paper text-[15px] py-4 px-9 mt-9 hover:bg-grey-800 transition-colors duration-200">
