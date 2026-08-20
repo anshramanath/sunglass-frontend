@@ -171,16 +171,13 @@ export default function CheckoutPage() {
 
             <dl className="mt-6 space-y-2.5 text-[15px]">
               <div className="flex justify-between"><dt className="text-grey-600">Subtotal</dt><dd>{formatPrice(totalCents)}</dd></div>
-              <div className="flex justify-between"><dt className="text-grey-600">Shipping</dt><dd>Included in price</dd></div>
-              <div className="flex justify-between"><dt className="text-grey-600">Tax</dt><dd className="text-grey-500">Calculated at payment</dd></div>
+              <div className="flex justify-between"><dt className="text-grey-600">Shipping &amp; Tax</dt><dd>Included in price</dd></div>
             </dl>
 
             <div className="flex justify-between items-baseline mt-5 pt-5 border-t border-grey-200">
               <span className="text-[15px]">Order Total</span>
               <span className="text-[21px]">{formatPrice(totalCents)}</span>
             </div>
-            <p className="text-[13px] text-grey-500 mt-2.5">Applicable tax is calculated and shown on the next step.</p>
-
             {checkoutError && <p className="text-[13px] text-brand mt-5 text-center">{checkoutError}</p>}
             <button
               type="button"

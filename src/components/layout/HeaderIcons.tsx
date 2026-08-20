@@ -93,7 +93,7 @@ function BagPanelContent() {
               <span>Subtotal</span>
               <span>{formatPrice(totalCents)}</span>
             </div>
-            <p className="text-[13px] text-grey-500 mt-1.5">Shipping &amp; taxes calculated at checkout.</p>
+            <p className="text-[13px] text-grey-500 mt-1.5">Shipping &amp; tax included in the price.</p>
             <SheetClose asChild>
               <Link href="/checkout" className="block w-full bg-ink text-paper text-[15px] text-center py-4 mt-5 hover:bg-grey-800 transition-colors duration-200">
                 Checkout
