@@ -714,6 +714,7 @@ export default function PrescriptionFramesClient({ frames, email, name }: { fram
     if (step === 5) {
       if (!vals.name.trim())  { setError("Name is required!"); return; }
       if (!vals.email.trim()) { setError("Email is required!"); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vals.email.trim())) { setError("Please enter a valid email!"); return; }
       saveToLS(step + 1, selectedFrame!.id, pendingColor!.colorSlug, vals);
       setStep(s => s + 1);
       return;

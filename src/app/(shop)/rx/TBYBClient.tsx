@@ -443,6 +443,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
     if (step === 3) {
       if (!vals.name.trim()) { setError("Name is required!"); return; }
       if (!vals.email.trim()) { setError("Email is required!"); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vals.email.trim())) { setError("Please enter a valid email!"); return; }
       saveToLS(step + 1, selectedPkg!.id);
       setStep(s => s + 1);
       return;
