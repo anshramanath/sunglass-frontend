@@ -41,7 +41,7 @@ export default async function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 bg-paper border-b border-grey-200">
-      <div className="mx-auto max-w-[1680px] px-5 lg:px-10">
+      <div className="px-5 lg:px-10">
         <div className="h-16 flex items-center gap-6 xl:gap-9">
           <Link href="/" className="shrink-0" aria-label={`${brand.name} home`}>
             <Image src={brand.logo} alt={brand.name} width={120} height={28} className="h-7" style={{ width: "auto" }} />

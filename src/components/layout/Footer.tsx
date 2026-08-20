@@ -7,7 +7,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-grey-50 border-t border-grey-200">
-      <div className="mx-auto max-w-[1680px] px-5 lg:px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="px-5 lg:px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <Link href="/" aria-label={`${brand.name} home`}>
           <Image src={brand.logo} alt={brand.name} width={100} height={24} className="h-6" style={{ width: "auto" }} />
         </Link>
