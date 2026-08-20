@@ -7,14 +7,14 @@ export default function FaqPage() {
       <div className="mx-auto max-w-[640px]">
         <h1 className="text-[34px] lg:text-[44px] font-normal tracking-[-0.01em] text-center">FAQ</h1>
 
-        {/* Orders */}
+        {/* Purchases */}
         <div className="mt-12">
-          <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mb-2">Orders</p>
+          <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mb-2">Purchases</p>
           <div className="border-t border-grey-200">
-            <FaqItem question="Where can I see my orders?">
-              <p className="text-[15px] text-grey-600 leading-relaxed">Sign in and go to your account page — all orders are listed there with status and items.</p>
+            <FaqItem question="Where can I see my purchases?">
+              <p className="text-[15px] text-grey-600 leading-relaxed">Sign in and go to your account page — your order history, Try Before You Buy submissions, and Rx Frame orders are all listed there with statuses and details.</p>
             </FaqItem>
-            <FaqItem question="What do order statuses mean?">
+            <FaqItem question="What do these order statuses mean?">
               <dl className="text-[15px] space-y-3">
                 <div className="flex gap-4">
                   <dt className="w-40 shrink-0" style={{ color: "#737373" }}>Processing</dt>
@@ -30,6 +30,76 @@ export default function FaqPage() {
                 </div>
               </dl>
             </FaqItem>
+            <FaqItem question="What do these TBYB statuses mean?">
+              <dl className="text-[15px] space-y-3">
+                <div className="flex gap-4">
+                  <dt className="w-40 shrink-0" style={{ color: "#737373" }}>Curating</dt>
+                  <dd className="text-grey-600 leading-relaxed">We&apos;re selecting frames based on your preferences.</dd>
+                </div>
+                <div className="flex gap-4">
+                  <dt className="w-40 shrink-0" style={{ color: "#737373" }}>Emailed</dt>
+                  <dd className="text-grey-600 leading-relaxed">Check your inbox — we need a reply to move forward.</dd>
+                </div>
+                <div className="flex gap-4">
+                  <dt className="w-40 shrink-0 text-brand">Shipped</dt>
+                  <dd className="text-grey-600 leading-relaxed">Your frames are on their way.</dd>
+                </div>
+                <div className="flex gap-4">
+                  <dt className="w-40 shrink-0" style={{ color: "#737373" }}>Received</dt>
+                  <dd className="text-grey-600 leading-relaxed">We&apos;ve received the frames back from you.</dd>
+                </div>
+                <div className="flex gap-4">
+                  <dt className="w-40 shrink-0 text-ink">Refunded</dt>
+                  <dd className="text-grey-600 leading-relaxed">Your deposit has been refunded.</dd>
+                </div>
+              </dl>
+            </FaqItem>
+            <FaqItem question="What do these Rx Frame statuses mean?">
+              <dl className="text-[15px] space-y-3">
+                <div className="flex gap-4">
+                  <dt className="w-40 shrink-0" style={{ color: "#737373" }}>Processing</dt>
+                  <dd className="text-grey-600 leading-relaxed">We&apos;ve received your order and it&apos;s being prepared.</dd>
+                </div>
+                <div className="flex gap-4">
+                  <dt className="w-40 shrink-0" style={{ color: "#737373" }}>Emailed</dt>
+                  <dd className="text-grey-600 leading-relaxed">Check your inbox — we need a reply to move forward.</dd>
+                </div>
+                <div className="flex gap-4">
+                  <dt className="w-40 shrink-0 text-brand">Shipped</dt>
+                  <dd className="text-grey-600 leading-relaxed">Your frame is on its way.</dd>
+                </div>
+                <div className="flex gap-4">
+                  <dt className="w-40 shrink-0 text-ink">Refunded</dt>
+                  <dd className="text-grey-600 leading-relaxed">Your order has been refunded.</dd>
+                </div>
+              </dl>
+            </FaqItem>
+          </div>
+        </div>
+
+        {/* Try Before You Buy */}
+        <div className="mt-10">
+          <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mb-2">Try Before You Buy</p>
+          <div className="border-t border-grey-200">
+            <FaqItem question="What is Try Before You Buy?">
+              <p className="text-[15px] text-grey-600 leading-relaxed"><Link href="/rx" className="text-brand underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Try Before You Buy (TBYB)</Link> is a fit trial program. We curate frames based on your preferences and what we think will fit based on the questions you answer, then ship them to you to try on at home. Once you&apos;ve picked one, you send them all back. If you want to move forward with one, you then place an Rx Frame order and we apply prescription lenses to it.</p>
+            </FaqItem>
+            <FaqItem question="How does the deposit work for TBYB?">
+              <p className="text-[15px] text-grey-600 leading-relaxed">You pay a deposit upfront to start the process, which includes a non-refundable $30 service fee. The $30 is deducted either way — the remaining balance can be applied toward your Rx Frame order or refunded once we receive the frames back.</p>
+            </FaqItem>
+          </div>
+        </div>
+
+        {/* Rx Frames */}
+        <div className="mt-10">
+          <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mb-2">Rx Frames</p>
+          <div className="border-t border-grey-200">
+            <FaqItem question="What are Rx Frames?">
+              <p className="text-[15px] text-grey-600 leading-relaxed"><Link href="/rx?tab=frames" className="text-brand underline underline-offset-4 hover:opacity-60 transition-opacity duration-200">Rx Frames</Link> are prescription glasses — a frame fitted with lenses built to your exact prescription, measurements, and lens preferences.</p>
+            </FaqItem>
+            <FaqItem question="Can I apply my TBYB deposit to an Rx Frame order?">
+              <p className="text-[15px] text-grey-600 leading-relaxed">Yes. At the start of the Rx Frame order form, enter your TBYB order number and we&apos;ll look up your remaining deposit and apply it as a credit toward your total at checkout.</p>
+            </FaqItem>
           </div>
         </div>
 
@@ -38,7 +108,7 @@ export default function FaqPage() {
           <p className="text-[13px] uppercase tracking-wider text-grey-400 font-medium mb-2">Cart &amp; Checkout</p>
           <div className="border-t border-grey-200">
             <FaqItem question="Do I need an account to check out?">
-              <p className="text-[15px] text-grey-600 leading-relaxed">Yes — you need an account to place an order. You can browse and add items to your cart without signing in, but you&apos;ll be asked to sign in or create an account before completing your purchase.</p>
+              <p className="text-[15px] text-grey-600 leading-relaxed">You need an account to complete a purchase — but you can browse, add to cart, and fill out TBYB and Rx Frame forms without one. You&apos;ll be asked to sign in or create an account when you go to checkout.</p>
             </FaqItem>
             <FaqItem question="What happens if I sign in on another device?">
               <p className="text-[15px] text-grey-600 leading-relaxed">Your cart and saved items sync to your account, so they&apos;ll be there when you sign in anywhere.</p>

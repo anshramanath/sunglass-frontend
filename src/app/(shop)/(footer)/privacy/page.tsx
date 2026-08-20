@@ -9,7 +9,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-[21px] font-normal">What we collect</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">When you create an account: your name and email. When you place an order: your shipping address, purchased products, order history, and order status, collected by Stripe at checkout. When you&apos;re signed in: your cart and saved items are synced to our database.</p>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">When you create an account: your name and email. When you place an order: your shipping address, phone number, and purchased products, collected by Stripe at checkout. When you&apos;re signed in: your cart and saved items are synced to our database. For Try Before You Buy and Rx Frame orders, we also collect your prescription details, measurements, and a headshot photo to fit your lenses correctly.</p>
           </section>
 
           <section className="border-t border-grey-200 pt-9">
@@ -23,8 +23,8 @@ export default function PrivacyPage() {
           </section>
 
           <section className="border-t border-grey-200 pt-9">
-            <h2 className="text-[21px] font-normal">Cookies &amp; local storage</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">We use one session cookie to keep you signed in (managed by Supabase) and localStorage to save your cart and bookmarks if you&apos;re not signed in.</p>
+            <h2 className="text-[21px] font-normal">Cookies &amp; Local Storage</h2>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">We use one session cookie to keep you signed in (managed by Supabase) and localStorage to save your cart, bookmarks, and any in-progress Try Before You Buy or Rx Frame order details. When you&apos;re signed in, your cart and bookmarks are also synced to our database.</p>
           </section>
 
           <section className="border-t border-grey-200 pt-9">
@@ -35,7 +35,7 @@ export default function PrivacyPage() {
           <section className="border-t border-grey-200 pt-9">
             <h2 className="text-[21px] font-normal">Updates</h2>
             <p className="text-[15px] text-grey-600 leading-relaxed mt-3">We may update this policy. The latest version is always at this page.</p>
-            <p className="text-[13px] text-grey-400 mt-2">Last updated July 14, 2026</p>
+            <p className="text-[13px] text-grey-400 mt-2">Last updated August 20, 2026</p>
           </section>
 
         </div>

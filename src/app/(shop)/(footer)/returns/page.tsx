@@ -19,7 +19,7 @@ export default function ReturnsPage() {
 
           <section className="border-t border-grey-200 pt-9">
             <h2 className="text-[21px] font-normal">Refund amount</h2>
-            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">If we made a mistake on your order, you&apos;ll get a full refund. If you&apos;re returning for any other reason, we&apos;ll refund your order price minus the shipping cost.</p>
+            <p className="text-[15px] text-grey-600 leading-relaxed mt-3">If we made a mistake on your order, you&apos;ll get a full refund. If you&apos;re returning for any other reason, we&apos;ll issue a partial refund covering the item price.</p>
           </section>
 
           <section className="border-t border-grey-200 pt-9">
