@@ -117,3 +117,25 @@ export async function signOut() {
 
   await supabase.auth.signOut();
 }
+
+export async function deleteAccount() {
+  const user = await getUser();
+  if (!user) redirect("/sign-in");
+
+  const token = await getToken();
+
+  let res: Response;
+  try {
+    res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/user/delete`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch {
+    return "Network error";
+  }
+
+  if (!res.ok) return "Failed to delete account";
+
+  await signOut();
+  redirect("/");
+}

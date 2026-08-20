@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/utils";
 import SignOutButton from "./SignOutButton";
 import TBYBSubmissions from "./TBYBSubmissions";
 import RxOrders from "./RxOrders";
+import DeleteAccountButton from "./DeleteAccountButton";
 
 const STATUS: Record<string, { label: string; color: string }> = {
   processing: { label: "Processing", color: "#737373"            },
@@ -153,6 +154,12 @@ export default async function AccountPage() {
         <section className="mt-10 border-t border-grey-200 pt-10">
           <h2 className="text-[21px] font-normal">Rx Order History</h2>
           <RxOrders orders={rxOrders.filter(o => o.status !== "Unpaid")} />
+        </section>
+
+        <section className="mt-10 border-t border-grey-200 pt-10">
+          <h2 className="text-[21px] font-normal">Delete Account</h2>
+          <p className="text-[13px] text-grey-500 mt-3 max-w-md leading-relaxed">Permanently delete your account and sign-in credentials. Past orders are retained for our records but will no longer be linked to your account.</p>
+          <DeleteAccountButton />
         </section>
 
       </main>

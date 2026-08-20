@@ -527,7 +527,27 @@
       </div>
     </section>
 
+    <!-- account deletion -->
+    <section class="mt-10 border-t border-grey-200 pt-10">
+      <h2 class="text-xl font-normal">Delete Account</h2>
+      <p class="text-sm text-grey-500 mt-2 leading-relaxed max-w-md">This permanently deletes your account and sign-in credentials. Past orders are retained for our records but no longer linked to your account.</p>
+      <button type="button" onclick="document.getElementById('deleteModal').classList.remove('hidden')" class="mt-5 text-sm underline underline-offset-4 hover:opacity-70 transition-opacity duration-200 text-brand">Delete Account</button>
+    </section>
+
   </main>
+
+  <!-- delete confirmation modal -->
+  <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-5">
+    <div onclick="document.getElementById('deleteModal').classList.add('hidden')" class="absolute inset-0 bg-ink/40"></div>
+    <div class="relative bg-paper w-full max-w-sm p-7">
+      <h3 class="text-xl font-normal">Delete your account?</h3>
+      <p class="text-sm text-grey-500 mt-3 leading-relaxed">This permanently deletes your account and sign-in credentials. Past orders are retained for our records but no longer linked to your account. This can't be undone.</p>
+      <div class="mt-6 flex items-center gap-3">
+        <button type="button" onclick="document.getElementById('deleteModal').classList.add('hidden')" class="flex-1 text-sm border border-grey-300 py-3 hover:bg-grey-50 transition-colors duration-200">Cancel</button>
+        <button type="button" class="flex-1 text-sm text-paper bg-brand py-3 hover:opacity-80 transition-opacity duration-200">Delete Account</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     function toggleSubmission(btn) {
