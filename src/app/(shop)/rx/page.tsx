@@ -60,7 +60,7 @@ async function FramesLoader() {
 
 type Props = { searchParams: Promise<{ tab?: string }> };
 
-const TBYB_DESC = "Pick a package and pay a deposit — we'll handpick frames based on your preferences and send them to your door. Try them at home, then return within 5 days and apply your deposit toward your order, or get it back minus a $30 service fee.";
+const TBYB_DESC = "Pay a deposit and we'll curate frames that fit you and match your preferences. Try them at home, send them all back, and place an Rx Frame order for the one you want. The $30 service fee is always deducted — the rest applies toward your frame or is refunded.";
 const FRAMES_DESC = "Already know what you want? Pick a frame, choose your color, and we'll build your lenses to your exact prescription.";
 
 export default async function RxPage({ searchParams }: Props) {
