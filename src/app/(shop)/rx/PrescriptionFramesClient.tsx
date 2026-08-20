@@ -520,7 +520,7 @@ export default function PrescriptionFramesClient({ frames, email, name }: { fram
   const [hoveredColor, setHoveredColor] = useState<{ frameId: string; colorSlug: string } | null>(null);
   const [step, setStep] = useState<number>(0);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [vals, setVals] = useState<FormVals>({ ...INIT, email, name });
+  const [vals, setVals] = useState<FormVals>({ ...INIT });
   const [rxUploading, setRxUploading] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [depositFetching, setDepositFetching] = useState(false);
@@ -532,11 +532,11 @@ export default function PrescriptionFramesClient({ frames, email, name }: { fram
   useEffect(() => {
     try {
       const stored = localStorage.getItem(`${brandSlug}:rx`);
-      if (!stored) return;
+      if (!stored) { setVals(prev => ({ ...prev, name: name, email: email })); return; }
 
       const { frameId, frameColor, step: savedStep, vals: savedVals } = JSON.parse(stored);
 
-      const mergedVals: FormVals = { ...vals, ...(savedVals ?? {}) };
+      const mergedVals: FormVals = { ...vals, ...(savedVals ?? {}), name: savedVals?.name || name, email: savedVals?.email || email };
 
       if (typeof savedStep === "number") setStep(savedStep);
       setVals(mergedVals);
@@ -557,9 +557,7 @@ export default function PrescriptionFramesClient({ frames, email, name }: { fram
 
   function saveToLS(toStep: number, frameId: string | null, frameColor: string | null, values: FormVals) {
     try {
-      const { name: _name, email: _email, ...serializableVals } = values;
-
-      localStorage.setItem(`${brandSlug}:rx`, JSON.stringify({ frameId, frameColor, step: toStep, vals: serializableVals }));
+      localStorage.setItem(`${brandSlug}:rx`, JSON.stringify({ frameId, frameColor, step: toStep, vals: values }));
     } catch {}
   }
 
@@ -613,8 +611,6 @@ export default function PrescriptionFramesClient({ frames, email, name }: { fram
   }, [selectedFrame]);
 
   function selectFrame(frame: PrescriptionFrame) {
-    if (!email || !name) { router.push("/sign-in"); return; }
-
     if (selectedFrame?.id === frame.id) {
       setSelectedFrame(null);
       saveToLS(step, null, null, vals);

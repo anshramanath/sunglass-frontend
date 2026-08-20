@@ -329,12 +329,12 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
   const [selectedPkg, setSelectedPkg] = useState<TBYBPackage | null>(null);
   const [step, setStep] = useState<number>(1);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [vals, setVals] = useState<FormVals>({ ...INIT, email, name });
-  
+  const [vals, setVals] = useState<FormVals>({ ...INIT });
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem(`${brandSlug}:tbyb`);
-      if (!stored) return;
+      if (!stored) { setVals(prev => ({ ...prev, name: name, email: email })); return; }
 
       const { packageId, step: savedStep, vals: savedVals } = JSON.parse(stored);
 
@@ -343,18 +343,16 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
 
       if (savedStep) setStep(savedStep);
 
-      if (savedVals) setVals(prev => ({ ...prev, ...savedVals }));
+      setVals(prev => ({ ...prev, ...(savedVals ?? {}), name: savedVals?.name || name, email: savedVals?.email || email }));
     } catch {}
   }, []);
 
   function saveToLS(toStep: number, pkgId: string | null) {
     try {
-      const { name: _name, email: _email, ...serializableVals } = vals;
-
       localStorage.setItem(`${brandSlug}:tbyb`, JSON.stringify({
         packageId: pkgId,
         step: toStep,
-        vals: serializableVals,
+        vals,
       }));
     } catch {}
   }
@@ -409,7 +407,6 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
   }, [selectedPkg]);
 
   function selectPkg(pkg: TBYBPackage) {
-    if (!email || !name) { router.push("/sign-in"); return; }
     if (selectedPkg?.id === pkg.id) { setSelectedPkg(null); saveToLS(step, null); return; }
     setSelectedPkg(pkg);
     saveToLS(step, pkg.id);
