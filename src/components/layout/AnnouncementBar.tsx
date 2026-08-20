@@ -45,9 +45,10 @@ export default function AnnouncementBar() {
           <div className="flex items-center h-9 w-max announcement-marquee">
             <Sequence messages={announcements} />
             <Sequence messages={announcements} />
+            <Sequence messages={announcements} />
+            <Sequence messages={announcements} />
           </div>
         </div>
-
       </div>
     </div>
   );
