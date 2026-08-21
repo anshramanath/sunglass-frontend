@@ -120,7 +120,7 @@ export default function ProductDetail({ product, initialSelections }: { product:
               return (
                 <div key={attrName}>
                   <p className="text-[15px] mb-3">
-                    {attrName}
+                    {attrName.charAt(0).toUpperCase() + attrName.slice(1)}
                     {attrSelected && (
                       <span className="text-grey-600 ml-2">
                         — {options.find((o) => o.slug === attrSelected)!.option}
