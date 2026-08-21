@@ -213,7 +213,7 @@ function Step3({ vals, update, rxUploading, photoUploading, onRxFile, onPhotoFil
           <label className="text-[13px] text-grey-500 mb-1.5 block">Comments / Special Requests (Optional)</label>
           <textarea rows={4} value={vals.comments} onChange={e => update("comments", e.target.value)}
             placeholder="Anything else we should know?"
-            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 py-2.5 text-[15px] outline-none placeholder-grey-400 resize-none" />
+            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3 py-2.5 text-base outline-none placeholder-grey-400 resize-none" />
         </div>
         <div>
           <label className="text-[13px] text-grey-500 mb-1.5 block">Upload Prescription (Optional)</label>
@@ -231,19 +231,19 @@ function Step3({ vals, update, rxUploading, photoUploading, onRxFile, onPhotoFil
           <label className="text-[13px] text-grey-500 mb-1.5 block">Name</label>
           <input type="text" value={vals.name} onChange={e => update("name", e.target.value)}
             placeholder="Your name"
-            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-[15px] text-brand outline-none placeholder-grey-400" />
+            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-base text-brand outline-none placeholder-grey-400" />
         </div>
         <div>
           <label className="text-[13px] text-grey-500 mb-1.5 block">Email</label>
           <input type="text" value={vals.email} onChange={e => update("email", e.target.value)}
             placeholder="you@example.com"
-            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-[15px] text-brand outline-none placeholder-grey-400" />
+            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-base text-brand outline-none placeholder-grey-400" />
         </div>
         <div>
           <label className="text-[13px] text-grey-500 mb-1.5 block">Phone (Optional)</label>
           <input type="tel" value={vals.phone} onChange={e => update("phone", e.target.value)}
             placeholder="(555) 555-5555"
-            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-[15px] outline-none placeholder-grey-400" />
+            className="w-full border border-grey-300 focus:border-ink transition-colors duration-200 px-3.5 h-11 text-base outline-none placeholder-grey-400" />
         </div>
       </div>
     </div>
