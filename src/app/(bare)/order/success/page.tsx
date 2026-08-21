@@ -12,7 +12,7 @@ export default function OrderSuccessPage() {
   useEffect(() => {
     if (seconds <= 0) {
       clear();
-      router.push("/");
+      router.push("/account");
       return;
     }
     
