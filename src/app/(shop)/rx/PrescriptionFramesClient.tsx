@@ -611,6 +611,7 @@ export default function PrescriptionFramesClient({ frames, email, name }: { fram
   }, [selectedFrame]);
 
   function selectFrame(frame: PrescriptionFrame) {
+    if (!email || !name) { router.push("/sign-in"); return; }
     if (selectedFrame?.id === frame.id) {
       setSelectedFrame(null);
       saveToLS(step, null, null, vals);

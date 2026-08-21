@@ -407,6 +407,7 @@ export default function TBYBClient({ packages, email, name }: { packages: TBYBPa
   }, [selectedPkg]);
 
   function selectPkg(pkg: TBYBPackage) {
+    if (!email || !name) { router.push("/sign-in"); return; }
     if (selectedPkg?.id === pkg.id) { setSelectedPkg(null); saveToLS(step, null); return; }
     setSelectedPkg(pkg);
     saveToLS(step, pkg.id);
