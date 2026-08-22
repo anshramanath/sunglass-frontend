@@ -71,7 +71,7 @@ export async function signUp(name: string, email: string, password: string): Pro
     email,
     password,
     options: {
-      data: { name },
+      data: { name, brand: getBrand().name },
       emailRedirectTo: `${getBrand().url}/sign-in?email=${encodeURIComponent(email)}`,
     },
   });
