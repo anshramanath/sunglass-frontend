@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 
 export default function SizingAccordion({ images }: { images: { src: string; name: string }[] }) {
   const [open, setOpen] = useState(false);
@@ -30,7 +29,7 @@ export default function SizingAccordion({ images }: { images: { src: string; nam
             <div className="pb-6 space-y-3">
               {images.map((img, i) => (
                 <div key={i} className="bg-grey-50 p-5">
-                  <Image src={img.src} alt={img.name} width={600} height={400} className="w-full object-contain" />
+                  <img src={img.src} alt={img.name} loading="lazy" className="w-full object-contain" />
                 </div>
               ))}
             </div>

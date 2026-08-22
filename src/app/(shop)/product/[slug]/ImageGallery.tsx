@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 
 type ProductImage = { src: string; name: string };
 
@@ -21,12 +20,11 @@ export default function ImageGallery({ images }: { images: ProductImage[] }) {
             }`}
           >
             <div className="absolute inset-0 bg-grey-100 overflow-hidden flex items-center justify-center p-1.5">
-              <Image
+              <img
                 src={img.src}
                 alt={img.name}
-                fill
-                className="object-contain mix-blend-multiply"
-                sizes="76px"
+                loading="lazy"
+                className="w-full h-full object-contain mix-blend-multiply"
               />
             </div>
           </button>
@@ -35,13 +33,10 @@ export default function ImageGallery({ images }: { images: ProductImage[] }) {
 
       {/* Main image */}
       <div className="relative bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-14 sm:p-24">
-        <Image
+        <img
           src={images[selected].src}
           alt={images[selected].name}
-          fill
-          className="object-contain mix-blend-multiply"
-          priority
-          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="w-full h-full object-contain mix-blend-multiply"
         />
       </div>
     </div>

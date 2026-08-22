@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useCartItems, useCartCount, useCartTotal, useRemoveFromCart, useIncrementQty, useDecrementQty } from "@/components/providers/CartProvider";
 import { useBookmarkItems, useBookmarkCount, useToggleBookmark } from "@/components/providers/BookmarkProvider";
 import { useLoggedIn } from "@/components/providers/AuthProvider";
@@ -63,7 +62,7 @@ function BagPanelContent() {
                 <div key={`${item.productSlug}:${item.sku}`} className="flex items-start gap-5 py-7 first:pt-0">
                   <SheetClose asChild>
                     <Link href={href} className="shrink-0 w-[90px] aspect-[4/5] bg-grey-100 flex items-center justify-center p-2">
-                      <Image src={item.imageSrc} alt={item.name} width={90} height={112} className="w-full h-full object-contain mix-blend-multiply" />
+                      <img src={item.imageSrc} alt={item.name} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
                     </Link>
                   </SheetClose>
                   <div className="flex-1 min-w-0 flex flex-col">
@@ -131,7 +130,7 @@ function SavedPanelContent() {
               <div key={item.productSlug} className="flex items-start gap-5 py-7 first:pt-0">
                 <SheetClose asChild>
                   <Link href={`/product/${item.productSlug}`} className="shrink-0 w-[90px] aspect-[4/5] bg-grey-100 flex items-center justify-center p-2">
-                    <Image src={item.imageSrc} alt={item.name} width={90} height={112} className="w-full h-full object-contain mix-blend-multiply" />
+                    <img src={item.imageSrc} alt={item.name} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
                   </Link>
                 </SheetClose>
                 <div className="flex-1 min-w-0 flex flex-col">
@@ -211,7 +210,7 @@ function SearchPanelContent({ filler }: { filler: ProductListItem[] }) {
               <SheetClose key={p.id} asChild>
                 <Link href={`/product/${p.slug}`} className="block">
                   <div className="relative bg-grey-100 aspect-[4/5] flex items-center justify-center p-4">
-                    <Image src={p.imageSrc} alt={p.name} width={200} height={200} className="w-full h-full object-contain mix-blend-multiply" />
+                    <img src={p.imageSrc} alt={p.name} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
                     {p.sale && (
                       <span className="absolute top-2 right-2 text-paper text-[10px] uppercase tracking-wide font-medium px-1.5 py-0.5" style={{ backgroundColor: "var(--color-brand)" }}>Sale</span>
                     )}

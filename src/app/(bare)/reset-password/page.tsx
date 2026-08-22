@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getBrand } from "@/lib/brand";
 import ResetForm from "./ResetForm";
 
@@ -16,15 +15,13 @@ export default async function ResetPasswordPage({
 
       {/* ── Left — product image ── */}
       <div className="relative hidden lg:flex items-center justify-center bg-grey-50 overflow-hidden p-20">
-        <Image
+        <img
           src={brand.hero}
           alt={`${brand.name} eyewear`}
-          width={600}
-          height={600}
           className="w-full h-full object-contain mix-blend-multiply"
         />
         <Link href="/" className="absolute top-9 left-10" aria-label={`${brand.name} home`}>
-          <Image src={brand.logo} alt={brand.name} width={120} height={36} className="h-9 object-contain" style={{ width: "auto" }} />
+          <img src={brand.logo} alt={brand.name} className="h-9 w-auto object-contain" />
         </Link>
       </div>
 

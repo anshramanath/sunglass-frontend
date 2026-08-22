@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import type { RxOrder } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
@@ -44,7 +43,7 @@ function RxOrderCard({ o }: { o: RxOrder }) {
       <div className="px-5 sm:px-6 py-5 border-t border-grey-200 flex items-end justify-between gap-6 flex-wrap">
         <div className="flex items-center gap-4">
           <div className="w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
-            <Image src={o.frameImageSrc} alt={o.frameName} width={64} height={80} className="w-full h-full object-contain mix-blend-multiply" />
+            <img src={o.frameImageSrc} alt={o.frameName} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[15px]">{o.frameName}</p>

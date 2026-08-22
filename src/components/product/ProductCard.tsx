@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ProductListItem, ListVariation } from "@/lib/types";
 import { useIsBookmarked, useToggleBookmark } from "@/components/providers/BookmarkProvider";
@@ -41,11 +40,10 @@ export default function ProductCard({ product }: { product: ProductListItem }) {
     <div className="group">
       <Link href={href} className="block relative bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-3 sm:p-7">
         {displaySrc ? (
-          <Image
+          <img
             src={displaySrc}
             alt={displayAlt}
-            width={300}
-            height={300}
+            loading="lazy"
             className="w-full h-full object-contain mix-blend-multiply transition-transform duration-[420ms] ease-standard group-hover:scale-[1.04]"
           />
         ) : (

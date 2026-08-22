@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { requireUser } from "@/lib/auth";
 import { getOrders, getSubmissions, getRxOrders } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
@@ -30,7 +29,7 @@ export default async function AccountPage() {
         <div className="px-5 lg:px-10">
           <div className="h-16 flex items-center justify-between gap-4">
             <Link href="/" className="shrink-0" aria-label={`${brand.name} home`}>
-              <Image src={brand.logo} alt={brand.name} width={120} height={28} className="h-8" style={{ width: "auto" }} />
+              <img src={brand.logo} alt={brand.name} className="h-8 w-auto" />
             </Link>
             <Link href="/" className="flex items-center gap-1.5 whitespace-nowrap text-[13px] hover:opacity-60 transition-opacity duration-200">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
@@ -107,7 +106,7 @@ export default async function AccountPage() {
                       {order.items.map((item, i) => (
                         <div key={i} className="flex items-center gap-4">
                           <div className="block w-16 shrink-0 bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-1.5">
-                            <Image src={item.imageSrc} alt={item.name} width={64} height={80} className="w-full h-full object-contain mix-blend-multiply" />
+                            <img src={item.imageSrc} alt={item.name} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-[15px]">{item.name}</p>

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getCategories, getFiller } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
 import { CategoryNode, ProductListItem } from "@/lib/types";
@@ -44,7 +43,7 @@ export default async function Navbar() {
       <div className="px-5 lg:px-10">
         <div className="h-16 flex items-center gap-6 xl:gap-9">
           <Link href="/" className="shrink-0" aria-label={`${brand.name} home`}>
-            <Image src={brand.logo} alt={brand.name} width={120} height={28} className="h-7" style={{ width: "auto" }} />
+            <img src={brand.logo} alt={brand.name} className="h-7 w-auto" />
           </Link>
 
           <ul className="hidden lg:flex items-center gap-6 xl:gap-7">

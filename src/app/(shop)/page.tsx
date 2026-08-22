@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Suspense } from "react";
 import { getCategories, getFiller } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
@@ -51,13 +50,10 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="group bg-grey-100 lg:min-h-[80vh] order-1 lg:order-2 flex items-center justify-center p-10 sm:p-16 relative overflow-hidden">
-          <Image
+          <img
             src={brand.hero}
             alt={`${brand.name} hero eyewear`}
-            width={900}
-            height={600}
             className="w-full max-h-[60vh] object-contain mix-blend-multiply transition-transform duration-[600ms] ease-standard group-hover:scale-[1.04]"
-            priority
           />
         </div>
       </section>
@@ -73,11 +69,10 @@ export default async function HomePage() {
             return (
               <Link key={i} href={`/category/${leaf.path}`} className={`group block${i === 4 ? " hidden lg:block" : ""}`}>
                 <div className="bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-3 sm:p-7">
-                  <Image
+                  <img
                     src={image}
                     alt={leaf.name}
-                    width={400}
-                    height={500}
+                    loading="lazy"
                     className="w-full h-full object-contain mix-blend-multiply transition-transform duration-[420ms] ease-standard group-hover:scale-[1.04]"
                   />
                 </div>
@@ -104,11 +99,10 @@ export default async function HomePage() {
           const leaf = leaves[(5 + i) % leaves.length];
           return (
             <Link key={i} href={`/category/${leaf.path}`} className={`group relative ${bgs[i]} min-h-[58vh] overflow-hidden flex items-center justify-center p-12${i === 1 ? " hidden sm:flex" : ""}`}>
-              <Image
+              <img
                 src={slot.image}
                 alt={slot.body}
-                width={600}
-                height={400}
+                loading="lazy"
                 className="w-full max-h-[45vh] object-contain mix-blend-multiply transition-transform duration-[600ms] ease-standard group-hover:scale-[1.05]"
               />
               <div className="absolute bottom-9 left-9">

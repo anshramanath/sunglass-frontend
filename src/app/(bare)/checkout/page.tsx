@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useCartItems, useCartTotal, useCartCount, useRemoveFromCart, useIncrementQty, useDecrementQty, useUpdateCartPrice } from "@/components/providers/CartProvider";
 import { validateCart, createCheckoutSession } from "@/lib/api";
 import { getBrand } from "@/lib/brand";
@@ -91,7 +90,7 @@ export default function CheckoutPage() {
         <div className="px-5 lg:px-10">
           <div className="h-16 flex items-center justify-between relative">
             <Link href="/" className="shrink-0" aria-label={`${brand.name} home`}>
-              <Image src={brand.logo} alt={brand.name} width={120} height={28} className="h-8" style={{ width: "auto" }} />
+              <img src={brand.logo} alt={brand.name} className="h-8 w-auto" />
             </Link>
             <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 text-[13px] text-grey-500 whitespace-nowrap">
               <LockIcon className="w-4 h-4" />
@@ -133,7 +132,7 @@ export default function CheckoutPage() {
                 items.map((item) => (
                   <div key={`${item.productSlug}:${item.sku}`} className="flex gap-5 py-6">
                     <Link href={`/product/${item.productSlug}`} className="block w-20 shrink-0 self-start bg-grey-100 aspect-[4/5] overflow-hidden flex items-center justify-center p-2">
-                      <Image src={item.imageSrc} alt={item.name} width={80} height={100} className="w-full h-full object-contain mix-blend-multiply" />
+                      <img src={item.imageSrc} alt={item.name} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
                     </Link>
                     <div className="flex-1 min-w-0 flex flex-col">
                       <div className="flex items-start justify-between gap-4">
