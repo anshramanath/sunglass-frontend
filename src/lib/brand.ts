@@ -3,7 +3,7 @@ const BRANDS = {
     name: "proSPORT Sunglasses",
     shortName: "proSport",
     slug: "prosport-sunglasses",
-    url: "https://prosport-sunglasses-frontend.vercel.app",
+    url: "https://prosportsunglasses.com",
     favicon: "/prosport-sunglasses/favicon.png",
     description: "Athletic sunglasses built for speed, clarity, and all-day performance.",
     announcements: [
@@ -39,7 +39,7 @@ const BRANDS = {
     name: "BikerShades",
     shortName: "BikerShades",
     slug: "bikershades",
-    url: "https://bikershades-frontend.vercel.app",
+    url: "https://bikershades.com",
     favicon: "/bikershades/favicon.png",
     description: "Rider-first eyewear made for wind, glare, and the road ahead.",
     announcements: [
@@ -75,7 +75,7 @@ const BRANDS = {
     name: "Sunglass Monster",
     shortName: "SGM",
     slug: "sunglass-monster",
-    url: "https://sunglass-monster-frontend.vercel.app",
+    url: "https://sunglassmonster.com",
     favicon: "/sunglass-monster/favicon.png",
     description: "Bold, fashion-forward sunglasses with standout style and easy all-day wear.",
     announcements: [
